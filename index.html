@@ -1,1 +1,82 @@
-<h1>Hello — portfolio in progress.</h1>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cris Sobrino — Engineering &amp; data science portfolio</title>
+    <meta
+      name="description"
+      content="Selected engineering, data science and software projects."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="masthead">
+      <div class="shell masthead__inner">
+        <h1 class="masthead__name">Cris Sobrino</h1>
+        <p class="masthead__lede">
+          One or two lines on what you work on and what you are looking for.
+          Written for someone reading it for the first time.
+        </p>
+
+        <div class="credentials">
+          <div class="credential">
+            <span class="credential__year mono">20XX — 20XX</span>
+            <span class="credential__title">MSc Machine Learning for Health</span>
+            <span class="credential__place mono">University name</span>
+          </div>
+          <div class="credential">
+            <span class="credential__year mono">20XX — 20XX</span>
+            <span class="credential__title">MEng Molecular Bioengineering</span>
+            <span class="credential__place mono">University name</span>
+          </div>
+        </div>
+
+        <div class="contact mono">
+          <a href="mailto:you@example.com">you@example.com</a>
+          <a href="#">GitHub</a>
+          <a href="#">LinkedIn</a>
+          <a href="#">CV</a>
+        </div>
+      </div>
+
+      <div class="shell masthead__foot">
+        <a class="cue" href="#work" data-cue>
+          <span class="mono">Selected work</span>
+          <span class="cue__arrow" aria-hidden="true">↓</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="shell" id="work">
+      <section aria-label="Projects">
+        <div class="section__head">
+          <h2 class="section__title">Selected work</h2>
+          <div
+            class="filters"
+            data-filters
+            role="group"
+            aria-label="Filter projects by tag"
+          ></div>
+        </div>
+        <div class="grid" data-grid></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell footer__inner mono">
+        <span>Cris Sobrino</span>
+        <span>Last updated 2026</span>
+      </div>
+    </footer>
+
+    <script src="assets/js/projects.js"></script>
+    <script src="assets/js/index.js"></script>
+  </body>
+</html>
