@@ -1,5 +1,4 @@
-(function () {
-  const projects = window.PROJECTS || [];
+(async function () {
   const grid = document.querySelector("[data-grid]");
   const filters = document.querySelector("[data-filters]");
 
@@ -9,6 +8,20 @@
     if (text != null) node.textContent = text;
     return node;
   };
+
+  let projects = [];
+  try {
+    const manifest = await fetch("assets/data/projects/manifest.json").then(
+      (r) => r.json()
+    );
+    projects = await Promise.all(
+      manifest.map((slug) =>
+        fetch(`assets/data/projects/${slug}.json`).then((r) => r.json())
+      )
+    );
+  } catch (err) {
+    console.error("Failed to load projects", err);
+  }
 
   projects.forEach((project, i) => {
     const card = el("a", "card reveal");

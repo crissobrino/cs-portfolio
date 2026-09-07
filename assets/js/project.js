@@ -1,7 +1,16 @@
-(function () {
+(async function () {
   const slug = new URLSearchParams(location.search).get("p");
-  const project = (window.PROJECTS || []).find((p) => p.slug === slug);
   const root = document.querySelector("[data-project]");
+
+  let project = null;
+  if (slug) {
+    try {
+      const res = await fetch(`assets/data/projects/${slug}.json`);
+      if (res.ok) project = await res.json();
+    } catch (err) {
+      console.error("Failed to load project", err);
+    }
+  }
 
   const el = (tag, className, text) => {
     const node = document.createElement(tag);

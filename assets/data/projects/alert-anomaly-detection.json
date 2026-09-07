@@ -1,0 +1,77 @@
+{
+  "slug": "alert-anomaly-detection",
+  "title": "Anomaly detection for epidemiological alert prioritisation",
+  "year": "2026",
+  "domain": "Data Science",
+  "tags": [
+    "Data Science",
+    "NLP",
+    "Unsupervised Learning",
+    "Anomaly Detection"
+  ],
+  "summary": "A hybrid unsupervised system that ranks public-health alerts by how unusual they are — catching outbreaks no single method would flag alone.",
+  "stack": [
+    "Python",
+    "sentence-transformers",
+    "scikit-learn",
+    "PyTorch",
+    "SHAP",
+    "Hugging Face Transformers",
+    "SQL Server",
+    "Power BI"
+  ],
+  "role": "Solo project",
+  "context": "MSc thesis (Machine Learning for Health), built alongside full-time work as a health data scientist",
+  "repo": "",
+  "sections": [
+    {
+      "heading": "The problem",
+      "body": [
+        "Public health surveillance teams get more open-source alerts than anyone can manually review, and most of them come from informal, unverified sources. Collecting the alerts was never the hard part. The hard part is figuring out which of the thousands already sitting in the system actually deserve a person's attention. Most of the NLP work I found in this space is about generating or filtering alerts, not ranking the ones that already exist."
+      ]
+    },
+    {
+      "heading": "Approach",
+      "body": [
+        "I built an end-to-end pipeline. An ETL layer pulls alert text, epidemiological data, geography and timing into one structured data model, which feeds a Power BI dashboard and an anomaly-ranking layer underneath it. There's no labelled 'priority' data for this — nobody has gone through and marked which past alerts turned out to matter — so the ranking had to be unsupervised.",
+        "It combines two signals that don't talk to each other. Track A is semantic: embed the alert text, then score how far it sits from the centre of its disease cluster. Track B is structural: an Isolation Forest and an autoencoder run over nine features — severity, geographic spread, how recent the activity is. Both scores get percentile-ranked, fused into one hybrid score, and checked against WHO risk criteria with a zero-shot classifier."
+      ],
+      "images": [
+        {
+          "src": "assets/img/alert-anomaly-detection/track-a.png",
+          "alt": "Diagram of Track A: embedding alert text, clustering by disease, and scoring distance from the cluster centre",
+          "caption": "Track A — embed, cluster, then score each alert by its distance from its cluster centre."
+        },
+        {
+          "src": "assets/img/alert-anomaly-detection/track-b.png",
+          "alt": "Diagram of Track B: an Isolation Forest and an autoencoder over nine structural features, fused by percentile rank",
+          "caption": "Track B — an Isolation Forest and an autoencoder over nine structural features, fused by percentile rank."
+        }
+      ]
+    },
+    {
+      "heading": "Result",
+      "body": [
+        "The two tracks ended up catching almost completely different alerts. Out of 2,282 analysed, only 23 scored highly on both. That's actually the useful part — fusing them surfaced 68 confirmed outbreaks (yellow fever, Lassa fever, cholera) that never scored extremely high on either method alone, just moderately on both. No single detector running by itself would have caught these.",
+        "It also replaced a manual weekly compilation an analyst used to do by hand."
+      ]
+    }
+  ],
+  "images": [
+    {
+      "src": "assets/img/alert-anomaly-detection/cover.png",
+      "alt": "System architecture diagram: alerts splitting into Track A and Track B, fusing into a ranked score, then characterisation",
+      "caption": "System architecture — alerts split into Track A and Track B, then fuse into a single ranked score."
+    },
+    {
+      "src": "assets/img/alert-anomaly-detection/scatter.png",
+      "alt": "Scatter plot showing Track A and Track B scores are nearly uncorrelated across alerts",
+      "caption": "Each dot is an alert. Only 23 of 2,282 scored highly on both tracks — the two signals are almost independent."
+    },
+    {
+      "src": "assets/img/alert-anomaly-detection/result.png",
+      "alt": "Correlation heatmap across the semantic score, structural sub-scores, zero-shot score, and the fused hybrid score",
+      "caption": "Spearman correlation across scores — the semantic track (score_A) barely correlates with the structural sub-scores, which is what fusing captures."
+    }
+  ]
+}

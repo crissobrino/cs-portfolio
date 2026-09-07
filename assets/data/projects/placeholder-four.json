@@ -1,0 +1,27 @@
+{
+  "slug": "placeholder-four",
+  "title": "Fourth placeholder project",
+  "year": "2024",
+  "domain": "Data science",
+  "tags": [
+    "Data science",
+    "Visualisation"
+  ],
+  "summary": "One sentence on what the project does and who it was for.",
+  "stack": [
+    "Python",
+    "Plotly"
+  ],
+  "role": "Solo project",
+  "context": "Internship",
+  "repo": "",
+  "sections": [
+    {
+      "heading": "The problem",
+      "body": [
+        "Placeholder copy — replace with the real story."
+      ]
+    }
+  ],
+  "images": []
+}
