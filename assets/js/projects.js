@@ -98,7 +98,7 @@ window.PROJECTS = [
     summary:
       "Two variational autoencoders trained on 380,000 patient-days of continuous glucose data, testing whether adding insulin and wearable signals produces a better representation than glucose alone.",
     stack: ["Python", "PyTorch", "UMAP", "NumPy", "pandas"],
-    role: "Solo project",
+    role: "",
     context:
       "Coursework project for a Probabilistic & Generative ML course (MSc), data from MetaboNet, a public harmonised dataset consolidating 21 Type 1 diabetes clinical studies",
     repo: "https://github.com/crissobrino/diabetes-vae",
@@ -141,12 +141,6 @@ window.PROJECTS = [
         alt: "Product-of-Experts architecture: three encoders fusing into one shared latent distribution, then three decoders",
         caption:
           "Product-of-Experts architecture — three encoders fuse into one shared latent, then three decoders reconstruct each modality.",
-      },
-      {
-        src: "assets/img/diabetes-vae/result.jpg",
-        alt: "Insulin reconstruction trace showing the model flattens sharp bolus spikes into a smooth average",
-        caption:
-          "Insulin reconstruction. The model tracks broad basal patterns but flattens sharp bolus spikes — MSE loss rewards predicting the average.",
       },
     ],
   },
