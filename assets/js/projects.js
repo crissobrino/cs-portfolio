@@ -37,33 +37,50 @@ window.PROJECTS = [
       {
         heading: "Approach",
         body: [
-          "Built an end-to-end pipeline: an ETL layer consolidated alert text, epidemiological data, geography, and timing into a structured data model, feeding both a Power BI dashboard and an unsupervised anomaly-ranking layer. No labeled 'priority' data existed for this, so the whole system is unsupervised.",
-          "The ranking combined two independent signals, fused into a single hybrid score and cross-checked against WHO risk criteria using a zero-shot classifier:",
+          "Built an end-to-end pipeline: an ETL layer consolidating alert text, epidemiological data, geography and timing into a structured data model, feeding both a Power BI dashboard and an unsupervised anomaly-ranking layer. No labelled 'priority' data exists for this task, so the whole system is unsupervised.",
+          "The ranking combined two independent signals. Track A (semantic) embedded each alert's text and scored how far it sat from the centre of its disease cluster. Track B (structural) combined an Isolation Forest and an autoencoder over nine features covering severity, geographic spread and recent activity. The two scores were percentile-ranked and fused into a single hybrid ranking, then cross-checked against WHO risk criteria with a zero-shot classifier.",
         ],
-        list: [
-          "A semantic track using multilingual sentence embeddings to flag alerts whose language was atypical for their disease category",
-          "A structural track combining an Isolation Forest and an autoencoder over severity, spread, and recency features",
-          "Zero-shot cross-check of the fused score against WHO risk criteria",
+        images: [
+          {
+            src: "assets/img/alert-anomaly-detection/track-a.png",
+            alt: "Diagram of Track A: embedding alert text, clustering by disease, and scoring distance from the cluster centre",
+            caption:
+              "Track A — embed, cluster, then score each alert by its distance from its cluster centre.",
+          },
+          {
+            src: "assets/img/alert-anomaly-detection/track-b.png",
+            alt: "Diagram of Track B: an Isolation Forest and an autoencoder over nine structural features, fused by percentile rank",
+            caption:
+              "Track B — an Isolation Forest and an autoencoder over nine structural features, fused by percentile rank.",
+          },
         ],
       },
       {
         heading: "Result",
         body: [
-          "Applied to 2,282 real alerts over a six-month window, it surfaced 68 confirmed outbreaks that no single detector caught alone — including real cases of yellow fever, Lassa fever, and cholera.",
-          "The two signal tracks turned out to be almost completely statistically independent (near-zero correlation), which is exactly why fusing them worked: it caught outbreaks that scored moderately, but never extremely, on any one method by itself. The pipeline also replaced a manual weekly compilation an analyst previously did by hand.",
+          "The two tracks turned out to catch almost entirely different alerts — of the 2,282 analysed, only 23 scored highly on both. That independence is the whole point: fusing them surfaced 68 confirmed outbreaks (yellow fever, Lassa fever, cholera) that scored moderately but never extremely on any single method, so no detector running alone would have flagged them.",
+          "The pipeline also replaced a manual weekly compilation an analyst previously did by hand.",
         ],
       },
     ],
     images: [
       {
-        src: "assets/img/alert-anomaly-detection/cover.jpg",
-        alt: "Scatter plot comparing the semantic and structural anomaly scores across alerts",
-        caption: "The two independent signal tracks, plotted against each other.",
+        src: "assets/img/alert-anomaly-detection/cover.png",
+        alt: "System architecture diagram: alerts splitting into Track A and Track B, fusing into a ranked score, then characterisation",
+        caption:
+          "System architecture — alerts split into Track A and Track B, then fuse into a single ranked score.",
       },
       {
-        src: "assets/img/alert-anomaly-detection/result.jpg",
-        alt: "Correlation heatmap showing the semantic and structural tracks are nearly uncorrelated",
-        caption: "Near-zero correlation between tracks — why fusing them catches more.",
+        src: "assets/img/alert-anomaly-detection/scatter.png",
+        alt: "Scatter plot showing Track A and Track B scores are nearly uncorrelated across alerts",
+        caption:
+          "Each dot is an alert. Only 23 of 2,282 scored highly on both tracks — the two signals are almost independent.",
+      },
+      {
+        src: "assets/img/alert-anomaly-detection/result.png",
+        alt: "Correlation heatmap across the semantic score, structural sub-scores, zero-shot score, and the fused hybrid score",
+        caption:
+          "Spearman correlation across scores — the semantic track (score_A) barely correlates with the structural sub-scores, which is what fusing captures.",
       },
     ],
   },

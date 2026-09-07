@@ -10,6 +10,25 @@
     return node;
   };
 
+  const renderFigure = (image) => {
+    const figure = el("figure", "figure");
+    if (image.src) {
+      const frame = el("div", "figure__frame");
+      const img = el("img");
+      img.src = image.src;
+      img.alt = image.alt || image.caption || "";
+      img.loading = "lazy";
+      frame.append(img);
+      figure.append(frame);
+    } else {
+      const frame = el("div", "figure__frame figure__frame--empty");
+      frame.append(el("span", "mono", "Image"));
+      figure.append(frame);
+    }
+    if (image.caption) figure.append(el("figcaption", null, image.caption));
+    return figure;
+  };
+
   if (!project) {
     document.title = "Not found — Portfolio";
     root.append(
@@ -61,6 +80,11 @@
       section.list.forEach((item) => ul.append(el("li", null, item)));
       prose.append(ul);
     }
+    if (section.images && section.images.length) {
+      const stack = el("div", "section-images");
+      section.images.forEach((image) => stack.append(renderFigure(image)));
+      prose.append(stack);
+    }
   });
 
   const gallery = el("section", "gallery");
@@ -69,24 +93,7 @@
       ? project.images
       : [{ caption: "Image placeholder" }, { caption: "Image placeholder" }];
 
-  images.forEach((image) => {
-    const figure = el("figure", "figure");
-    if (image.src) {
-      const frame = el("div", "figure__frame");
-      const img = el("img");
-      img.src = image.src;
-      img.alt = image.alt || image.caption || "";
-      img.loading = "lazy";
-      frame.append(img);
-      figure.append(frame);
-    } else {
-      const frame = el("div", "figure__frame figure__frame--empty");
-      frame.append(el("span", "mono", "Image"));
-      figure.append(frame);
-    }
-    if (image.caption) figure.append(el("figcaption", null, image.caption));
-    gallery.append(figure);
-  });
+  images.forEach((image) => gallery.append(renderFigure(image)));
 
   const layout = el("div", "layout");
   layout.append(prose, spec);
