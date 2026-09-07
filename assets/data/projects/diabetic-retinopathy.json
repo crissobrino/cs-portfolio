@@ -1,0 +1,48 @@
+{
+  "slug": "diabetic-retinopathy",
+  "title": "Diabetic retinopathy detection from fundus photographs",
+  "year": "2026",
+  "domain": "Deep Learning",
+  "tags": ["Deep Learning", "Computer Vision", "Medical Imaging", "PyTorch"],
+  "summary": "A two-track image classification competition — build a CNN from scratch, and fine-tune a pretrained one. Best models scored 0.780 and 0.826 AUC.",
+  "stack": ["Python", "PyTorch", "torchvision", "OpenCV"],
+  "role": "Team of two",
+  "context": "Private Codabench competition run as coursework (MSc); no public leaderboard to link to",
+  "repo": "",
+  "sections": [
+    {
+      "heading": "The problem",
+      "body": [
+        "Detecting diabetic retinopathy from retinal photographs. The original labels are a 0-4 clinical severity scale, collapsed to binary for the competition, which left a 73/27 class split. There were 2,000 training images, 500 validation, 1,000 test, split across two separate tracks — one where you train a CNN from scratch, one where you fine-tune an ImageNet backbone. With only 2,000 training images, overfitting was the constant risk on both sides."
+      ]
+    },
+    {
+      "heading": "Approach",
+      "body": [
+        "Both tracks shared a preprocessing pipeline: unify image orientation, crop to the retinal disc, and apply Ben Graham contrast normalisation. I handled the class imbalance twice over, with a weighted loss and a weighted sampler.",
+        "Two decisions came from the medical problem itself rather than from tuning. Microaneurysms are the main signal for early retinopathy and they're small, so on the fine-tuning track I worked at 380px instead of the usual 224. And fundus cameras don't have a fixed orientation, so rotating only ±15 degrees throws away most of the valid rotations — using the full ±180 range worked a lot better.",
+        "The from-scratch track ended up as a 5-block CNN, about 1M parameters, averaged over three seeds. The fine-tuning track was a weighted ensemble of DenseNet121, DenseNet169 and ResNeXt50, unfrozen in two stages, with the ensemble weights chosen by grid search on validation. Both used 4-pass test-time augmentation."
+      ]
+    },
+    {
+      "heading": "Result",
+      "body": [
+        "0.826 AUC on the private test set for the fine-tuning track, 0.780 for the from-scratch one.",
+        "The interesting part was what didn't work, and there was a lot of it. CLAHE broke the crop step because it changed the global intensity the cropping depended on. A dtype bug in the contrast normalisation caused pixel overflow and turned every image grey — that sent us backwards below our own first baseline until I found it. Adding SE blocks and residual connections to the custom model overfit immediately. The aggressive ±180 augmentation that helped the pretrained models failed completely from scratch, at 0.53 AUC. And unfreezing a third DenseNet block overfit, so two stages was the right place to stop.",
+        "I also dropped a fourth backbone (SE-ResNeXt50) from the final ensemble even though it scored fine on its own, because its predictions correlated too closely with ResNeXt50 and it wasn't adding anything."
+      ]
+    }
+  ],
+  "images": [
+    {
+      "src": "assets/img/diabetic-retinopathy/cover.jpg",
+      "alt": "Original fundus photograph next to the same image after Ben Graham contrast normalisation",
+      "caption": "Original vs. after Ben Graham contrast normalisation — vessels and small lesions become far more visible to the network."
+    },
+    {
+      "src": "assets/img/diabetic-retinopathy/result.jpg",
+      "alt": "Bar chart of private-set AUC for every submission across both tracks; the lowest bar is a dtype bug that turned every image grey",
+      "caption": "Every submission, both tracks. Private-set AUC — the bottom bar on the left is a dtype bug that turned every image grey."
+    }
+  ]
+}
