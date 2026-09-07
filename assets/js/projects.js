@@ -7,7 +7,7 @@
 window.PROJECTS = [
   {
     slug: "alert-anomaly-detection",
-    title: "Surfacing outbreaks buried in thousands of unreviewed health alerts",
+    title: "Anomaly detection for epidemiological alert prioritisation",
     year: "2026",
     domain: "Data Science",
     tags: ["Data Science", "NLP", "Unsupervised Learning", "Anomaly Detection"],
@@ -85,23 +85,70 @@ window.PROJECTS = [
     ],
   },
   {
-    slug: "placeholder-two",
-    title: "Second placeholder project",
-    year: "2025",
-    domain: "Software",
-    tags: ["Software", "Web"],
-    summary: "One sentence on what the project does and who it was for.",
-    stack: ["TypeScript", "React", "PostgreSQL"],
-    role: "Team of three",
-    context: "Personal project",
+    slug: "diabetes-vae",
+    title: "Multimodal VAEs for diabetes representation learning",
+    year: "2026",
+    domain: "Deep Learning",
+    tags: [
+      "Deep Learning",
+      "Generative Models",
+      "Representation Learning",
+      "Health Data",
+    ],
+    summary:
+      "Two variational autoencoders trained on 380,000 patient-days of continuous glucose data, testing whether adding insulin and wearable signals produces a better representation than glucose alone.",
+    stack: ["Python", "PyTorch", "UMAP", "NumPy", "pandas"],
+    role: "Team of two",
+    context:
+      "Coursework project for a Probabilistic & Generative ML course (MSc), data from MetaboNet, a public harmonised dataset consolidating 21 Type 1 diabetes clinical studies",
     repo: "",
     sections: [
       {
         heading: "The problem",
-        body: ["Placeholder copy — replace with the real story."],
+        body: [
+          "Diabetes care is assessed episodically — HbA1c, periodic clinical review — while a patient's metabolic state changes hour by hour. The question was whether unsupervised representation learning could organise patient-days by metabolic similarity without any clinical labels, and whether adding insulin and wearable physiology to glucose data produces a richer representation than glucose alone.",
+        ],
+      },
+      {
+        heading: "Approach",
+        body: [
+          "Built a CGM-only convolutional VAE as a baseline, then a multimodal VAE fusing three modalities — glucose, insulin, wearable physiology — through a Product-of-Experts layer, which combines per-modality posteriors into a single shared latent distribution and handles missing modalities natively. That mattered: wearable data existed for only a small subset of patients.",
+          "Trained on 379,849 patient-days from 13 studies, evaluated on 69,894 held-out days across 305 patients. Posterior collapse was the main modelling difficulty, addressed with a 32-dimensional latent space, KL annealing, and a per-dimension free-bits threshold.",
+        ],
+      },
+      {
+        heading: "Result",
+        body: [
+          "Both models independently learned the same clinically interpretable axis: a single latent dimension correlating strongly with time-in-range and inversely with mean glucose, with no clinical labels used in training.",
+          "But the multimodal model did not clearly beat the baseline. Patient-centroid distances aligned less well with glucose-derived clinical metrics (+0.448 vs +0.593 on time-in-range). Rather than claim a win, we diagnosed why: every evaluation metric was derived from CGM, so they structurally favoured the CGM-only model; and insulin reconstruction failed on sharp bolus events, because MSE loss rewards predicting a smooth average over sparse spikes.",
+        ],
+      },
+      {
+        heading: "What the loss curves didn't show",
+        body: [
+          "Several early models had healthy-looking train and validation curves while being quietly broken. None of it showed up in the loss curves — catching it meant inspecting reconstructed traces, per-dimension KL values, and latent structure directly.",
+        ],
+        list: [
+          "One decoder reconstructed only the first few hours of each day",
+          "One checkpoint was selected before the KL term activated, giving good reconstruction loss but an unregularised latent space",
+          "The insulin encoder was partly responding to a normalisation artefact",
+        ],
       },
     ],
-    images: [],
+    images: [
+      {
+        src: "assets/img/diabetes-vae/cover.jpg",
+        alt: "Product-of-Experts architecture: three encoders fusing into one shared latent distribution, then three decoders",
+        caption:
+          "Product-of-Experts architecture — three encoders fuse into one shared latent, then three decoders reconstruct each modality.",
+      },
+      {
+        src: "assets/img/diabetes-vae/result.jpg",
+        alt: "Insulin reconstruction trace showing the model flattens sharp bolus spikes into a smooth average",
+        caption:
+          "Insulin reconstruction. The model tracks broad basal patterns but flattens sharp bolus spikes — MSE loss rewards predicting the average.",
+      },
+    ],
   },
   {
     slug: "placeholder-three",
