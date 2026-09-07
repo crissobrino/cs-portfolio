@@ -37,23 +37,6 @@
     grid.append(card);
   });
 
-  // Keep the hairline grid rectangular: pad the last row with empty cells.
-  const pad = () => {
-    grid.querySelectorAll(".card--filler").forEach((n) => n.remove());
-    const cards = grid.querySelectorAll(".card:not(.card--filler)");
-    if (!cards.length) return;
-    const columns = getComputedStyle(grid).gridTemplateColumns.split(" ").length;
-    const missing = (columns - (cards.length % columns)) % columns;
-    for (let i = 0; i < missing; i++) {
-      const filler = el("div", "card card--filler");
-      filler.setAttribute("aria-hidden", "true");
-      grid.append(filler);
-    }
-  };
-
-  pad();
-  window.addEventListener("resize", pad);
-
   const tags = [...new Set(projects.flatMap((p) => p.tags || []))].sort();
   const buttons = [];
 
@@ -61,7 +44,7 @@
     buttons.forEach((b) =>
       b.setAttribute("aria-pressed", String(b.dataset.tag === active))
     );
-    grid.querySelectorAll(".card:not(.card--filler)").forEach((card) => {
+    grid.querySelectorAll(".card").forEach((card) => {
       const match =
         active === "all" || card.dataset.tags.split("|").includes(active);
       card.classList.toggle("card--dimmed", !match);

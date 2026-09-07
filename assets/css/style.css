@@ -11,6 +11,7 @@
   --paper: #f1f5f2;
   --paper-deep: #e7eeea;
   --surface: #ffffff;
+  --panel: #454d55;
   --wash: rgba(143, 192, 169, 0.12);
   --wash-strong: rgba(143, 192, 169, 0.22);
 
@@ -19,6 +20,8 @@
 
   --gutter: clamp(1.25rem, 5vw, 4rem);
   --measure: 66ch;
+  --nav-h: 3.25rem;
+  --radius: 14px;
 }
 
 *,
@@ -32,7 +35,7 @@ html {
 }
 
 #work {
-  scroll-margin-top: 2rem;
+  scroll-margin-top: calc(var(--nav-h) + 1.5rem);
 }
 
 body {
@@ -94,13 +97,57 @@ main.shell {
   flex: 1;
 }
 
+/* ---------- Top bar ---------- */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: var(--nav-h);
+  background: var(--ink);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.nav__mark {
+  color: var(--surface);
+  text-decoration: none;
+  font-size: 0.8125rem;
+  letter-spacing: 0.14em;
+}
+
+.nav__links {
+  display: flex;
+  gap: clamp(1rem, 3vw, 2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav__links a {
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  transition: color 0.18s;
+}
+
+.nav__links a:hover {
+  color: var(--accent);
+}
+
 /* ---------- Masthead: full first screen ---------- */
 
 .masthead {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 100svh;
+  min-height: calc(100svh - var(--nav-h));
   overflow: hidden;
   border-bottom: 1px solid var(--rule);
   background:
@@ -118,12 +165,55 @@ main.shell {
 }
 
 /* padding-block only — .shell owns the horizontal gutter */
+/* Cover: name across the top, then info left and image right */
 .masthead__inner {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-block: clamp(4rem, 12vh, 7rem) clamp(2rem, 4vh, 3rem);
+  padding-block: clamp(2.5rem, 7vh, 4rem) clamp(2rem, 4vh, 3rem);
+}
+
+/* Both columns stretch to one shared top and bottom edge */
+.masthead__split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: stretch;
+  gap: clamp(2rem, 4.5vw, 4rem);
+  margin-top: clamp(1.75rem, 5vh, 3rem);
+}
+
+.masthead__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(1.75rem, 3.5vw, 2.75rem);
+  border-radius: calc(var(--radius) + 4px);
+  background: var(--panel);
+  color: var(--surface);
+}
+
+.masthead__text .masthead__lede {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.masthead__text .contact a {
+  color: var(--accent);
+}
+
+.masthead__text .contact a:hover {
+  color: var(--surface);
+}
+
+.cover {
+  width: 100%;
+  height: 100%;
+  min-height: clamp(17rem, 38vh, 24rem);
+  object-fit: cover;
+  border: 1px solid var(--rule);
+  border-radius: calc(var(--radius) + 4px);
+  background: var(--surface);
 }
 
 .masthead__foot {
@@ -172,45 +262,48 @@ main.shell {
 .masthead__name {
   font-size: clamp(2.75rem, 8vw, 5.25rem);
   letter-spacing: -0.035em;
+  text-align: center;
+  text-wrap: balance; /* if it wraps, split the lines evenly */
 }
 
 .masthead__lede {
-  max-width: 46ch;
-  margin: 1.5rem 0 0;
+  max-width: 38ch;
+  margin: 0;
   font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
   color: var(--muted);
 }
 
-.credentials {
-  max-width: 46rem;
-  margin: clamp(2.25rem, 5vw, 3.25rem) 0 0;
-  padding: 0.5rem 1.5rem;
-  background: var(--surface);
-  border: 1px solid var(--rule);
+/* Degrees: centred under the name, side by side until they run out of room */
+.degrees {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem clamp(2rem, 5vw, 4rem);
+  margin: clamp(1.25rem, 3vh, 2rem) 0 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
 }
 
-.credential {
+.degree {
   display: grid;
-  grid-template-columns: 8.5rem 1fr auto;
-  gap: 1.25rem;
-  align-items: baseline;
-  padding: 0.875rem 0;
-  border-bottom: 1px solid var(--rule);
+  gap: 0.2rem;
 }
 
-.credential:last-child {
-  border-bottom: 0;
+/* Sans for the degree itself — mono is for labels and numbers, not content */
+.degree__title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
 }
 
-.credential__year {
-  color: var(--accent-deep);
-}
-
-.credential__title {
+.degree__meta {
+  font-family: var(--font-mono);
   font-weight: 500;
-}
-
-.credential__place {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: var(--muted);
 }
 
@@ -218,7 +311,7 @@ main.shell {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
-  padding: 1.5rem 0 0;
+  padding: clamp(1.75rem, 4vh, 2.5rem) 0 0;
 }
 
 /* ---------- Filters ---------- */
@@ -274,9 +367,7 @@ main.shell {
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  border-top: 1px solid var(--rule);
-  border-left: 1px solid var(--rule);
-  background: var(--surface);
+  gap: clamp(0.875rem, 1.5vw, 1.25rem);
 }
 
 .card {
@@ -285,24 +376,18 @@ main.shell {
   gap: 0.75rem;
   min-height: 15rem;
   padding: 1.5rem;
-  border-right: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
   color: inherit;
   text-decoration: none;
   background: var(--surface);
-  transition: background-color 0.2s, opacity 0.2s;
+  transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;
 }
 
 .card:hover,
 .card:focus-visible {
   background: var(--wash);
-}
-
-/* Empty slots keep the block rectangular without pretending to be cards */
-.card--filler {
-  min-height: 0;
-  pointer-events: none;
-  background: var(--paper-deep);
+  border-color: var(--accent);
 }
 
 .card--dimmed {
@@ -419,6 +504,7 @@ main.shell {
 .sheet {
   background: var(--surface);
   border: 1px solid var(--rule);
+  border-radius: var(--radius);
   padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3.5rem)
     clamp(2.5rem, 5vw, 4rem);
 }
@@ -451,8 +537,9 @@ main.shell {
 
 .spec {
   align-self: start;
+  border-radius: var(--radius);
   position: sticky;
-  top: 1.5rem;
+  top: calc(var(--nav-h) + 1.5rem);
   margin: 0;
   padding: 0.25rem 1.25rem;
   background: var(--paper);
@@ -530,6 +617,7 @@ main.shell {
 
 .figure__frame {
   border: 1px solid var(--rule);
+  border-radius: var(--radius);
   background: var(--paper);
   overflow: hidden;
 }
@@ -558,6 +646,7 @@ main.shell {
 
 .repo {
   display: inline-flex;
+  border-radius: calc(var(--radius) - 6px);
   align-items: center;
   gap: 0.5rem;
   margin: clamp(2.5rem, 5vw, 3.5rem) 0 0;
@@ -639,6 +728,15 @@ main.shell {
 /* ---------- Small screens ---------- */
 
 @media (max-width: 900px) {
+  .masthead__split {
+    grid-template-columns: 1fr;
+    gap: clamp(1.75rem, 5vh, 2.5rem);
+  }
+
+  .cover {
+    aspect-ratio: 16 / 10;
+  }
+
   .layout {
     grid-template-columns: 1fr;
   }
@@ -650,9 +748,13 @@ main.shell {
 }
 
 @media (max-width: 640px) {
-  .credential {
-    grid-template-columns: 1fr;
-    gap: 0.25rem;
+  /* Mono runs wide — keep long degree titles on one line */
+  .degree__title {
+    font-size: 0.875rem;
+  }
+
+  .degree__meta {
+    font-size: 0.6875rem;
   }
 
   .grid,
