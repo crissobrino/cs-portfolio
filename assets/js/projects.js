@@ -145,23 +145,61 @@ window.PROJECTS = [
     ],
   },
   {
-    slug: "placeholder-three",
-    title: "Third placeholder project",
-    year: "2024",
-    domain: "Engineering",
-    tags: ["Engineering", "Simulation"],
-    summary: "One sentence on what the project does and who it was for.",
-    stack: ["MATLAB", "Simulink"],
-    role: "Solo project",
-    context: "Final year project",
+    slug: "ardm-imputation",
+    title: "Order-agnostic diffusion models for imputation",
+    year: "2026",
+    domain: "Deep Learning",
+    tags: ["Deep Learning", "Generative Models", "Transformers", "PyTorch"],
+    summary:
+      "A from-scratch implementation of ARDM (Hoogeboom et al., ICLR 2022), tested on images and tabular data to see where order-agnostic generation actually holds up.",
+    stack: ["Python", "PyTorch", "Transformers", "NumPy", "matplotlib"],
+    role: "Team of two",
+    context:
+      "Coursework project for a Probabilistic & Generative ML course (MSc), on binarized MNIST and the UCI Mushroom dataset",
     repo: "",
     sections: [
       {
         heading: "The problem",
-        body: ["Placeholder copy — replace with the real story."],
+        body: [
+          "Standard autoregressive models generate in a fixed left-to-right order, which makes them awkward for imputation — filling in arbitrary missing values. ARDM instead randomises the generation order at every training step, so the model learns to predict any token from any subset of the others. The goal was to implement the paper from scratch and find out where that property actually pays off.",
+        ],
+      },
+      {
+        heading: "Approach",
+        body: [
+          "Built a bidirectional Transformer (~2M parameters, causal mask removed) trained under the ARDM objective: sample a random permutation and a random step, mask everything after it, and compute the loss only at the target position. Then ran three experiments — imputation on binarized MNIST at varying observation rates, an architecture comparison against a small CNN under the identical objective, and a transfer test to categorical tabular data.",
+        ],
+      },
+      {
+        heading: "Result",
+        body: [
+          "Imputation comes free. No architecture or training changes needed — just fix the observed pixels and sample the rest in a random order. Quantifying the model's own uncertainty with pixel-wise entropy over 50 completions gave 0.037 bits at 90% visible, rising to 0.219 at 10%: uncertainty scales with the amount of missing information, as it should.",
+          "The Transformer only mattered when context was sparse. At 90% and 50% visible, a small CNN matched it despite being far simpler and faster to train; the gap only opened at 10% visible, where the CNN broke into fragments — with most of the image masked, a local receptive field has nothing to condition on, while global attention can still reach whatever pixels are revealed.",
+          "The tabular transfer was inconclusive, and it's reported that way. Imputation accuracy beat random by a wide margin (0.40–0.56 vs. 0.04), but test loss came in well above validation loss and the train/val gap resisted closing. With only 8k samples, that could be dataset size, the global-vocabulary design, or both — left unresolved rather than claimed as a success.",
+          "Also worth noting: sequential sampling took 27.3s versus 0.5s for parallel block sampling — a 46x speedup for a modest quality loss.",
+        ],
       },
     ],
-    images: [],
+    images: [
+      {
+        src: "assets/img/ardm-imputation/cover.jpg",
+        alt: "Original digit next to reconstructions at 90%, 50%, and 10% visible",
+        caption:
+          "Original digit next to reconstructions at 90%, 50% and 10% visible.",
+      },
+      {
+        src: "assets/img/ardm-imputation/entropy.jpg",
+        alt: "Pixel-wise entropy map over 50 completions, brighter where the model was more uncertain",
+        caption:
+          "Pixel-wise entropy over 50 completions. Bright means the model was uncertain — uncertainty grows as less of the image is visible.",
+      },
+      {
+        src: "assets/img/ardm-imputation/transformer-vs-cnn.jpg",
+        alt: "Transformer vs CNN imputation quality across visibility levels, CNN falling apart at 10% visible",
+        caption:
+          "Transformer vs CNN imputation. Nearly identical at 90% and 50% visible; the CNN falls apart at 10%.",
+      },
+    ],
   },
   {
     slug: "placeholder-four",
