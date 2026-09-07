@@ -101,7 +101,7 @@ window.PROJECTS = [
     role: "Solo project",
     context:
       "Coursework project for a Probabilistic & Generative ML course (MSc), data from MetaboNet, a public harmonised dataset consolidating 21 Type 1 diabetes clinical studies",
-    repo: "",
+    repo: "https://github.com/crissobrino/diabetes-vae",
     sections: [
       {
         heading: "The problem",
