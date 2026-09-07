@@ -98,7 +98,7 @@ window.PROJECTS = [
     summary:
       "Two variational autoencoders trained on 380,000 patient-days of continuous glucose data, testing whether adding insulin and wearable signals produces a better representation than glucose alone.",
     stack: ["Python", "PyTorch", "UMAP", "NumPy", "pandas"],
-    role: "Team of two",
+    role: "Solo project",
     context:
       "Coursework project for a Probabilistic & Generative ML course (MSc), data from MetaboNet, a public harmonised dataset consolidating 21 Type 1 diabetes clinical studies",
     repo: "",
@@ -120,7 +120,7 @@ window.PROJECTS = [
         heading: "Result",
         body: [
           "Both models independently learned the same clinically interpretable axis: a single latent dimension correlating strongly with time-in-range and inversely with mean glucose, with no clinical labels used in training.",
-          "But the multimodal model did not clearly beat the baseline. Patient-centroid distances aligned less well with glucose-derived clinical metrics (+0.448 vs +0.593 on time-in-range). Rather than claim a win, we diagnosed why: every evaluation metric was derived from CGM, so they structurally favoured the CGM-only model; and insulin reconstruction failed on sharp bolus events, because MSE loss rewards predicting a smooth average over sparse spikes.",
+          "But the multimodal model did not clearly beat the baseline. Patient-centroid distances aligned less well with glucose-derived clinical metrics (+0.448 vs +0.593 on time-in-range). Rather than claim a win, I diagnosed why: every evaluation metric was derived from CGM, so they structurally favoured the CGM-only model; and insulin reconstruction failed on sharp bolus events, because MSE loss rewards predicting a smooth average over sparse spikes.",
         ],
       },
       {
