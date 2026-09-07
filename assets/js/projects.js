@@ -137,7 +137,7 @@ window.PROJECTS = [
     ],
     images: [
       {
-        src: "assets/img/diabetes-vae/cover.jpg",
+        src: "assets/img/diabetes-vae/cover.png",
         alt: "Product-of-Experts architecture: three encoders fusing into one shared latent distribution, then three decoders",
         caption:
           "Product-of-Experts architecture — three encoders fuse into one shared latent, then three decoders reconstruct each modality.",
