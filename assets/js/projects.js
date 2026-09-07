@@ -156,7 +156,7 @@ window.PROJECTS = [
     role: "Team of two",
     context:
       "Coursework project for a Probabilistic & Generative ML course (MSc), on binarized MNIST and the UCI Mushroom dataset",
-    repo: "",
+    repo: "https://github.com/crissobrino/ardm-imputation",
     sections: [
       {
         heading: "The problem",
