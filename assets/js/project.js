@@ -38,6 +38,20 @@
     return figure;
   };
 
+  const renderVideo = (video) => {
+    const figure = el("figure", "figure");
+    const frame = el("div", "figure__frame");
+    const vid = document.createElement("video");
+    vid.src = video.src;
+    vid.controls = true;
+    vid.preload = "metadata";
+    if (video.poster) vid.poster = video.poster;
+    frame.append(vid);
+    figure.append(frame);
+    if (video.caption) figure.append(el("figcaption", null, video.caption));
+    return figure;
+  };
+
   if (!project) {
     document.title = "Not found — Portfolio";
     root.append(
@@ -92,6 +106,11 @@
     if (section.images && section.images.length) {
       const stack = el("div", "section-images");
       section.images.forEach((image) => stack.append(renderFigure(image)));
+      prose.append(stack);
+    }
+    if (section.video) {
+      const stack = el("div", "section-images");
+      stack.append(renderVideo(section.video));
       prose.append(stack);
     }
   });

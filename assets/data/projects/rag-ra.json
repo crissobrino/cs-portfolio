@@ -34,6 +34,13 @@
       ]
     },
     {
+      "heading": "Demo",
+      "video": {
+        "src": "assets/img/rag-ra/demo_video.mp4",
+        "caption": "Live walkthrough: a Spanish query retrieves and compares related papers, and an out-of-scope question is correctly refused rather than answered."
+      }
+    },
+    {
       "heading": "Approach",
       "body": [
         "Angular frontend, FastAPI backend, over a ChromaDB store of 103,260 arXiv abstracts, with Qwen3 served through a local Ollama gateway."
