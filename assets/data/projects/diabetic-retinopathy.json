@@ -4,7 +4,7 @@
   "year": "2026",
   "domain": "Deep Learning",
   "tags": ["Deep Learning", "Computer Vision", "Medical Imaging", "PyTorch"],
-  "summary": "A two-track image classification competition — build a CNN from scratch, and fine-tune a pretrained one. Best models scored 0.780 and 0.826 AUC.",
+  "summary": "A two-track image classification competition: build a CNN from scratch, and fine-tune a pretrained one. Best models scored 0.780 and 0.826 AUC.",
   "stack": ["Python", "PyTorch", "torchvision", "OpenCV"],
   "role": "Team of two",
   "context": "Private Codabench competition run as coursework (MSc); no public leaderboard to link to",
@@ -23,22 +23,22 @@
     {
       "heading": "Approach",
       "body": [
-        "Shared preprocessing: unify orientation, crop to the retinal disc, Ben Graham contrast normalisation. Class imbalance handled twice — weighted loss and a weighted sampler."
+        "Shared preprocessing: unify orientation, crop to the retinal disc, Ben Graham contrast normalisation. Class imbalance handled twice: weighted loss and a weighted sampler."
       ],
       "images": [
         {
           "src": "assets/img/diabetic-retinopathy/cover.jpg",
           "alt": "Original fundus photograph next to the same image after Ben Graham contrast normalisation",
-          "caption": "Original vs. after Ben Graham contrast normalisation — vessels and small lesions become far more visible to the network."
+          "caption": "Original vs. after Ben Graham contrast normalisation: vessels and small lesions become far more visible to the network."
         }
       ]
     },
     {
       "list": [
-        "380px instead of the usual 224 on the fine-tuning track — microaneurysms, the main early signal, are small",
-        "±180° rotation instead of ±15° — fundus cameras have no fixed orientation, so the narrow range throws away most valid rotations",
+        "380px instead of the usual 224 on the fine-tuning track, since microaneurysms, the main early signal, are small",
+        "±180° rotation instead of ±15°: fundus cameras have no fixed orientation, so the narrow range throws away most valid rotations",
         "From-scratch track: 5-block CNN, ~1M params, averaged over 3 seeds",
-        "Fine-tuning track: weighted ensemble of DenseNet121, DenseNet169, ResNeXt50 — unfrozen in two stages, ensemble weights via grid search",
+        "Fine-tuning track: weighted ensemble of DenseNet121, DenseNet169, ResNeXt50, unfrozen in two stages, ensemble weights via grid search",
         "Both tracks: 4-pass test-time augmentation"
       ]
     },
@@ -51,7 +51,7 @@
         {
           "src": "assets/img/diabetic-retinopathy/result.jpg",
           "alt": "Bar chart of private-set AUC for every submission across both tracks; the lowest bar is a dtype bug that turned every image grey",
-          "caption": "Every submission, both tracks. Private-set AUC — the bottom bar on the left is a dtype bug that turned every image grey."
+          "caption": "Every submission, both tracks. Private-set AUC; the bottom bar on the left is a dtype bug that turned every image grey."
         }
       ]
     },
@@ -59,11 +59,11 @@
       "heading": "What didn't work",
       "list": [
         "CLAHE broke the crop step by changing the global intensity the crop depended on",
-        "A dtype bug in contrast normalisation turned every image grey — sent results below baseline until found",
+        "A dtype bug in contrast normalisation turned every image grey, sending results below baseline until found",
         "SE blocks + residual connections on the custom CNN overfit immediately",
         "±180° augmentation that helped pretrained models failed completely from scratch (0.53 AUC)",
-        "Unfreezing a third DenseNet block overfit — two stages was the right place to stop",
-        "Dropped a 4th backbone (SE-ResNeXt50) from the ensemble — correlated too closely with ResNeXt50 to add value"
+        "Unfreezing a third DenseNet block overfit, so two stages was the right place to stop",
+        "Dropped a 4th backbone (SE-ResNeXt50) from the ensemble: it correlated too closely with ResNeXt50 to add value"
       ]
     }
   ]

@@ -34,37 +34,37 @@
     {
       "heading": "Approach",
       "body": [
-        "Baseline: a CGM-only convolutional VAE. Multimodal version: fuses glucose, insulin, and wearable physiology through a Product-of-Experts layer, which combines each modality's posterior into one shared latent and handles missing modalities for free — important since wearable data only existed for a small slice of patients."
+        "Baseline: a CGM-only convolutional VAE. Multimodal version: fuses glucose, insulin, and wearable physiology through a Product-of-Experts layer, which combines each modality's posterior into one shared latent and handles missing modalities for free, which matters since wearable data only existed for a small slice of patients."
       ],
       "list": [
         "Data: 379,849 patient-days (13 studies) for training, 69,894 held-out days (305 patients) for evaluation",
-        "Main challenge — posterior collapse — addressed with a 32-dim latent space, KL annealing, and per-dimension free bits"
+        "Main challenge: posterior collapse, addressed with a 32-dim latent space, KL annealing, and per-dimension free bits"
       ],
       "images": [
         {
           "src": "assets/img/diabetes-vae/cover.png",
           "alt": "Product-of-Experts architecture: three encoders fusing into one shared latent distribution, then three decoders",
-          "caption": "Product-of-Experts architecture — three encoders fuse into one shared latent, then three decoders reconstruct each modality."
+          "caption": "Product-of-Experts architecture: three encoders fuse into one shared latent, then three decoders reconstruct each modality."
         }
       ]
     },
     {
       "heading": "Result",
       "list": [
-        "Both models converge on the same clinically interpretable latent axis — correlates with time-in-range, inversely with mean glucose — despite never seeing a clinical label",
+        "Both models converge on the same clinically interpretable latent axis (correlates with time-in-range, inversely with mean glucose), despite never seeing a clinical label",
         "Multimodal did not clearly beat the baseline: worse patient-centroid alignment with glucose metrics (+0.448 vs +0.593 on time-in-range)",
         "Cause: every evaluation metric was derived from CGM, biasing comparisons toward the CGM-only model",
-        "Insulin reconstruction also failed on sharp bolus events — MSE rewards predicting the average, not a spike"
+        "Insulin reconstruction also failed on sharp bolus events: MSE rewards predicting the average, not a spike"
       ]
     },
     {
       "heading": "What the loss curves didn't show",
       "body": [
-        "A few early models looked healthy on train/validation loss while being completely broken underneath — only caught by digging into reconstructed traces, per-dimension KL values, and latent structure."
+        "A few early models looked healthy on train/validation loss while being completely broken underneath, only caught by digging into reconstructed traces, per-dimension KL values, and latent structure."
       ],
       "list": [
         "One decoder was only reconstructing the first few hours of each day",
-        "One checkpoint got selected before the KL term even kicked in — good reconstruction loss, totally unregularised latent space",
+        "One checkpoint got selected before the KL term even kicked in: good reconstruction loss, totally unregularised latent space",
         "The insulin encoder was partly responding to a normalisation artefact"
       ]
     }

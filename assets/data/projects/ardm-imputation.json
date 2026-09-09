@@ -24,7 +24,7 @@
     {
       "heading": "The problem",
       "body": [
-        "Standard autoregressive models generate left to right, in a fixed order — bad for imputation, where missing values can sit anywhere. ARDM's fix: randomise the generation order at every training step."
+        "Standard autoregressive models generate left to right, in a fixed order. That's bad for imputation, where missing values can sit anywhere. ARDM's fix: randomise the generation order at every training step."
       ],
       "list": [
         "Goal: implement the paper from scratch and identify where order-agnostic generation helps in practice, not just where the theory predicts it"
@@ -36,17 +36,17 @@
         "Bidirectional Transformer (~2M params, no causal mask), trained under the ARDM objective."
       ],
       "list": [
-        "Training step: random permutation → random step → mask everything after it → loss computed at only that one position",
-        "Experiment 1 — imputation on binarized MNIST across a range of observation rates",
-        "Experiment 2 — head-to-head vs. a small CNN under the same objective",
-        "Experiment 3 — transfer test onto categorical tabular data"
+        "Training step: random permutation, random step, mask everything after it, loss computed at only that one position",
+        "Experiment 1: imputation on binarized MNIST across a range of observation rates",
+        "Experiment 2: head-to-head vs. a small CNN under the same objective",
+        "Experiment 3: transfer test onto categorical tabular data"
       ]
     },
     {
       "heading": "Result",
       "list": [
-        "Imputation requires no architecture change or retraining — fix the observed pixels, sample the rest in random order",
-        "Model uncertainty (pixel entropy, 50 completions) rises as expected: 0.037 bits at 90% visible → 0.219 bits at 10% visible",
+        "Imputation requires no architecture change or retraining: fix the observed pixels, sample the rest in random order",
+        "Model uncertainty (pixel entropy, 50 completions) rises as expected: 0.037 bits at 90% visible, up to 0.219 bits at 10% visible",
         "Parallel block sampling: 46x faster than sequential (0.5s vs. 27.3s) for a small quality cost"
       ],
       "images": [
@@ -58,14 +58,14 @@
         {
           "src": "assets/img/ardm-imputation/entropy.jpg",
           "alt": "Pixel-wise entropy map over 50 completions, brighter where the model was more uncertain",
-          "caption": "Pixel-wise entropy over 50 completions — brighter means more uncertain. Uncertainty grows as less of the image is visible."
+          "caption": "Pixel-wise entropy over 50 completions. Brighter means more uncertain; uncertainty grows as less of the image is visible."
         }
       ]
     },
     {
       "heading": "Transformer vs. CNN",
       "list": [
-        "Only beats a small CNN when context gets sparse — tied at 90%/50% visible, CNN falls apart at 10% visible"
+        "Only beats a small CNN when context gets sparse: tied at 90%/50% visible, CNN falls apart at 10% visible"
       ],
       "images": [
         {
@@ -78,7 +78,7 @@
     {
       "heading": "Limitation",
       "list": [
-        "Tabular transfer: accuracy beat random (0.40–0.56 vs. 0.04), but test loss never closed the gap to validation loss — likely a data-size or vocabulary-design issue, left unresolved"
+        "Tabular transfer: accuracy beat random (0.40–0.56 vs. 0.04), but test loss never closed the gap to validation loss, likely a data-size or vocabulary-design issue, left unresolved"
       ]
     }
   ]
