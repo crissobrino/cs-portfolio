@@ -96,17 +96,15 @@
     }
   });
 
-  const gallery = el("section", "gallery");
-  const images =
-    project.images && project.images.length
-      ? project.images
-      : [{ caption: "Image placeholder" }, { caption: "Image placeholder" }];
-
-  images.forEach((image) => gallery.append(renderFigure(image)));
-
   const layout = el("div", "layout");
   layout.append(prose, spec);
-  root.append(head, layout, gallery);
+  root.append(head, layout);
+
+  if (project.images && project.images.length) {
+    const gallery = el("section", "gallery");
+    project.images.forEach((image) => gallery.append(renderFigure(image)));
+    root.append(gallery);
+  }
 
   if (project.repo) {
     const link = el("a", "repo", "View repository");

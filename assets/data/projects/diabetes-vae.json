@@ -24,40 +24,49 @@
     {
       "heading": "The problem",
       "body": [
-        "Diabetes care gets assessed in snapshots — HbA1c every few months, a clinical review here and there — but a patient's metabolic state is actually changing hour by hour. I wanted to see if unsupervised representation learning could organise patient-days by how metabolically similar they are, with zero clinical labels, and whether adding insulin and wearable physiology on top of glucose actually gives you a richer picture or not."
+        "Diabetes care is assessed in snapshots (HbA1c every few months); metabolic state changes hour by hour."
+      ],
+      "list": [
+        "Test whether unsupervised representation learning can organise patient-days by metabolic similarity, with zero clinical labels",
+        "Test whether adding insulin and wearable physiology to glucose alone produces a richer representation"
       ]
     },
     {
       "heading": "Approach",
       "body": [
-        "I started with a CGM-only convolutional VAE as a baseline, then built a multimodal version that fuses three modalities — glucose, insulin, wearable physiology — through a Product-of-Experts layer. That layer combines each modality's posterior into one shared latent distribution and handles missing modalities without any extra work, which mattered a lot since wearable data only existed for a small slice of patients.",
-        "Training used 379,849 patient-days from 13 studies, evaluated on 69,894 held-out days across 305 patients. Posterior collapse was the main thing fighting me during modelling — I dealt with it using a 32-dimensional latent space, KL annealing, and a per-dimension free-bits threshold."
+        "Baseline: a CGM-only convolutional VAE. Multimodal version: fuses glucose, insulin, and wearable physiology through a Product-of-Experts layer, which combines each modality's posterior into one shared latent and handles missing modalities for free — important since wearable data only existed for a small slice of patients."
+      ],
+      "list": [
+        "Data: 379,849 patient-days (13 studies) for training, 69,894 held-out days (305 patients) for evaluation",
+        "Main challenge — posterior collapse — addressed with a 32-dim latent space, KL annealing, and per-dimension free bits"
+      ],
+      "images": [
+        {
+          "src": "assets/img/diabetes-vae/cover.png",
+          "alt": "Product-of-Experts architecture: three encoders fusing into one shared latent distribution, then three decoders",
+          "caption": "Product-of-Experts architecture — three encoders fuse into one shared latent, then three decoders reconstruct each modality."
+        }
       ]
     },
     {
       "heading": "Result",
-      "body": [
-        "Both models landed on the same clinically interpretable axis on their own — one latent dimension that correlates strongly with time-in-range and inversely with mean glucose, and neither model ever saw a clinical label during training.",
-        "What the multimodal model didn't do was clearly beat the baseline. Its patient-centroid distances lined up worse with glucose-derived clinical metrics (+0.448 vs +0.593 on time-in-range). I could have left it there, but I wanted to know why. Turns out every evaluation metric was derived from CGM in the first place, so they were always going to favour the CGM-only model. On top of that, insulin reconstruction fell apart on sharp bolus events — MSE loss just rewards predicting the average, and a spike isn't the average."
+      "list": [
+        "Both models converge on the same clinically interpretable latent axis — correlates with time-in-range, inversely with mean glucose — despite never seeing a clinical label",
+        "Multimodal did not clearly beat the baseline: worse patient-centroid alignment with glucose metrics (+0.448 vs +0.593 on time-in-range)",
+        "Cause: every evaluation metric was derived from CGM, biasing comparisons toward the CGM-only model",
+        "Insulin reconstruction also failed on sharp bolus events — MSE rewards predicting the average, not a spike"
       ]
     },
     {
       "heading": "What the loss curves didn't show",
       "body": [
-        "A few early models had perfectly healthy-looking train and validation curves while being completely broken underneath. None of it showed up in the loss — I only caught it by digging into the actual reconstructed traces, the per-dimension KL values, and the latent structure itself."
+        "A few early models looked healthy on train/validation loss while being completely broken underneath — only caught by digging into reconstructed traces, per-dimension KL values, and latent structure."
       ],
       "list": [
         "One decoder was only reconstructing the first few hours of each day",
-        "One checkpoint got selected before the KL term even kicked in — good reconstruction loss, but a totally unregularised latent space",
-        "The insulin encoder turned out to be partly responding to a normalisation artefact"
+        "One checkpoint got selected before the KL term even kicked in — good reconstruction loss, totally unregularised latent space",
+        "The insulin encoder was partly responding to a normalisation artefact"
       ]
-    }
-  ],
-  "images": [
-    {
-      "src": "assets/img/diabetes-vae/cover.png",
-      "alt": "Product-of-Experts architecture: three encoders fusing into one shared latent distribution, then three decoders",
-      "caption": "Product-of-Experts architecture — three encoders fuse into one shared latent, then three decoders reconstruct each modality."
     }
   ]
 }
