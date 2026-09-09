@@ -1,0 +1,72 @@
+{
+  "slug": "multilingual-rag-literature-review",
+  "title": "Multilingual RAG assistant for literature review",
+  "year": "2026",
+  "domain": "NLP",
+  "tags": [
+    "NLP",
+    "RAG",
+    "LLMs",
+    "Information Retrieval"
+  ],
+  "summary": "A research assistant that takes a research idea in any of five languages, retrieves related papers from 103k arXiv abstracts, and reports how the idea differs from what already exists.",
+  "stack": [
+    "Python",
+    "FastAPI",
+    "ChromaDB",
+    "sentence-transformers",
+    "Angular",
+    "Ollama (Qwen3)",
+    "RAGAS"
+  ],
+  "role": "Team of three",
+  "context": "Coursework project for an NLP course (MSc)",
+  "repo": "",
+  "sections": [
+    {
+      "heading": "The problem",
+      "body": [
+        "Checking whether a research idea is novel requires reading a large volume of papers to find the ones that overlap with it."
+      ],
+      "list": [
+        "System takes a research direction in plain language and returns the closest prior work, with a structured comparison of overlap and novelty",
+        "Core challenge: retrieval is not the hard part — preventing the model from inventing overlaps that aren't there is"
+      ]
+    },
+    {
+      "heading": "Approach",
+      "body": [
+        "Angular frontend, FastAPI backend, over a ChromaDB store of 103,260 arXiv abstracts, with Qwen3 served through a local Ollama gateway."
+      ],
+      "images": [
+        {
+          "src": "assets/img/rag-ra/architecture.png",
+          "alt": "Architecture diagram: Angular frontend sends a query through langid + Google Translate to ChromaDB, results pass through a similarity guardrail and prompt builder into Qwen3 via Ollama, with the answer returned to the frontend",
+          "caption": "Query flow — translate to English, retrieve from ChromaDB, pass the 0.35 similarity guardrail, then generate through Qwen3."
+        }
+      ],
+      "list": [
+        "Two-stage retrieval: approximate nearest-neighbour search pulls 20 candidates, then a cross-encoder reranks them by query-document interaction rather than vector proximity alone",
+        "Hallucination guard 1: similarity threshold of 0.35 — tuned by simulating the rejection distribution across candidate values, validated on a held-out set — below which the system refuses and skips the LLM call entirely",
+        "Hallucination guard 2: temperature fixed at 0 for reproducibility",
+        "Hallucination guard 3: external prompt templates enforce a fixed five-section output and forbid content outside the retrieved context",
+        "Queries in five languages are translated to English for retrieval; answers are generated back in the user's language"
+      ]
+    },
+    {
+      "heading": "Result",
+      "list": [
+        "Faithfulness 0.918, answer relevancy 0.926 on the 8b model, evaluated with RAGAS using GPT-4o-mini as an independent judge"
+      ]
+    },
+    {
+      "heading": "What the evaluation found",
+      "list": [
+        "RAGAS's built-in relevancy metric penalises non-committal language — but \"insufficient context\" is the correct answer when the evidence doesn't support a claim, and the system is explicitly prompted to give that answer. Replaced with a custom judge scoring the five required sections, validated against manually annotated samples",
+        "The larger model wasn't worth it: Qwen3:32b scored marginally higher (0.965 vs 0.918 faithfulness) but took 94s per query against 5.6s — for an interactive system, the 8b model was the right choice",
+        "The multilingual benchmark exposed a translation penalty: German held 0.92 recall against English, French dropped to 0.72 — translation flattens specific academic terminology enough to shift the query in embedding space",
+        "LLM generation accounts for 97% of end-to-end latency; the full retrieval stack is under 3%"
+      ]
+    }
+  ]
+}
