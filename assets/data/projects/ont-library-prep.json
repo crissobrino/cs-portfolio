@@ -1,0 +1,177 @@
+{
+  "slug": "ont-library-prep",
+  "title": "Automating Oxford Nanopore library preparation",
+  "year": "2025",
+  "domain": "Lab Automation",
+  "tags": [
+    "Lab Automation",
+    "Liquid Handling",
+    "Bioengineering",
+    "Python"
+  ],
+  "summary": "A fully automated robotic workflow for preparing DNA sequencing libraries, built to remove a manual bottleneck in synthetic biology quality control.",
+  "stack": [
+    "Python",
+    "Biopython",
+    "SciPy",
+    "CyBio Composer scripting",
+    "3D printing (Fusion 360)",
+    "Oxford Nanopore MinION",
+    "BMG CLARIOstar"
+  ],
+  "role": "Solo project",
+  "context": "Master's thesis (MEng Molecular Bioengineering, Imperial College London), developed and tested at the London Biofoundry",
+  "repo": "",
+  "sections": [
+    {
+      "heading": "The problem",
+      "body": [
+        "Every DNA construct built has to be checked against its intended design before anything downstream can use it. That check runs on sequencing, and sequencing needs library preparation: the step that turns raw DNA into something a sequencer can read."
+      ],
+      "list": [
+        "Done by hand, library prep is slow and fragile: sub-10µL pipetting, repeated magnetic bead washes, time-sensitive reagent steps. One mistake ruins the run",
+        "As construct libraries scale up, this becomes the bottleneck in the whole build-test cycle"
+      ]
+    },
+    {
+      "heading": "Approach",
+      "body": [
+        "An end-to-end automated version of the Oxford Nanopore native barcoding protocol on a CyBio FeliX liquid handling robot, running with no human intervention from input DNA to sequencing-ready library."
+      ]
+    },
+    {
+      "heading": "Qualifying the instrument",
+      "body": [
+        "The protocol needs 0.75–10µL volumes, where liquid handlers typically struggle, so the machine was benchmarked before writing any protocol."
+      ],
+      "list": [
+        "Linear dilution series read on a fluorescence plate reader, comparing automated against manual pipetting",
+        "Four dispensing configurations tested (blowout and overstroke on/off): blowout without overstroke was the only configuration that held precision, adding overstroke pushed variance back up at higher volumes",
+        "Robustness checked by repeating the series at double volume: 3µL sat comfortably inside the reliable range, 2µL did not, so anything below that was handled with mastermixes rather than pipetted directly",
+        "An early attempt using food colouring was abandoned for fluorescein, which had poor solubility and gave inconsistent readings"
+      ]
+    },
+    {
+      "heading": "Re-deriving the protocol for a machine",
+      "body": [
+        "Most of the work was translation rather than transcription."
+      ],
+      "list": [
+        "Vortexing became scripted pipetting",
+        "Thermocycling and HULA mixing both moved onto an integrated heat-shake module",
+        "Steps that relied on a technician's judgement became conditional logic on user input",
+        "Dead waiting time became parallel task execution"
+      ],
+      "images": [
+        {
+          "src": "assets/img/ont-library-prep/ont-protocol-translation.jpg",
+          "alt": "Table mapping each manual protocol step to its robotic equivalent",
+          "caption": "Every manual step needed a robotic equivalent. Some had none, and had to be redesigned."
+        }
+      ]
+    },
+    {
+      "heading": "Working within deck constraints",
+      "body": [
+        "The FeliX has 12 deck positions but only four support single-channel pipetting, so every component needing individual tube access had to compete for those four slots."
+      ],
+      "list": [
+        "No dedicated position for the DNA plate: it lives on top of the magnet and moves to the idle, room-temperature heat-shaker whenever magnetic separation has to be avoided",
+        "A second tip box in a spare position refills the primary box by 8-channel transfer mid-run, preserving single-tip access without anyone touching the deck"
+      ],
+      "images": [
+        {
+          "src": "assets/img/ont-library-prep/ont-deck-layout.jpg",
+          "alt": "The CyBio FeliX deck with labelled hardware and the custom slot layout",
+          "caption": "The FeliX deck: labelled hardware on the left, the slot layout I designed on the right."
+        }
+      ]
+    },
+    {
+      "heading": "Custom hardware",
+      "body": [
+        "The deck lacked parts the protocol needed, so four were designed and 3D-printed:"
+      ],
+      "list": [
+        "A tube holder for single-channel reagent pipetting",
+        "A dual-compartment ice box separating chilled from room-temperature reagents",
+        "A fixed waste box for tip disposal",
+        "A Flongle flow cell adapter",
+        "Reagents were arranged in protocol order so a run's progress could be tracked by eye during troubleshooting"
+      ],
+      "images": [
+        {
+          "src": "assets/img/ont-library-prep/ont-custom-parts.jpg",
+          "alt": "Four 3D-printed components: tube holder, ice box, waste box, and Flongle adapter",
+          "caption": "Four components I designed and 3D-printed, because the deck had no equivalent: tube holder, ice box, waste box, Flongle adapter."
+        }
+      ]
+    },
+    {
+      "heading": "Modular scripting",
+      "body": [
+        "Each protocol step (end prep, barcode ligation, adapter ligation, magnetic bead clean-up) was written as an independent module so it could be debugged alone, first dry, then with water and dye as a visual tracer, before being chained into a full run."
+      ],
+      "images": [
+        {
+          "src": "assets/img/ont-library-prep/ont-modular-scripting.jpg",
+          "alt": "Diagram of independent protocol modules chained into a full automated run",
+          "caption": "Each protocol step was written as an independent module, so I could debug one at a time before chaining them into a full run."
+        }
+      ]
+    },
+    {
+      "heading": "Debugging across three sequencing runs",
+      "body": [
+        "The first two runs failed in ways that mattered."
+      ],
+      "list": [
+        "Run A recovered barcodes and sequences individually but found no reads with barcodes correctly attached: the ligation step wasn't working",
+        "Run B produced only 5 usable reads, but those matched their references almost perfectly (alignment scores 0.98–1.0), which meant the chemistry was fine and the problem was mechanical",
+        "A test run between the two failed entirely, pointing at pipetting offsets (the height at which tips draw liquid from wells) and excessive pipetting speed",
+        "Correcting offsets across every step is what made the final run work"
+      ],
+      "images": [
+        {
+          "src": "assets/img/ont-library-prep/ont-run-progression.jpg",
+          "alt": "Progression across three sequencing runs from failure to a working protocol",
+          "caption": "Three runs. Run A's barcodes never ligated, Run B yielded almost nothing, Run C worked once the pipetting offsets were fixed."
+        }
+      ]
+    },
+    {
+      "heading": "Knowing where to stop",
+      "body": [
+        "One step stayed manual: loading the flow cell. It needs slow dispensing at a specific angle, and an air bubble damages the nanopores. The robot has no pressure or visual feedback to verify it, so automating it would have risked the run for no gain."
+      ]
+    },
+    {
+      "heading": "What I'd change",
+      "body": [
+        "The workflow is written in the vendor's proprietary scripting environment, which ties it to one manufacturer's ecosystem."
+      ],
+      "list": [
+        "A cross-platform implementation would migrate to other liquid handlers",
+        "Standardising consumables like tips across vendors would cut the lock-in further",
+        "For a method meant to be reproduced in other labs, portability matters as much as whether it runs here"
+      ]
+    },
+    {
+      "heading": "Result",
+      "body": [
+        "Run C recovered all constructs and their barcodes, with most alignment scores above 0.95 and the expected barcode-construct-barcode structure intact."
+      ],
+      "list": [
+        "Samples came from four different research groups, varying in construct length, concentration and preparation method, so the protocol held across genuinely different inputs rather than one tuned case",
+        "Headline: 3 runs, two failures and a working protocol"
+      ],
+      "images": [
+        {
+          "src": "assets/img/ont-library-prep/ont-run-c.jpg",
+          "alt": "Run C alignment scores, clustered above 0.95",
+          "caption": "Run C alignment scores, clustered above 0.95."
+        }
+      ]
+    }
+  ]
+}
