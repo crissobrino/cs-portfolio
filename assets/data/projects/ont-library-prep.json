@@ -11,13 +11,16 @@
   ],
   "summary": "A fully automated robotic workflow for preparing DNA sequencing libraries, built to remove a manual bottleneck in synthetic biology quality control.",
   "stack": [
+    "Lab Automation",
+    "Robotics",
+    "SOLIDWORKS",
+    "3D Printing",
+    "Oxford Nanopore Sequencing",
     "Python",
     "Biopython",
-    "SciPy",
-    "CyBio Composer scripting",
-    "3D printing (Fusion 360)",
-    "Oxford Nanopore MinION",
-    "BMG CLARIOstar"
+    "scikit-learn",
+    "Validation",
+    "Testing"
   ],
   "role": "Solo project",
   "context": "Master's thesis (MEng Molecular Bioengineering, Imperial College London), developed and tested at the London Biofoundry",
@@ -37,6 +40,13 @@
       "heading": "Approach",
       "body": [
         "An end-to-end automated version of the Oxford Nanopore native barcoding protocol on a CyBio FeliX liquid handling robot, running with no human intervention from input DNA to sequencing-ready library."
+      ],
+      "images": [
+        {
+          "src": "assets/img/ont-library-prep/felix.png",
+          "alt": "The CyBio FeliX liquid handling robot deck, loaded and ready to run",
+          "caption": "The CyBio FeliX liquid handling robot used for the automated protocol."
+        }
       ]
     },
     {
@@ -61,13 +71,6 @@
         "Thermocycling and HULA mixing both moved onto an integrated heat-shake module",
         "Steps that relied on a technician's judgement became conditional logic on user input",
         "Dead waiting time became parallel task execution"
-      ],
-      "images": [
-        {
-          "src": "assets/img/ont-library-prep/ont-protocol-translation.jpg",
-          "alt": "Table mapping each manual protocol step to its robotic equivalent",
-          "caption": "Every manual step needed a robotic equivalent. Some had none, and had to be redesigned."
-        }
       ]
     },
     {
@@ -81,8 +84,8 @@
       ],
       "images": [
         {
-          "src": "assets/img/ont-library-prep/ont-deck-layout.jpg",
-          "alt": "The CyBio FeliX deck with labelled hardware and the custom slot layout",
+          "src": "assets/img/ont-library-prep/decklayout.png",
+          "alt": "The CyBio FeliX deck with labelled hardware on the left and the custom slot layout diagram on the right",
           "caption": "The FeliX deck: labelled hardware on the left, the slot layout I designed on the right."
         }
       ]
@@ -101,9 +104,9 @@
       ],
       "images": [
         {
-          "src": "assets/img/ont-library-prep/ont-custom-parts.jpg",
-          "alt": "Four 3D-printed components: tube holder, ice box, waste box, and Flongle adapter",
-          "caption": "Four components I designed and 3D-printed, because the deck had no equivalent: tube holder, ice box, waste box, Flongle adapter."
+          "src": "assets/img/ont-library-prep/solidworks.png",
+          "alt": "SOLIDWORKS renders and 3D-printed parts: Eppendorf rack, ice box, Flongle adapter, and waste box",
+          "caption": "Four components designed in SOLIDWORKS and 3D-printed, because the deck had no equivalent: tube holder, ice box, waste box, Flongle adapter."
         }
       ]
     },
@@ -114,9 +117,9 @@
       ],
       "images": [
         {
-          "src": "assets/img/ont-library-prep/ont-modular-scripting.jpg",
-          "alt": "Diagram of independent protocol modules chained into a full automated run",
-          "caption": "Each protocol step was written as an independent module, so I could debug one at a time before chaining them into a full run."
+          "src": "assets/img/ont-library-prep/scripting.png",
+          "alt": "Scripting architecture: a workflow controller coordinating end-prep, barcode ligation, adapter ligation and magnetic bead modules on the FeliX, plus heat and shake on the BioShake",
+          "caption": "The workflow controller initialises the hardware and coordinates each module (end prep, barcode ligation, adapter ligation, bead clean-up) in sequence, so any one of them could be debugged alone."
         }
       ]
     },
@@ -133,9 +136,9 @@
       ],
       "images": [
         {
-          "src": "assets/img/ont-library-prep/ont-run-progression.jpg",
-          "alt": "Progression across three sequencing runs from failure to a working protocol",
-          "caption": "Three runs. Run A's barcodes never ligated, Run B yielded almost nothing, Run C worked once the pipetting offsets were fixed."
+          "src": "assets/img/ont-library-prep/barcharts.png",
+          "alt": "Sequencing read counts and reference alignment across Run A, Run B and Run C",
+          "caption": "Run A recovered reads but with barcodes never correctly attached. Run B yielded almost nothing. Run C spread cleanly across barcodes, aligned to their references."
         }
       ]
     },
@@ -164,13 +167,6 @@
       "list": [
         "Samples came from four different research groups, varying in construct length, concentration and preparation method, so the protocol held across genuinely different inputs rather than one tuned case",
         "Headline: 3 runs, two failures and a working protocol"
-      ],
-      "images": [
-        {
-          "src": "assets/img/ont-library-prep/ont-run-c.jpg",
-          "alt": "Run C alignment scores, clustered above 0.95",
-          "caption": "Run C alignment scores, clustered above 0.95."
-        }
       ]
     }
   ]
