@@ -4,5 +4,6 @@
   "alert-anomaly-detection",
   "diabetes-vae",
   "ardm-imputation",
-  "diabetic-retinopathy"
+  "diabetic-retinopathy",
+  "amr-resistance-prediction"
 ]

@@ -1,0 +1,99 @@
+{
+  "slug": "amr-resistance-prediction",
+  "title": "Antibiotic resistance prediction from mass spectrometry",
+  "year": "2026",
+  "domain": "Machine Learning",
+  "tags": [
+    "Machine Learning",
+    "Multi-label",
+    "Semi-supervised",
+    "Health Data"
+  ],
+  "summary": "A Kaggle competition predicting resistance to 8 antibiotics from bacterial mass spectra, where nearly half the labels for the hardest target were missing.",
+  "stack": [
+    "Python",
+    "XGBoost",
+    "CatBoost",
+    "LightGBM",
+    "scikit-learn",
+    "PyTorch"
+  ],
+  "role": "Team of three",
+  "context": "Private Kaggle competition run as coursework (MSc), Oct 2025 to Jan 2026",
+  "repo": "",
+  "sections": [
+    {
+      "heading": "The problem",
+      "body": [
+        "Determining which antibiotics will work against a bacterial infection normally means culturing the sample and testing susceptibility, which takes days. A MALDI-TOF mass spectrum takes minutes: predicting resistance directly from the spectrum cuts diagnosis from days to minutes, which matters clinically, since the patient is on a best-guess antibiotic until then."
+      ],
+      "list": [
+        "Task: predict resistance to 8 antibiotics from spectra of 3,360 bacterial isolates",
+        "Labels were incomplete: some isolates were only tested against a few antibiotics, so the gaps are unknowns rather than negatives, and around 43% were missing for one target",
+        "Isolates spanned four bacterial species with genuinely different resistance mechanisms, so species is a feature that changes what the spectrum means, not just metadata"
+      ]
+    },
+    {
+      "heading": "Approach",
+      "body": [
+        "Random Forest per antibiotic as a baseline, plus a CNN with locally-connected layers and species embeddings, and LightGBM. Then XGBoost and CatBoost, both fitted per antibiotic with species-specific models where the data supported it."
+      ]
+    },
+    {
+      "body": [
+        "The eight targets needed different things. Carbapenems were nearly saturated: almost any model got them right. The beta-lactams were far harder, and Amoxicillin/Clavulanic acid was the worst of them, both the most heterogeneous target and the one missing most of its labels."
+      ]
+    },
+    {
+      "list": [
+        "Pseudo-labelling: filled the gaps with high-confidence synthetic labels, the obvious move given 43% missing"
+      ],
+      "images": [
+        {
+          "src": "assets/img/amr-resistance-prediction/missing-labels.jpg",
+          "alt": "Missing labels by antibiotic across a sample of rows, with Amoxicillin/Clavulanic acid missing far more than any other target",
+          "caption": "Missing labels by antibiotic. The solid band is Amoxicillin/Clavulanic acid, missing ~43% of its labels, the same target every model struggled with."
+        }
+      ]
+    },
+    {
+      "list": [
+        "Stacking: fed out-of-fold predictions from three related antibiotics (Ampicillin, Cefotaxime, Cefuroxime) in as features, on the theory that resistance patterns are correlated"
+      ],
+      "images": [
+        {
+          "src": "assets/img/amr-resistance-prediction/label-correlation.png",
+          "alt": "Pearson correlation matrix across the 8 antibiotic resistance labels, showing clusters of correlated targets",
+          "caption": "Resistance labels correlate in clusters, the motivation for stacking related antibiotics' predictions as features."
+        }
+      ]
+    },
+    {
+      "body": [
+        "The final submission was a rank-averaged ensemble of XGBoost, CatBoost, LightGBM and an SVM specialist. Rank averaging rather than probability averaging, since the models were calibrated differently and averaging raw probabilities would have let the overconfident ones dominate."
+      ]
+    },
+    {
+      "heading": "Result",
+      "body": [
+        "0.816 average AUC on the private leaderboard, against a 0.80 benchmark."
+      ],
+      "images": [
+        {
+          "src": "assets/img/amr-resistance-prediction/auc-heatmap.png",
+          "alt": "Per-antibiotic AUC across CatBoost, XGBoost and the ensemble, with carbapenems near 0.99 and Amoxicillin/Clavulanic acid near 0.73",
+          "caption": "Per-antibiotic AUC across models. Carbapenems sit near the ceiling at 0.99; Amoxicillin/Clavulanic acid trails at 0.74."
+        }
+      ]
+    },
+    {
+      "heading": "What the evaluation found",
+      "list": [
+        "Pseudo-labelling made it worse, not just for the target it was meant to fix but across every antibiotic: filling missing labels with model predictions reinforced what the model already believed rather than adding information",
+        "Simple ensembles beat complex stacking: the rank-averaged combination outperformed the meta-learning setup despite the latter being more sophisticated",
+        "The ensemble didn't win everywhere: it beat CatBoost on six of the eight antibiotics but lost on Ampicillin (0.930 vs 0.933) and Amoxicillin/Clavulanic acid (0.731 vs 0.736), the two targets where a specialist model was already doing something the ensemble diluted",
+        "Public score was 0.844 against 0.816 private. The gap runs in the direction that suggests some fitting to the public split, worth reporting rather than quoting the better number"
+      ]
+    }
+  ]
+}
