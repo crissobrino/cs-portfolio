@@ -11,5 +11,6 @@
   "icr-genome-assembly",
   "ppo-continuous-control",
   "mri-xr-hololens",
-  "dna-join"
+  "dna-join",
+  "albir-vision-robot"
 ]
