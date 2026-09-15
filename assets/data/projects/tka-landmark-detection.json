@@ -13,6 +13,9 @@
     "Deep Learning",
     "Computer Vision"
   ],
+  "thumb": {
+    "src": "assets/img/tka/knee-roi-thumb.png"
+  },
   "summary": "A 3D CNN pipeline to locate anatomical landmarks in CT scans for total knee arthroplasty, benchmarked directly against four human observers.",
   "stack": [
     "Python",

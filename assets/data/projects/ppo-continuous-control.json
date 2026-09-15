@@ -12,6 +12,9 @@
     "Deep Learning",
     "Reinforcement Learning"
   ],
+  "thumb": {
+    "position": "center 85%"
+  },
   "summary": "A from-scratch PPO implementation trained on a 2D walking robot, written up as a public technical guide with the full derivation, code, and training diagnostics.",
   "stack": [
     "Python",

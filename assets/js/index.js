@@ -23,13 +23,19 @@
     console.error("Failed to load projects", err);
   }
 
-  // Falls back to the project's first figure so a card doesn't need its own
-  // artwork to show something.
-  const thumbFor = (project) => {
-    if (project.thumb) return project.thumb;
+  const firstFigure = (project) => {
     for (const section of project.sections || [])
       for (const image of section.images || []) if (image.src) return image.src;
     return null;
+  };
+
+  // thumb is optional: { src, fit, position }. Any of them can be left out —
+  // src falls back to the project's first figure, fit and position to the
+  // stylesheet's cover/centre default.
+  const thumbFor = (project) => {
+    const cfg = project.thumb || {};
+    const src = cfg.src || firstFigure(project);
+    return src ? { src, fit: cfg.fit, position: cfg.position } : null;
   };
 
   projects.forEach((project, i) => {
@@ -50,13 +56,15 @@
       el("span", "card__arrow mono", "→")
     );
 
-    const thumbSrc = thumbFor(project);
-    if (thumbSrc) {
+    const thumbCfg = thumbFor(project);
+    if (thumbCfg) {
       const thumb = el("div", "card__thumb");
       const img = el("img");
-      img.src = thumbSrc;
+      img.src = thumbCfg.src;
       img.alt = "";
       img.loading = "lazy";
+      if (thumbCfg.fit) img.style.objectFit = thumbCfg.fit;
+      if (thumbCfg.position) img.style.objectPosition = thumbCfg.position;
       thumb.append(img);
       card.append(thumb);
     }

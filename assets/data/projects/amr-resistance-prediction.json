@@ -12,6 +12,9 @@
   "themes": [
     "Machine Learning"
   ],
+  "thumb": {
+    "src": "assets/img/amr-resistance-prediction/missing-labels-thumb.jpg"
+  },
   "summary": "A Kaggle competition predicting resistance to 8 antibiotics from bacterial mass spectra, where nearly half the labels for the hardest target were missing.",
   "stack": [
     "Python",

@@ -12,6 +12,9 @@
   "themes": [
     "Bioinformatics"
   ],
+  "thumb": {
+    "src": "assets/img/icr-genome-assembly/contact-map-thumb.png"
+  },
   "summary": "Assembling a personal cancer genome from ultra-high-resolution chromatin data, with no reference genome used - the first attempt to test this particular technique for genome assembly.",
   "stack": [
     "Python",
