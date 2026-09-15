@@ -1,0 +1,91 @@
+{
+  "slug": "dna-join",
+  "title": "Executing a database JOIN operation in DNA",
+  "year": "2023",
+  "domain": "DNA Data Storage",
+  "tags": [
+    "DNA Data Storage",
+    "Molecular Biology",
+    "Bioinformatics"
+  ],
+  "summary": "Encoding two relational database tables as synthetic DNA, then using PCR and restriction enzymes - not a CPU - to physically execute a SQL JOIN between them.",
+  "stack": [
+    "Python",
+    "MATLAB",
+    "PCR",
+    "Oxford Nanopore sequencing"
+  ],
+  "role": "Solo project",
+  "context": "UROP research project, DNA Storage Lab, Imperial College London",
+  "repo": "",
+  "sections": [
+    {
+      "heading": "The problem",
+      "body": [
+        "Relational databases run JOIN operations in software, matching keys across tables. This project asked whether the same operation could be executed physically, in DNA - encoding two database tables as synthetic oligonucleotides and letting molecular biology perform the join instead of a CPU.",
+        "Beyond the novelty, DNA's density and durability make it a serious candidate as an archival medium. If relational operations can run directly on the stored data, without converting it back into a conventional database first, that removes a real barrier to using DNA as more than a static archive."
+      ]
+    },
+    {
+      "heading": "Approach",
+      "list": [
+        "Two related tables generated with a standard database benchmark tool, sharing a join key",
+        "Each record translated into a DNA sequence: numeric fields converted to base 4, each digit mapped to a nucleotide"
+      ]
+    },
+    {
+      "body": [
+        "What makes the join happen physically, rather than being a translation exercise: each record also got a short hash sequence and its exact reverse complement, engineered so that oligos sharing a join key - and only those - can bind to each other's complementary region. Universal PCR primers carrying a restriction site went on both ends, so the whole pool could be handled as a batch."
+      ],
+      "images": [
+        {
+          "src": "assets/img/dna-join/oligo-construction.png",
+          "alt": "How each record is built up into an oligo: the partKey and data fields first, then a table ID primer prepended, then a hash sequence appended, then amplification primers added at both ends",
+          "caption": "Building a record into an oligo. The hash is the piece that does the work - two records sharing a join key carry complementary hashes, so only those two can bind."
+        }
+      ]
+    },
+    {
+      "body": [
+        "The lab process ran in three stages."
+      ],
+      "list": [
+        "Amplification PCR to build up material from both oligo pools",
+        "A restriction enzyme reaction to cut the primers off and expose the complementary overhangs",
+        "A final annealing step where the two pools were combined - at which point matching join keys bind together, physically executing the join"
+      ],
+      "images": [
+        {
+          "src": "assets/img/dna-join/experiment-overview.png",
+          "alt": "End-to-end experiment: two database tables encoded into oligo pools, then PCR and cleaving, then annealing where matching records bind, then sequencing and processing back into a joined table",
+          "caption": "The whole experiment: tables in as oligos, PCR and cleaving, annealing to join, then sequencing back out to a joined table."
+        }
+      ]
+    },
+    {
+      "body": [
+        "The joined DNA was sequenced on an Oxford Nanopore Flongle over 72 hours. Reads were then checked against the expected output - length filter, locate both table ID primers by pairwise alignment, crop, and compare against the database of correct joins by Levenshtein distance - to establish whether the right records had actually joined."
+      ],
+      "images": [
+        {
+          "src": "assets/img/dna-join/read-analysis-pipeline.png",
+          "alt": "Flowchart of the read analysis: read each sequence from the fastq file, filter on length, find both table ID primers by pairwise alignment, crop excess bases, compare against the database of correct joins with Levenshtein distance, and sort into good, bad and all sequences before computing statistics",
+          "caption": "Read processing. Every read is filtered, cropped to its primers and matched against the set of correct joins - the step that turns raw nanopore output into a yes or no per read."
+        }
+      ]
+    },
+    {
+      "heading": "Result",
+      "list": [
+        "11% of sequenced reads matched a correct join - 29,780 of 275,000",
+        "Every possible join for one partKey was recovered completely; the other produced zero correct joins"
+      ]
+    },
+    {
+      "body": [
+        "That split is diagnostic rather than just disappointing. The electropherogram from the cleaving step shows why: some sequences cleaved on one side only, others didn't cleave at all - a specific, visible failure at a specific stage, not a general breakdown of the method.",
+        "Since the other partKey went through the identical protocol and worked completely, the approach itself holds. Something specific to the failed oligo - most likely a synthesis error in that sequence, or a cleaving issue tied to its composition - is a better explanation than a flaw in the join mechanism."
+      ]
+    }
+  ]
+}

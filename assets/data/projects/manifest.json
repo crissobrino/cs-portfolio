@@ -10,5 +10,6 @@
   "tka-landmark-detection",
   "icr-genome-assembly",
   "ppo-continuous-control",
-  "mri-xr-hololens"
+  "mri-xr-hololens",
+  "dna-join"
 ]
