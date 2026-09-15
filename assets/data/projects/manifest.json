@@ -8,5 +8,6 @@
   "amr-resistance-prediction",
   "melanoma-classification",
   "tka-landmark-detection",
-  "icr-genome-assembly"
+  "icr-genome-assembly",
+  "ppo-continuous-control"
 ]

@@ -1,0 +1,75 @@
+{
+  "slug": "ppo-continuous-control",
+  "title": "Reinforcement learning for continuous control with PPO",
+  "year": "2024",
+  "domain": "Reinforcement Learning",
+  "tags": [
+    "Reinforcement Learning",
+    "PyTorch",
+    "Continuous Control"
+  ],
+  "summary": "A from-scratch PPO implementation trained on a 2D walking robot, written up as a public technical guide with the full derivation, code, and training diagnostics.",
+  "stack": [
+    "Python",
+    "PyTorch",
+    "Stable-Baselines3",
+    "Gymnasium (MuJoCo)"
+  ],
+  "role": "Solo project",
+  "context": "Coursework, Reinforcement Learning for Bioengineers (MSc)",
+  "repo": "",
+  "link": "https://medium.com/@csobrinofm/reinforcement-learning-a-practical-guide-to-proximal-policy-optimization-ppo-276df3e5099e",
+  "linkLabel": "Read the full guide",
+  "sections": [
+    {
+      "heading": "The problem",
+      "body": [
+        "The original plan wasn't Walker2D. It was applying PPO to anatomical landmark detection in medical images, extending earlier work that used DQN for the same task. That codebase was written in TensorFlow 1, which Google Colab had already deprecated. After spending real time trying to port it to TensorFlow 2, I made the call to switch environments entirely rather than keep burning the available time on a dependency problem instead of on reinforcement learning itself."
+      ],
+      "list": [
+        "Walker2D is a harder environment in its own right: a 2D robot with seven body parts and six torque-controlled joints",
+        "Both the action and observation spaces are continuous",
+        "The policy has to learn to stay upright before it can learn to move forward at all"
+      ],
+      "imageLayout": "pair",
+      "images": [
+        {
+          "src": "assets/img/ppo/ppo-walker-test-A.jpg",
+          "alt": "The Walker2D robot rendered upright and balanced on a checkerboard floor",
+          "caption": "Upright and balanced."
+        },
+        {
+          "src": "assets/img/ppo/ppo-walker-test-B.jpg",
+          "alt": "The same Walker2D robot collapsed forward onto the floor, torso down and leg folded",
+          "caption": "And down - the failure mode that ends the episode. Everything the reward measures sits on the other side of not doing this."
+        }
+      ]
+    },
+    {
+      "heading": "Approach",
+      "body": [
+        "Implemented PPO from its actual derivation rather than just calling a library function - the clipped surrogate objective, the advantage estimation, and why the clipping term exists at all. It keeps each policy update close to the previous policy, which is what makes PPO stable enough to use off-the-shelf on a continuous control problem like this one."
+      ],
+      "list": [
+        "Trained with Stable-Baselines3 using hyperparameters from rl-baselines3-zoo, so the results reflect PPO's actual learning behaviour rather than my own hyperparameter search",
+        "Written up as a public technical article - theory, implementation and this experiment - rather than kept as a private coursework submission"
+      ]
+    },
+    {
+      "heading": "Result",
+      "body": [
+        "The learning curve is the whole story in one image."
+      ],
+      "list": [
+        "Near-zero reward for the first ~25,000 timesteps, while the agent is just falling over",
+        "A steep climb as it learns to balance, peaking around 350 near timestep 75,000",
+        "Then a slight decline, settling into a plateau around 300-320"
+      ]
+    },
+    {
+      "body": [
+        "That decline is worth explaining rather than smoothing over. The reward distribution across training is bimodal - a cluster of low-reward early episodes and a separate cluster near the final performance, with almost nothing in between. Combined with the late-training dip, that is consistent with the policy starting to overfit to the specifics of this environment rather than learning a more general walking strategy. It's the kind of thing you'd check with a second training run or a KL-divergence penalty, so I'd rather say that directly than present the peak number as the final result."
+      ]
+    }
+  ]
+}

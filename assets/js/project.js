@@ -151,9 +151,10 @@
     root.append(gallery);
   }
 
-  if (project.repo) {
-    const link = el("a", "repo", "View repository");
-    link.href = project.repo;
+  const linkHref = project.link || project.repo;
+  if (linkHref) {
+    const link = el("a", "repo", project.linkLabel || "View repository");
+    link.href = linkHref;
     link.rel = "noopener";
     link.target = "_blank";
     root.append(link);
