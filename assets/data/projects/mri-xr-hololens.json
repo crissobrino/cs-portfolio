@@ -1,0 +1,100 @@
+{
+  "slug": "mri-xr-hololens",
+  "title": "3D MRI visualization in mixed reality for HoloLens",
+  "year": "2024",
+  "domain": "Extended Reality",
+  "tags": [
+    "Extended Reality",
+    "Unity",
+    "Medical Imaging",
+    "C#"
+  ],
+  "summary": "An XR tool that converts breast MRI scans into an interactive 3D hologram, built with hand-tracking and eye-tracking controls for radiologists on Microsoft HoloLens 2.",
+  "stack": [
+    "Unity",
+    "C#",
+    "HLSL",
+    "Mixed Reality Toolkit (MRTK)",
+    "fo-dicom"
+  ],
+  "role": "Team of five",
+  "context": "Coursework (Bioengineering, Imperial College London)",
+  "repo": "",
+  "sections": [
+    {
+      "heading": "The problem",
+      "body": [
+        "Radiologists read MRI scans as stacks of flat 2D slices, scrolling through dozens of images to mentally reconstruct a 3D shape. The brief was to skip that reconstruction step entirely: take a breast MRI, build it into an actual 3D volume, and let a radiologist examine it directly in mixed reality."
+      ],
+      "list": [
+        "Rotate it, slice through it, zoom in, and annotate findings by voice or text",
+        "On a HoloLens 2 headset, with no controller needed",
+        "Nobody on the five-person team had used Unity or C# before this project"
+      ],
+      "images": [
+        {
+          "src": "assets/img/mri-xr/use-case-diagram.png",
+          "alt": "Use-case diagram with Radiologist and Administrator actors: the radiologist chooses a file, visualises images (scroll, rotate, zoom, slice), annotates by text or voice recording and saves progress, while the administrator uploads files for 3D reconstruction, resets annotations and deletes files. An eye-tracking log extends annotation on HoloLens 2 only",
+          "caption": "What the system had to do, and for whom. Scroll, rotate, zoom and slice hang off visualisation; text and voice hang off annotation; the eye-tracking log extends it on HoloLens 2 only."
+        }
+      ]
+    },
+    {
+      "heading": "Approach",
+      "body": [
+        "The pipeline stacks three real engineering problems on top of each other."
+      ],
+      "list": [
+        "Medical scans arrive as DICOM, a format Unity has no native support for. We wrote a custom converter in C# that decodes single- and multi-frame DICOM and re-encodes each slice as a texture Unity can use",
+        "A stack of 2D slices still isn't a 3D object. A volume creation script assembles them into an actual 3D texture, which then needs a custom GPU shader - extending an open-source base - to render as a solid, semi-transparent structure rather than just a bounding cube, with a hand-built transfer function deciding which densities read as tissue and which as background",
+        "All of that has to run inside HoloLens 2's Mixed Reality Toolkit, wired to hand-tracking for manipulating the model and eye-tracking to log where the radiologist actually looks"
+      ]
+    },
+    {
+      "body": [
+        "The eye-tracking is the genuine differentiator: gaze data can surface which parts of a scan draw clinical attention, which is not something a conventional viewer records at all."
+      ],
+      "images": [
+        {
+          "alt": "The application's start scene as built in Unity, with a press-to-start prompt for the radiologist and a key combination for administrator file upload",
+          "caption": "The app's start scene, built in Unity - press to start as the radiologist, or a key combination for admin file upload."
+        }
+      ]
+    },
+    {
+      "heading": "My part",
+      "body": [
+        "I worked on the third piece: getting everything to run as one system on the headset. That meant integrating MRTK, wiring hand-interaction - rotate, scale, move - directly to the rendered volume, and connecting the holographic UI so the pipeline behaved as a single tool rather than as separate pieces that happened to compile."
+      ],
+      "list": [
+        "Researched the options and picked the team's onboarding path, the Unity Essentials course, since nobody was starting with any Unity or C#",
+        "Helped structure how the work was split across the team once everyone had the basics"
+      ]
+    },
+    {
+      "heading": "Result",
+      "body": [
+        "Five people, no prior Unity or C# experience, one working end-to-end pipeline: DICOM upload, through volume rendering, to an interactive hologram on a real HoloLens 2, demonstrated on video."
+      ],
+      "images": [
+        {
+          "alt": "The rendered MRI volume as a hologram, viewed through HoloLens 2 during the demo",
+          "caption": "The volume as a hologram on the headset - the end of the pipeline, and the only part a radiologist would actually see."
+        }
+      ]
+    },
+    {
+      "heading": "What actually cost us time",
+      "body": [
+        "The most instructive failure wasn't technical, it was infrastructure."
+      ],
+      "list": [
+        "Git couldn't handle the project at all - Unity's mix of large binary and text files broke standard pushes",
+        "Git LFS looked like the fix until we hit its 1GB storage quota",
+        "That forced a switch to Unity's own version control mid-project, which allows three simultaneous users on a student licence, for a team of five",
+        "The rest of development ran on manually coordinated, ad-hoc syncs to work around a three-seat limit for five people - time that should have gone into features",
+        "It is also why there's no public repository here: the project lived on Unity Cloud behind that restricted student licence"
+      ]
+    }
+  ]
+}

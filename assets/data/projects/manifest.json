@@ -9,5 +9,6 @@
   "melanoma-classification",
   "tka-landmark-detection",
   "icr-genome-assembly",
-  "ppo-continuous-control"
+  "ppo-continuous-control",
+  "mri-xr-hololens"
 ]
