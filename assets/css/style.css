@@ -620,22 +620,33 @@ main.shell {
   margin: 1.5rem 0;
 }
 
-/* Two- and three-up: lays figures across a row, which also divides their
-   width. A trailing figure that doesn't fill the row keeps its column
-   width rather than stretching to span it. */
-.section-images--pair,
-.section-images--triple {
-  display: grid;
-  align-items: start;
+/* Two- and three-up. Each figure is given width in proportion to its own
+   aspect ratio, so every image in a row lands at exactly the same height
+   without being cropped or stretched — equal columns would instead leave
+   images of differing shape at differing heights. */
+.section-images__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
 }
 
-.section-images--pair {
-  grid-template-columns: 1fr 1fr;
-}
-
-.section-images--triple {
-  grid-template-columns: 1fr 1fr 1fr;
+.section-images--triple .section-images__row {
   gap: 1rem;
+}
+
+.section-images__row > .figure {
+  flex: var(--aspect, 1) 1 0%;
+  min-width: 0;
+}
+
+.section-images__row .figure__frame:not(.figure__frame--empty) {
+  width: 100%;
+}
+
+.section-images__row .figure__frame img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .figure {
@@ -822,8 +833,7 @@ main.shell {
     height: auto;
   }
 
-  .section-images--pair,
-  .section-images--triple {
-    grid-template-columns: 1fr;
+  .section-images__row {
+    flex-direction: column;
   }
 }

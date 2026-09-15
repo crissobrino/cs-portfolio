@@ -19,14 +19,26 @@
     return node;
   };
 
-  const renderFigure = (image) => {
+  const renderFigure = (image, inRow) => {
     const figure = el("figure", "figure");
     if (image.src) {
       const frame = el("div", "figure__frame");
       const img = el("img");
       img.src = image.src;
       img.alt = image.alt || image.caption || "";
-      img.loading = "lazy";
+      // Row figures need their real dimensions to size correctly, so they
+      // can't wait for a lazy load to tell us the aspect ratio.
+      img.loading = inRow ? "eager" : "lazy";
+      // Row layouts size each figure by its aspect ratio to equalise heights.
+      const setAspect = () => {
+        if (img.naturalHeight)
+          figure.style.setProperty(
+            "--aspect",
+            img.naturalWidth / img.naturalHeight
+          );
+      };
+      if (img.complete) setAspect();
+      else img.addEventListener("load", setAspect, { once: true });
       frame.append(img);
       figure.append(frame);
     } else {
@@ -104,12 +116,22 @@
       prose.append(ul);
     }
     if (section.images && section.images.length) {
-      const layouts = { pair: " section-images--pair", triple: " section-images--triple" };
+      const perRow = { pair: 2, triple: 3 }[section.imageLayout];
       const stack = el(
         "div",
-        `section-images${layouts[section.imageLayout] || ""}`
+        `section-images${perRow ? ` section-images--${section.imageLayout}` : ""}`
       );
-      section.images.forEach((image) => stack.append(renderFigure(image)));
+      if (perRow) {
+        for (let i = 0; i < section.images.length; i += perRow) {
+          const row = el("div", "section-images__row");
+          section.images
+            .slice(i, i + perRow)
+            .forEach((image) => row.append(renderFigure(image, true)));
+          stack.append(row);
+        }
+      } else {
+        section.images.forEach((image) => stack.append(renderFigure(image)));
+      }
       prose.append(stack);
     }
     if (section.video) {
