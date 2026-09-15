@@ -8,6 +8,9 @@
     "Molecular Biology",
     "Bioinformatics"
   ],
+  "themes": [
+    "Bioinformatics"
+  ],
   "summary": "Encoding two relational database tables as synthetic DNA, then using PCR and restriction enzymes - not a CPU - to physically execute a SQL JOIN between them.",
   "stack": [
     "Python",

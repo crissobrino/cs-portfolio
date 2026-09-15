@@ -2,12 +2,15 @@
   "slug": "mri-xr-hololens",
   "title": "3D MRI visualization in mixed reality for HoloLens",
   "year": "2024",
-  "domain": "Extended Reality",
+  "domain": "Software Engineering",
   "tags": [
     "Extended Reality",
     "Unity",
     "Medical Imaging",
     "C#"
+  ],
+  "themes": [
+    "Software Engineering"
   ],
   "summary": "An XR tool that converts breast MRI scans into an interactive 3D hologram, built with hand-tracking and eye-tracking controls for radiologists on Microsoft HoloLens 2.",
   "stack": [

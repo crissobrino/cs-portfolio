@@ -9,6 +9,9 @@
     "Transformers",
     "PyTorch"
   ],
+  "themes": [
+    "Deep Learning"
+  ],
   "summary": "A from-scratch implementation of ARDM (Hoogeboom et al., ICLR 2022), tested on images and tabular data to establish where order-agnostic generation holds up.",
   "stack": [
     "Python",

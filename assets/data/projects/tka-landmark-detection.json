@@ -9,6 +9,10 @@
     "3D CNN",
     "Healthcare"
   ],
+  "themes": [
+    "Deep Learning",
+    "Computer Vision"
+  ],
   "summary": "A 3D CNN pipeline to locate anatomical landmarks in CT scans for total knee arthroplasty, benchmarked directly against four human observers.",
   "stack": [
     "Python",

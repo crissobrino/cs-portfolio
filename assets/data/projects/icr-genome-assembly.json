@@ -9,6 +9,9 @@
     "HPC",
     "Cancer Research"
   ],
+  "themes": [
+    "Bioinformatics"
+  ],
   "summary": "Assembling a personal cancer genome from ultra-high-resolution chromatin data, with no reference genome used - the first attempt to test this particular technique for genome assembly.",
   "stack": [
     "Python",

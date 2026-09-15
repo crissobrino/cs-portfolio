@@ -9,6 +9,10 @@
     "LLMs",
     "Information Retrieval"
   ],
+  "themes": [
+    "NLP & LLMs",
+    "Software Engineering"
+  ],
   "summary": "A research assistant that takes a research idea in any of five languages, retrieves related papers from 103k arXiv abstracts, and reports how the idea differs from what already exists.",
   "stack": [
     "Python",

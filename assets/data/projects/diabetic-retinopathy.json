@@ -3,9 +3,23 @@
   "title": "Diabetic retinopathy detection from fundus photographs",
   "year": "2026",
   "domain": "Deep Learning",
-  "tags": ["Deep Learning", "Computer Vision", "Medical Imaging", "PyTorch"],
+  "tags": [
+    "Deep Learning",
+    "Computer Vision",
+    "Medical Imaging",
+    "PyTorch"
+  ],
+  "themes": [
+    "Deep Learning",
+    "Computer Vision"
+  ],
   "summary": "A two-track image classification competition: build a CNN from scratch, and fine-tune a pretrained one. Best models scored 0.780 and 0.826 AUC.",
-  "stack": ["Python", "PyTorch", "torchvision", "OpenCV"],
+  "stack": [
+    "Python",
+    "PyTorch",
+    "torchvision",
+    "OpenCV"
+  ],
   "role": "Team of two",
   "context": "Private Codabench competition run as coursework (MSc); no public leaderboard to link to",
   "repo": "",

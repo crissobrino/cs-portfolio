@@ -9,6 +9,10 @@
     "Medical Imaging",
     "Class Imbalance"
   ],
+  "themes": [
+    "Deep Learning",
+    "Computer Vision"
+  ],
   "summary": "A melanoma classifier trained on 400,000 lesions where only 343 were malignant, combining an ensemble of CNNs with clinical metadata.",
   "stack": [
     "Python",

@@ -9,6 +9,9 @@
     "Semi-supervised",
     "Health Data"
   ],
+  "themes": [
+    "Machine Learning"
+  ],
   "summary": "A Kaggle competition predicting resistance to 8 antibiotics from bacterial mass spectra, where nearly half the labels for the hardest target were missing.",
   "stack": [
     "Python",

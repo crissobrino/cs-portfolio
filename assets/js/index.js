@@ -23,11 +23,20 @@
     console.error("Failed to load projects", err);
   }
 
+  // Falls back to the project's first figure so a card doesn't need its own
+  // artwork to show something.
+  const thumbFor = (project) => {
+    if (project.thumb) return project.thumb;
+    for (const section of project.sections || [])
+      for (const image of section.images || []) if (image.src) return image.src;
+    return null;
+  };
+
   projects.forEach((project, i) => {
     const card = el("a", "card reveal");
     card.href = `project.html?p=${encodeURIComponent(project.slug)}`;
     card.style.setProperty("--delay", `${Math.min(i * 60, 420)}ms`);
-    card.dataset.tags = (project.tags || []).join("|");
+    card.dataset.themes = (project.themes || []).join("|");
 
     const meta = el("div", "card__meta mono");
     meta.append(
@@ -41,6 +50,17 @@
       el("span", "card__arrow mono", "→")
     );
 
+    const thumbSrc = thumbFor(project);
+    if (thumbSrc) {
+      const thumb = el("div", "card__thumb");
+      const img = el("img");
+      img.src = thumbSrc;
+      img.alt = "";
+      img.loading = "lazy";
+      thumb.append(img);
+      card.append(thumb);
+    }
+
     card.append(
       meta,
       el("h2", "card__title", project.title),
@@ -50,7 +70,26 @@
     grid.append(card);
   });
 
-  const tags = [...new Set(projects.flatMap((p) => p.tags || []))].sort();
+  // Methods first, then disciplines. Anything not listed sorts to the end,
+  // so a newly coined theme still gets a filter.
+  const THEME_ORDER = [
+    "Machine Learning",
+    "Deep Learning",
+    "NLP & LLMs",
+    "Computer Vision",
+    "Reinforcement Learning",
+    "Lab Automation",
+    "Robotics & Embedded Systems",
+    "Bioinformatics",
+    "Software Engineering",
+  ];
+  const rank = (t) => {
+    const i = THEME_ORDER.indexOf(t);
+    return i === -1 ? THEME_ORDER.length : i;
+  };
+  const themes = [...new Set(projects.flatMap((p) => p.themes || []))].sort(
+    (a, b) => rank(a) - rank(b) || a.localeCompare(b)
+  );
   const buttons = [];
 
   const apply = (active) => {
@@ -59,8 +98,12 @@
     );
     grid.querySelectorAll(".card").forEach((card) => {
       const match =
-        active === "all" || card.dataset.tags.split("|").includes(active);
-      card.classList.toggle("card--dimmed", !match);
+        active === "all" || card.dataset.themes.split("|").includes(active);
+      card.hidden = !match;
+      // A card can be filtered back into view without ever having intersected,
+      // so reveal it directly rather than leaving it at the animation's
+      // starting opacity of 0.
+      if (match) card.classList.add("reveal--in");
     });
   };
 
@@ -92,12 +135,12 @@
     window.addEventListener("scroll", toggleCue, { passive: true });
   }
 
-  ["all", ...tags].forEach((tag) => {
-    const button = el("button", "filter", tag === "all" ? "All" : tag);
+  ["all", ...themes].forEach((theme) => {
+    const button = el("button", "filter", theme === "all" ? "All" : theme);
     button.type = "button";
-    button.dataset.tag = tag;
-    button.setAttribute("aria-pressed", String(tag === "all"));
-    button.addEventListener("click", () => apply(tag));
+    button.dataset.tag = theme;
+    button.setAttribute("aria-pressed", String(theme === "all"));
+    button.addEventListener("click", () => apply(theme));
     buttons.push(button);
     filters.append(button);
   });

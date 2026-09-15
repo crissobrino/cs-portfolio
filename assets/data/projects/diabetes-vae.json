@@ -9,6 +9,9 @@
     "Representation Learning",
     "Health Data"
   ],
+  "themes": [
+    "Deep Learning"
+  ],
   "summary": "Two variational autoencoders trained on 380,000 patient-days of continuous glucose data, testing whether adding insulin and wearable signals produces a better representation than glucose alone.",
   "stack": [
     "Python",

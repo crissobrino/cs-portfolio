@@ -9,6 +9,10 @@
     "Computer Vision",
     "Control Theory"
   ],
+  "themes": [
+    "Computer Vision",
+    "Robotics & Embedded Systems"
+  ],
   "summary": "A single-camera mobile robot that tracks moving targets, judges obstacle distance from monocular geometry, and explores an unknown grid - all reasoning happening on the microcontroller itself, no external computer or localization.",
   "stack": [
     "Python (MicroPython on OpenMV)",

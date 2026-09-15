@@ -9,6 +9,10 @@
     "Unsupervised Learning",
     "Anomaly Detection"
   ],
+  "themes": [
+    "Machine Learning",
+    "NLP & LLMs"
+  ],
   "summary": "A hybrid unsupervised system that ranks public-health alerts by how unusual they are, catching outbreaks no single method would flag alone.",
   "stack": [
     "Python",

@@ -9,6 +9,10 @@
     "Bioengineering",
     "Python"
   ],
+  "themes": [
+    "Lab Automation",
+    "Bioinformatics"
+  ],
   "summary": "A fully automated robotic workflow for preparing DNA sequencing libraries, built to remove a manual bottleneck in synthetic biology quality control.",
   "stack": [
     "Lab Automation",
