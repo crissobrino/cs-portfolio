@@ -6,5 +6,6 @@
   "ardm-imputation",
   "diabetic-retinopathy",
   "amr-resistance-prediction",
-  "melanoma-classification"
+  "melanoma-classification",
+  "tka-landmark-detection"
 ]

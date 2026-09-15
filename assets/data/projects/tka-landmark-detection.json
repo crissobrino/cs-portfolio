@@ -1,0 +1,128 @@
+{
+  "slug": "tka-landmark-detection",
+  "title": "Automated landmark detection for knee replacement planning",
+  "year": "2024",
+  "domain": "Deep Learning",
+  "tags": [
+    "Computer Vision",
+    "Medical Imaging",
+    "3D CNN",
+    "Healthcare"
+  ],
+  "summary": "A 3D CNN pipeline to locate anatomical landmarks in CT scans for total knee arthroplasty, benchmarked directly against four human observers.",
+  "stack": [
+    "Python",
+    "TensorFlow",
+    "3D ResNet-50",
+    "SimpleITK",
+    "ITK-SNAP"
+  ],
+  "role": "Team of 7",
+  "context": "Year-3 group project (Bioengineering, Imperial College London), with input from orthopaedic surgeons",
+  "repo": "",
+  "sections": [
+    {
+      "heading": "The problem",
+      "body": [
+        "Knee replacement surgery depends on precise implant alignment, which is planned from over a dozen anatomical landmarks across the hip, knee and ankle. Right now those landmarks are placed by hand on CT scans - slow, and dependent on who's doing it.",
+        "The scope changed partway through. The original goal was to automate the full implant-positioning calculation, but the angle calculations that requires need weight-bearing scans, and the CT data available wasn't weight-bearing. So the project became the necessary step underneath: can a model locate these landmarks as reliably as a person does?"
+      ],
+      "images": [
+        {
+          "src": "assets/img/tka/FigImplant.jpeg",
+          "alt": "An arthritic knee joint alongside the same joint after total knee replacement, showing the implant components",
+          "caption": "What the planning is for: implant alignment in total knee replacement is set from landmarks spread across the whole leg, not just the knee."
+        }
+      ]
+    },
+    {
+      "heading": "Approach",
+      "body": [
+        "190 CT scans from 95 patients (ethics-approved, Charing Cross Hospital), narrowed to 99 scans containing all three regions of interest. Four observers independently annotated 16 landmarks per scan, verified for clinical usability by an orthopaedic surgeon. Averaging across observers gave us the training labels - but it also gave us something more useful: a measurement of how much humans disagree with each other, before asking whether a model could do better."
+      ]
+    },
+    {
+      "body": [
+        "We resampled to isotropic 1x1x1mm spacing, normalised intensity to 0-1, standardised left/right orientation and cropped the background away, then cut each scan into three 256x256x256 regions of interest."
+      ],
+      "images": [
+        {
+          "src": "assets/img/tka/preproc.png",
+          "alt": "Preprocessing pipeline: original full-leg CT resampled to 1x1x1mm spacing, intensity normalised to 0-1 and background cropped, then split into 256x256x256 regions of interest",
+          "caption": "Preprocessing: resample to isotropic spacing, normalise intensity, crop the background, then cut into fixed-size regions."
+        },
+        {
+          "src": "assets/img/tka/rois.png",
+          "alt": "The three regions of interest - hip, knee and ankle - cropped out of a single full-leg CT scan",
+          "caption": "The three regions of interest. Landmarks span the whole leg, so a single model over the full scan would spend most of its capacity on empty bone shaft."
+        }
+      ]
+    },
+    {
+      "body": [
+        "A separate 3D ResNet-50 per region - hip, knee and ankle, carrying 3, 11 and 2 landmarks respectively - predicting landmark coordinates directly as a regression output rather than a classification. Compute was the binding constraint throughout: batch size 1, 150 epochs, and training loss was still falling when we had to stop."
+      ],
+      "images": [
+        {
+          "src": "assets/img/tka/pipeline2.png",
+          "alt": "Model pipeline: three cropped regions of interest each feeding a separate 3D ResNet-50 with a linear output layer, producing 9, 33 and 6 coordinate values for 3, 11 and 2 landmarks",
+          "caption": "One 3D ResNet-50 per region, each with a linear head regressing x, y, z directly - 9, 33 and 6 output values across hip, knee and ankle."
+        }
+      ]
+    },
+    {
+      "heading": "Result",
+      "body": [
+        "Measuring inter-observer agreement produced the project's most interesting finding. The TAC, an ankle landmark that prior literature reports as almost perfectly reliable (ICC 1.0), scored 0.314 in our data - one of the least reliable landmarks in the whole set. The landmark behind Whiteside's line, a long-disputed reference in TKA planning, also scored poorly (0.643), which lines up with existing debate over whether that line should be trusted alone for femoral cuts. Both results challenge assumptions the field has largely taken for granted."
+      ],
+      "images": [
+        {
+          "src": "assets/img/tka/original_landmarks_graph.png",
+          "alt": "Euclidean distance from the mean position for each of four observers, per landmark, with the observer mean marked - spread ranges from roughly 2.5mm to 7mm depending on the landmark",
+          "caption": "How far each observer sits from the consensus position, landmark by landmark. Some landmarks are pinned down to under 3mm between observers; others scatter past 7mm."
+        }
+      ]
+    },
+    {
+      "heading": "Where the model fell short",
+      "body": [
+        "The model's landmark localisation needs more compute than this project had access to. Mean error was 37.3mm (hip), 84.4mm (knee) and 28.7mm (ankle) - well above the sub-2mm reported for comparable 2D pipelines, and an order of magnitude worse than the observers it was measured against."
+      ],
+      "images": [
+        {
+          "src": "assets/img/tka/obs_vs_ml.png",
+          "alt": "Per-landmark comparison of mean observer error against model prediction error, with observers clustered near the bottom of the scale and model predictions far above them",
+          "caption": "Observers against the model, landmark by landmark, in pixels (1mm isotropic spacing, so these read as millimetres). The gap is the result - the benchmark was the point of annotating four times over."
+        },
+        {
+          "src": "assets/img/tka/boxplot_test.png",
+          "alt": "Boxplot of prediction error per landmark in millimetres, grouped by region: hip landmarks around 20-25mm, knee landmarks around 80-100mm, ankle landmarks around 30mm",
+          "caption": "Error by landmark, grouped by region. The knee - the region carrying 11 of the 16 landmarks - is also the region the model handles worst."
+        }
+      ]
+    },
+    {
+      "body": [
+        "The training curves show precisely why: loss was still decreasing at epoch 150, the ceiling of the available compute, and validation loss ran consistently higher and noisier than training loss throughout - the signature of a model with more capacity than 99 scans can constrain. That diagnosis points directly at the fix, a smaller architecture or more aggressive data augmentation, rather than leaving it as an open question.",
+        "Split by axis, the error spreads roughly evenly across x, y and z rather than concentrating in one direction, and the hip and ankle stay well below the knee in every axis. The failure is uniform, not a systematic offset in one plane."
+      ],
+      "images": [
+        {
+          "src": "assets/img/tka/boxplot_X_test.png",
+          "alt": "Boxplot of prediction error per landmark along the X axis, in millimetres",
+          "caption": "Error along x."
+        },
+        {
+          "src": "assets/img/tka/boxplot_Y_test.png",
+          "alt": "Boxplot of prediction error per landmark along the Y axis, in millimetres",
+          "caption": "Error along y."
+        },
+        {
+          "src": "assets/img/tka/boxplot_Z_test.png",
+          "alt": "Boxplot of prediction error per landmark along the Z axis, in millimetres",
+          "caption": "Error along z. Comparable in scale to x and y - no single axis is carrying the failure."
+        }
+      ]
+    }
+  ]
+}
