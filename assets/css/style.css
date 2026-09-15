@@ -620,13 +620,22 @@ main.shell {
   margin: 1.5rem 0;
 }
 
-/* Two-up: pairs figures across a row, which also halves their width.
-   An odd trailing figure keeps the same half-width column rather than
-   stretching to fill the row. */
-.section-images--pair {
+/* Two- and three-up: lays figures across a row, which also divides their
+   width. A trailing figure that doesn't fill the row keeps its column
+   width rather than stretching to span it. */
+.section-images--pair,
+.section-images--triple {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   align-items: start;
+}
+
+.section-images--pair {
+  grid-template-columns: 1fr 1fr;
+}
+
+.section-images--triple {
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
 }
 
 .figure {
@@ -638,6 +647,14 @@ main.shell {
   border-radius: var(--radius);
   background: var(--paper);
   overflow: hidden;
+}
+
+/* Shrink the frame to the image rather than letting it run the full column
+   width with the image floating in it. Images are never scaled up past
+   their own resolution. */
+.figure__frame:not(.figure__frame--empty) {
+  width: fit-content;
+  max-width: 100%;
 }
 
 /* Same height across the row, natural aspect ratio per image —
@@ -805,7 +822,8 @@ main.shell {
     height: auto;
   }
 
-  .section-images--pair {
+  .section-images--pair,
+  .section-images--triple {
     grid-template-columns: 1fr;
   }
 }

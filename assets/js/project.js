@@ -104,11 +104,10 @@
       prose.append(ul);
     }
     if (section.images && section.images.length) {
+      const layouts = { pair: " section-images--pair", triple: " section-images--triple" };
       const stack = el(
         "div",
-        `section-images${
-          section.imageLayout === "pair" ? " section-images--pair" : ""
-        }`
+        `section-images${layouts[section.imageLayout] || ""}`
       );
       section.images.forEach((image) => stack.append(renderFigure(image)));
       prose.append(stack);
