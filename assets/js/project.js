@@ -104,7 +104,12 @@
       prose.append(ul);
     }
     if (section.images && section.images.length) {
-      const stack = el("div", "section-images");
+      const stack = el(
+        "div",
+        `section-images${
+          section.imageLayout === "pair" ? " section-images--pair" : ""
+        }`
+      );
       section.images.forEach((image) => stack.append(renderFigure(image)));
       prose.append(stack);
     }

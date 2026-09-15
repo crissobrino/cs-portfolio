@@ -620,6 +620,15 @@ main.shell {
   margin: 1.5rem 0;
 }
 
+/* Two-up: pairs figures across a row, which also halves their width.
+   An odd trailing figure keeps the same half-width column rather than
+   stretching to fill the row. */
+.section-images--pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+}
+
 .figure {
   margin: 0;
 }
@@ -794,5 +803,9 @@ main.shell {
   .gallery .figure__frame:not(.figure__frame--empty) img {
     width: 100%;
     height: auto;
+  }
+
+  .section-images--pair {
+    grid-template-columns: 1fr;
   }
 }
