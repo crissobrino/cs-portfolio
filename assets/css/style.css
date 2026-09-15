@@ -109,12 +109,16 @@ main.shell {
   color: rgba(255, 255, 255, 0.72);
 }
 
+/* The bar spans the window, so the mark and links sit near its edges instead
+   of pulling in to the 1180px content column */
 .nav__inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
   height: 100%;
+  max-width: none;
+  padding-inline: clamp(1rem, 3vw, 2.5rem);
 }
 
 .nav__mark {
