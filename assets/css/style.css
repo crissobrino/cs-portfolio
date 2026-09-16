@@ -631,6 +631,37 @@ main.shell {
   margin: 0 0 1.125rem;
 }
 
+/* Subheadings divide a section into numbered stages. The rule above each one
+   is what makes them read as separate blocks rather than as more paragraphs. */
+.prose h3 {
+  margin: 2rem 0 0.875rem;
+  padding-top: 1.125rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+}
+
+.prose h2 + h3 {
+  margin-top: 1.25rem;
+}
+
+/* Closing note, set like the subheadings. */
+.prose__note {
+  margin: 2rem 0 0;
+  padding-top: 1.125rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+}
+
 .prose ul {
   margin: 0 0 1.125rem;
   padding-left: 1.1rem;
@@ -886,5 +917,64 @@ main.shell {
 
   .section-images__row {
     flex-direction: column;
+  }
+}
+
+/* ---------- Prose tables ---------- */
+/* Tables carry more columns than the prose measure allows, so they are let
+   out of it and scroll horizontally on narrow screens. */
+.table-wrap {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.table caption {
+  caption-side: bottom;
+  text-align: left;
+  padding-top: 0.625rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.table th {
+  text-align: left;
+  vertical-align: bottom;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  padding: 0 1rem 0.5rem 0;
+  border-bottom: 1px solid var(--ink);
+}
+
+.table td {
+  vertical-align: top;
+  padding: 0.625rem 1rem 0.625rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.table th:last-child,
+.table td:last-child {
+  padding-right: 0;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+@media (max-width: 640px) {
+  .table {
+    min-width: 34rem;
   }
 }

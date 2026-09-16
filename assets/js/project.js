@@ -50,6 +50,30 @@
     return figure;
   };
 
+  const renderTable = (table) => {
+    const wrap = el("div", "table-wrap");
+    const node = el("table", "table");
+    // <caption> has to be the table's first child to be valid, even though
+    // caption-side puts it underneath.
+    if (table.caption) node.append(el("caption", null, table.caption));
+    if (table.columns && table.columns.length) {
+      const thead = el("thead");
+      const row = el("tr");
+      table.columns.forEach((c) => row.append(el("th", null, c)));
+      thead.append(row);
+      node.append(thead);
+    }
+    const tbody = el("tbody");
+    (table.rows || []).forEach((cells) => {
+      const row = el("tr");
+      cells.forEach((cell) => row.append(el("td", null, cell)));
+      tbody.append(row);
+    });
+    node.append(tbody);
+    wrap.append(node);
+    return wrap;
+  };
+
   const renderVideo = (video) => {
     const figure = el("figure", "figure");
     const frame = el("div", "figure__frame");
@@ -109,12 +133,15 @@
   const prose = el("section", "prose");
   (project.sections || []).forEach((section) => {
     if (section.heading) prose.append(el("h2", null, section.heading));
+    if (section.subheading) prose.append(el("h3", null, section.subheading));
     (section.body || []).forEach((p) => prose.append(el("p", null, p)));
     if (section.list) {
       const ul = el("ul");
       section.list.forEach((item) => ul.append(el("li", null, item)));
       prose.append(ul);
     }
+    if (section.note) prose.append(el("p", "prose__note", section.note));
+    if (section.table) prose.append(renderTable(section.table));
     if (section.images && section.images.length) {
       const perRow = { pair: 2, triple: 3 }[section.imageLayout];
       const stack = el(

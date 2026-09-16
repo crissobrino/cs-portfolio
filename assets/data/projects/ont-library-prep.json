@@ -25,42 +25,36 @@
     "Oxford Nanopore Sequencing",
     "Python",
     "Biopython",
-    "scikit-learn",
     "Validation",
     "Testing"
   ],
   "role": "Solo project",
-  "context": "Master's thesis (MEng Molecular Bioengineering, Imperial College London), developed and tested at the London Biofoundry",
+  "context": "Master's thesis (MEng Molecular Bioengineering, Imperial College London), developed and tested at the London Biofoundry. Awarded First Class Honours.",
   "repo": "",
   "sections": [
     {
       "heading": "The problem",
       "body": [
         "Synthetic biology designs and builds DNA to a specification, on a Design-Build-Test-Learn cycle that biofoundries run at industrial scale, with robots doing most of the work. Quality control is the gate between Build and Test: confirming a construct was assembled as designed, before anything downstream depends on it.",
-        "That confirmation runs on sequencing, and sequencing needs library preparation first: turning raw DNA into a format the sequencer can read. By hand it is slow and fragile."
+        "That confirmation runs on sequencing, and sequencing needs library preparation first: turning raw DNA into a format the sequencer can read. By hand it is slow and fragile (sub-10µL pipetting, repeated magnetic bead washes, time-sensitive reagents...), where one mistake can cost the whole run."
       ],
       "images": [
         {
           "src": "assets/img/ont-library-prep/dbtl2.png",
           "alt": "The Design-Build-Test-Learn cycle as four arrows, with design, build, test and learn activities around the outside, and quality control marked in red on the boundary between Build and Test",
-          "caption": "The Design-Build-Test-Learn cycle. Quality control, boxed in red, is the validation gate between Build and Test - the stage automation hadn't yet reached."
+          "caption": "The Design-Build-Test-Learn cycle. Quality control, boxed in red, is the validation gate between Build and Test. This is the step that my project automated."
         }
-      ],
-      "list": [
-        "Sub-10µL pipetting",
-        "Repeated magnetic bead washes",
-        "Time-sensitive reagents, where one mistake costs the whole run"
       ]
     },
     {
       "body": [
-        "So in a cycle built around automation, the step meant to catch errors was the one still being done by hand."
+        "So in a cycle built around automation, the step meant to catch errors was the one still being done by hand in biofoundries."
       ]
     },
     {
       "heading": "Approach",
       "body": [
-        "An end-to-end automated version of the Oxford Nanopore native barcoding protocol on a CyBio FeliX liquid handling robot, running with no human intervention from input DNA to sequencing-ready library."
+        "I designed and implemented an end-to-end automated version of the Oxford Nanopore native barcoding protocol on a CyBio FeliX liquid handling robot, running with no human intervention from input DNA to sequencing-ready library."
       ],
       "images": [
         {
@@ -71,21 +65,70 @@
       ],
       "list": [
         "ONT was chosen for its cost, minimal infrastructure requirements and long reads that need no fragmentation.",
-        "The FeliX takes custom scripts, and integrates the two modules the protocol needs: a heater-shaker and a magnetic separation plate"
+        "The FeliX was the liquid handler available at the London Biofoundry with the characteristics required for this task. It takes custom scripts, and integrates the two modules the protocol needs: a heater-shaker and a magnetic separation plate"
       ]
     },
     {
       "heading": "Building it for a machine",
       "body": [
-        "Most of the work was translation rather than transcription."
+        "Most of the work was translation from the manual protocol to instructions the robot could handle:"
+      ],
+      "table": {
+        "columns": [
+          "In the manual protocol",
+          "On the FeliX"
+        ],
+        "rows": [
+          [
+            "Vortexing, to resuspend the AXP beads",
+            "Scripted pipette mixing at 30 µL/s"
+          ],
+          [
+            "HULA mixing in a rotating incubator",
+            "BioShake module at 200 rpm"
+          ],
+          [
+            "Heat blocks, moved between as needed",
+            "BioShake 3000-T, which heats at ~7°C/min. The script starts heating early and holds until the target is reached, so temperature-sensitive steps never wait"
+          ],
+          [
+            "Technician reads the reagent batch and adjusts volumes (ONT ships EDTA in different formats)",
+            "The user declares the format at run start and the script picks the volumes, so it works across kit versions"
+          ],
+          [
+            "Barcodes picked and pipetted by hand",
+            "Assigned from a lookup table off the sample count, allocated sequentially"
+          ],
+          [
+            "200 µL wash buffer, as specified",
+            "50 µL, enough to cover the beads. Less tip usage, less reagent waste"
+          ],
+          [
+            "Fresh tip for every transfer",
+            "Tips reused on low-contamination steps like ethanol, dispensing above the liquid line"
+          ],
+          [
+            "Dead time waiting out incubations",
+            "Adapter changes, tip box swaps and plate transfers scheduled into the gaps, synchronised so they never delay a timed step"
+          ]
+        ],
+        "caption": "The protocol, rewritten step by step for a machine."
+      },
+      "images": [
+        {
+          "src": "assets/img/ont-library-prep/scripting.png",
+          "alt": "Software architecture diagram: a workflow controller driving end-prep, barcode ligation, adapter ligation, mastermix, plate transfer and magbead modules on the FeliX, with heat and shake on the BioShake",
+          "caption": "I wrote it as separate modules under one controller, so each protocol step could be run and debugged on its own."
+        }
+      ]
+    },
+    {
+      "body": [
+        "The deck presented the other main constraint:"
       ],
       "list": [
-        "Calibration came first: 3µL sits inside the instrument's reliable range and 2µL does not, so anything below that was handled with mastermixes",
-        "Vortexing became scripted pipette mixing, and HULA mixing moved onto the BioShake",
-        "Steps that relied on a technician's judgement became conditional logic on user input",
-        "Dead waiting time became parallel task execution",
-        "The deck has 12 positions but only four support single-channel pipetting, so every component needing individual tube access competed for those four slots",
-        "Four parts did not exist as standard equipment, so I designed and printed them: a tube holder, a dual-compartment ice box, a waste box and a Flongle adapter"
+        "Of its 12 positions, only four support single-channel pipetting, so every reagent requiring individual tube access competed for those four slots.",
+        "Four components needed for this layout were not available as standard equipment and were therefore designed in SOLIDWORKS and 3D printed: a tube holder, a dual-compartment ice box separating chilled and room-temperature reagents, a waste box and a Flongle adapter."
       ],
       "images": [
         {
@@ -101,15 +144,55 @@
       ]
     },
     {
-      "heading": "Results",
+      "heading": "Validation",
       "body": [
-        "Three sequencing runs, each one feeding back into the workflow."
+        "This protocol gives no indication of whether it is working while it runs. The volumes are too small to observe, the DNA is too dilute for a NanoDrop or a gel, and a failure only becomes apparent at the end of a sequencing run. Validation was therefore carried out in three stages."
+      ]
+    },
+    {
+      "subheading": "1. Low-volume liquid handling",
+      "body": [
+        "The protocol requires pipetting between 0.75 and 10µL, a range in which automated systems lose precision. This stage established whether the FeliX could dispense reliably within it, and where its lower limit fell:"
       ],
       "list": [
-        "Run A: twelve short constructs. Barcodes and sequences were each recovered, but never attached to each other, which pointed to a failure in barcode ligation",
-        "Run B: one long construct across twelve barcodes. Only five reads above 700bp, but three of those matched both barcode and reference in full (0.98-1.0), confirming the core reactions were functional and the problem was mechanical",
-        "Run C: offsets checked and adjusted across every step. All sequences and barcodes recovered, most scoring above 0.95, with the expected barcode-construct-barcode structure intact",
-        "Samples came from four research groups, varying in construct length, concentration and preparation method, so the protocol held on genuinely different inputs rather than one tuned case"
+        "Accuracy was measured with dye dilution series, where the fluorescence read from each well is proportional to the volume actually dispensed.",
+        "Matching plates prepared by hand and on the FeliX gave near identical curves, with R² values of 0.99 and 0.98. Of the four dispense settings tested, blowout without overstroke was the most precise and became the default.",
+        "Across three repeat plates, 3µL was consistent and 2µL was not. Rerunning the series at double the volume and half the concentration removed the scatter, confirming the robot rather than the assay was responsible. 3µL was therefore set as the lower limit, with anything smaller handled through mastermixes."
+      ]
+    },
+    {
+      "subheading": "2. Dry runs and workflow orchestration",
+      "body": [
+        "Each module (end preparation, barcode ligation, adapter ligation and bead clean-up) was run independently, first empty and then with water and dye. These runs caught faults a script review could not:"
+      ],
+      "list": [
+        "The CHOICE head was failing to release adapters, and was serviced and replaced.",
+        "The BioShake needed its serial port set manually, and its shaking disturbed pipetting, so those steps were serialised.",
+        "Beads pelleted against the well sidewall rather than the bottom, so tips could aspirate without disturbing them. Automated washing and elution depend on this.",
+        "Reagent depletion and dead volume were identified and mitigated, and tips were confirmed to pierce the foil seals covering the barcode plates."
+      ]
+    },
+    {
+      "subheading": "3. The full workflow with DNA",
+      "body": [
+        "The modules were then run together as a full protocol, using DNA from four Biofoundry research groups that varied in construct length, concentration and preparation method:"
+      ],
+      "list": [
+        "Libraries were prepared on the FeliX, loaded manually onto Flongle flow cells and sequenced on a MinION.",
+        "Reads were scored by Smith-Waterman alignment in Biopython, normalised by sequence length.",
+        "Control alignments confirmed the barcodes were unique and absent from the references, and set the threshold for a confident match at 0.75."
+      ]
+    },
+    {
+      "heading": "The sequencing runs",
+      "body": [
+        "Three runs, each used to locate the next weakness:"
+      ],
+      "list": [
+        "Run A: twelve short constructs. Barcodes and sequences were recovered but never attached to one another, pointing to a failure in barcode ligation.",
+        "Run B: one long construct across twelve barcodes. Yield was low, but three reads matched both barcode and reference in full, confirming the reactions worked and the problem was mechanical.",
+        "An intermediate run produced no usable reads, pointing to aspiration offsets and excessive pipetting speeds.",
+        "Run C: offsets adjusted at every step. All sequences and barcodes were recovered, most scoring above 0.95, with the expected barcode-construct-barcode structure intact."
       ],
       "images": [
         {
@@ -120,13 +203,23 @@
       ]
     },
     {
+      "body": [
+        "The outcome is the workflow itself: input DNA converted to a sequencing-ready library without human intervention, and shown to hold across samples from four groups rather than a single tuned case."
+      ]
+    },
+    {
       "heading": "Limitations",
       "list": [
-        "Dead volume in reagent wells was the most persistent issue. Several early failures were not scripting errors at all: not enough reagent was reaching the pipette tip",
-        "Runs A and B used identical end-prep offsets and gave very different yields. Construct A had been prepared with Taq polymerase, which leaves A-overhangs and skips the need for end-repair entirely",
-        "The proprietary CyBio Composer environment has no search, version control or crash recovery, which made debugging laborious and ties the workflow to one vendor's ecosystem",
-        "Flow cell loading stayed manual. Air bubbles damage nanopores, and the FeliX cannot validate dispensing angle or depth without visual or pressure feedback, so automating it would have risked the run for no gain"
+        "Dead volume in reagent wells was the most persistent issue: several early failures were not scripting errors but reagent failing to reach the tip.",
+        "Runs A and B used identical end-prep offsets yet gave very different yields, as construct A had been prepared with Taq polymerase, which leaves A-overhangs and bypasses end-repair entirely.",
+        "No intermediate QC was possible. NanoDrop and gels cannot read these concentrations and a TapeStation was outside the budget, so every failure had to be diagnosed from a full sequencing run.",
+        "The Biopython aligner overflowed above 700bp, so the Run C constructs were inspected manually in Geneious Prime.",
+        "CyBio Composer lacks search, version control and crash recovery, which made debugging laborious and ties the workflow to one vendor.",
+        "Flow cell loading remained manual, as air bubbles damage nanopores and the FeliX cannot control dispensing angle or depth without visual or pressure feedback."
       ]
+    },
+    {
+      "note": "Full report and presentation available upon request."
     }
   ]
 }
