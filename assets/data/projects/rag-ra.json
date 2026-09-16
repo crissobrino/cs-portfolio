@@ -24,7 +24,7 @@
     "RAGAS"
   ],
   "role": "Team of three",
-  "context": "Coursework project for an NLP course (MSc)",
+  "context": "Natural Language Processing Project (MSc)",
   "repo": "https://github.com/crissobrino/still-thinking-2",
   "sections": [
     {
@@ -71,7 +71,7 @@
       ]
     },
     {
-      "heading": "What the evaluation found",
+      "heading": "Evaluation",
       "list": [
         "RAGAS's built-in relevancy metric penalises non-committal language, but \"insufficient context\" is the correct answer when the evidence doesn't support a claim, and the system is explicitly prompted to give that answer. Replaced with a custom judge scoring the five required sections, validated against manually annotated samples"
       ]

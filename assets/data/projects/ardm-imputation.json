@@ -21,7 +21,7 @@
     "matplotlib"
   ],
   "role": "Team of two",
-  "context": "Coursework project for a Probabilistic & Generative ML course (MSc), on binarized MNIST and the UCI Mushroom dataset",
+  "context": "Probabilistic & Generative ML Coursework (MSc). Binarized MNIST and the UCI Mushroom dataset",
   "repo": "https://github.com/crissobrino/ardm-imputation",
   "sections": [
     {

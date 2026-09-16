@@ -19,7 +19,7 @@
     "MATLAB"
   ],
   "role": "Solo project",
-  "context": "Coursework, ALBiR module",
+  "context": "BioInspired Robotics Project (MEng)",
   "repo": "https://github.com/crissobrino/robonav-albir",
   "sections": [
     {
@@ -71,7 +71,7 @@
       ]
     },
     {
-      "heading": "What the rewrites recorded",
+      "heading": "Development log analysis",
       "body": [
         "Every rewrite of the mapping code was saved as its own file rather than committed to git, so the failures are all still there to read."
       ],

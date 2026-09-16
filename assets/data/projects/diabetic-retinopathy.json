@@ -21,7 +21,7 @@
     "OpenCV"
   ],
   "role": "Team of two",
-  "context": "Private Codabench competition run as coursework (MSc); no public leaderboard to link to",
+  "context": "Codabench competition",
   "repo": "https://github.com/crissobrino/diabetes-retinopathy",
   "sections": [
     {
@@ -70,7 +70,7 @@
       ]
     },
     {
-      "heading": "What didn't work",
+      "heading": "Negative results",
       "list": [
         "CLAHE broke the crop step by changing the global intensity the crop depended on",
         "A dtype bug in contrast normalisation turned every image grey, sending results below baseline until found",

@@ -21,7 +21,7 @@
     "pandas"
   ],
   "role": "",
-  "context": "Coursework project for a Probabilistic & Generative ML course (MSc), data from MetaboNet, a public harmonised dataset consolidating 21 Type 1 diabetes clinical studies",
+  "context": "Probabilistic & Generative ML open-ended Project (MSc). Data from MetaboNet, a public harmonised dataset consolidating 21 Type 1 diabetes clinical studies",
   "repo": "https://github.com/crissobrino/diabetes-vae",
   "sections": [
     {
@@ -61,7 +61,7 @@
       ]
     },
     {
-      "heading": "What the loss curves didn't show",
+      "heading": "Training diagnostics",
       "body": [
         "A few early models looked healthy on train/validation loss while being completely broken underneath, only caught by digging into reconstructed traces, per-dimension KL values, and latent structure."
       ],

@@ -25,7 +25,7 @@
     "ITK-SNAP"
   ],
   "role": "Team of seven",
-  "context": "Year-3 group project (Bioengineering, Imperial College London), with input from orthopaedic surgeons",
+  "context": "Bioengineering Group Project (BEng Thesis, Imperial College London). Input from orthopaedic surgeons",
   "repo": "",
   "sections": [
     {
@@ -91,7 +91,7 @@
       ]
     },
     {
-      "heading": "Where the model fell short",
+      "heading": "Localisation error",
       "body": [
         "The model's landmark localisation needs more compute than this project had access to. Mean error was 37.3mm (hip), 84.4mm (knee) and 28.7mm (ankle), well above the sub-2mm reported for comparable 2D pipelines, and an order of magnitude worse than the observers it was measured against."
       ],
@@ -130,6 +130,9 @@
           "caption": "Error along z. Comparable in scale to x and y; no single axis is carrying the failure."
         }
       ]
+    },
+    {
+      "note": "Report available upon request."
     }
   ]
 }

@@ -153,7 +153,6 @@ main.shell {
   display: flex;
   flex-direction: column;
   min-height: calc(100svh - var(--nav-h));
-  overflow: hidden;
   border-bottom: 1px solid var(--rule);
   background:
     radial-gradient(
@@ -275,7 +274,7 @@ main.shell {
 }
 
 .masthead__name {
-  font-size: clamp(2.5rem, 6.5vw, 4.5rem);
+  font-size: clamp(2.5rem, 9vw, 4.5rem);
   letter-spacing: -0.035em;
   text-align: center;
   text-wrap: balance; /* if it wraps, split the lines evenly */
@@ -875,19 +874,56 @@ main.shell {
 
 /* ---------- Small screens ---------- */
 
-@media (max-width: 900px) {
+/* 1024px, not 900: half of a 1920 screen is 960px wide, which was falling
+   through to the desktop two-column hero and getting crammed. */
+@media (max-width: 1024px) {
+  /* The hero still fills the first screen; the content below is compressed so
+     that it fits inside one rather than being clipped by it. */
   .masthead__split {
     grid-template-columns: 1fr;
     gap: clamp(1.75rem, 5vh, 2.5rem);
   }
 
+  .masthead__text {
+    padding: clamp(1.25rem, 5vw, 1.75rem);
+  }
+
+  /* Stacked, the whole hero has to fit one screen, so the vertical rhythm is
+     compressed and the image is capped by viewport height. The cap is applied
+     to WIDTH (height x 1.58, the image's own ratio) so the picture simply gets
+     smaller instead of being letterboxed into a grey band or cropped. */
+  .masthead__inner {
+    padding-block: clamp(1.25rem, 3vh, 2rem) clamp(0.75rem, 1.5vh, 1rem);
+  }
+
+  .degrees {
+    margin-top: clamp(0.875rem, 2vh, 1.25rem);
+    gap: 0.5rem clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .masthead__split {
+    margin-top: clamp(1rem, 2.5vh, 1.5rem);
+  }
+
+  .masthead__lede {
+    font-size: 0.9375rem;
+  }
+
   .cover {
     height: auto;
     min-height: 0;
-    aspect-ratio: 16 / 9;
-    max-height: 38vh;
+    aspect-ratio: auto;
+    max-height: none;
+    max-width: min(100%, calc(30vh * 1.58));
+    margin-inline: auto;
   }
 
+  .masthead__foot {
+    padding-block: 0 clamp(1rem, 2vh, 1.5rem);
+  }
+}
+
+@media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
   }
@@ -918,10 +954,6 @@ main.shell {
     grid-template-columns: 1fr;
   }
 
-  /* Stacked hero needs to give the scroll cue room on short phones */
-  .cover {
-    aspect-ratio: 2 / 1;
-  }
 
   .contact {
     padding-top: clamp(1.25rem, 2.5vh, 1.75rem);

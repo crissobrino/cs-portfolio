@@ -21,7 +21,7 @@
     "fo-dicom"
   ],
   "role": "Team of five",
-  "context": "Coursework (Bioengineering, Imperial College London)",
+  "context": "Software Engineering Project (MEng)",
   "repo": "",
   "sections": [
     {
@@ -87,7 +87,7 @@
       ]
     },
     {
-      "heading": "What actually cost us time",
+      "heading": "Infrastructure constraints",
       "body": [
         "The most instructive failure wasn't technical, it was infrastructure."
       ],

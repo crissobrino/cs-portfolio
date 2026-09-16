@@ -25,7 +25,7 @@
     "PyTorch"
   ],
   "role": "Team of three",
-  "context": "Private Kaggle competition run as coursework (MSc), Oct 2025 to Jan 2026",
+  "context": "Kaggle competition",
   "repo": "https://github.com/crissobrino/maldi-amr-prediction",
   "sections": [
     {
@@ -93,7 +93,7 @@
       ]
     },
     {
-      "heading": "What the evaluation found",
+      "heading": "Error analysis",
       "list": [
         "Pseudo-labelling made it worse across every antibiotic, including the ones it was not meant to fix: filling missing labels with model predictions reinforced what the model already believed rather than adding information",
         "Simple ensembles beat complex stacking: the rank-averaged combination outperformed the meta-learning setup despite the latter being more sophisticated",

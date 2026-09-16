@@ -101,7 +101,7 @@
       ]
     },
     {
-      "heading": "The resolution question",
+      "heading": "Effect of Micro-C resolution",
       "body": [
         "This had a clear answer, and it ran the opposite way from what I expected."
       ],
@@ -120,7 +120,7 @@
       ]
     },
     {
-      "heading": "Checking it against a reference",
+      "heading": "Reference-based validation",
       "body": [
         "The assembly used no reference, but evaluating it needed one: the finished scaffolds were aligned to GRCh38 with LASTZ. That check didn't resolve either."
       ],
