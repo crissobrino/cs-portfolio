@@ -26,7 +26,7 @@
   ],
   "role": "Team of three",
   "context": "Private Kaggle competition run as coursework (MSc), Oct 2025 to Jan 2026",
-  "repo": "",
+  "repo": "https://github.com/crissobrino/maldi-amr-prediction",
   "sections": [
     {
       "heading": "The problem",

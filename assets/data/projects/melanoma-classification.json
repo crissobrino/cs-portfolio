@@ -25,7 +25,7 @@
   ],
   "role": "Team of two",
   "context": "Kaggle competition run as coursework for an AI-in-medicine module (MSc), Sep-Dec 2025, ISIC 2024 SLICE-3D dataset",
-  "repo": "",
+  "repo": "https://github.com/crissobrino/isic-melanoma-classif",
   "sections": [
     {
       "heading": "The problem",
