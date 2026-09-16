@@ -4,13 +4,13 @@
   "alert-anomaly-detection",
   "diabetes-vae",
   "icr-genome-assembly",
+  "melanoma-classification",
+  "amr-resistance-prediction",
+  "tka-landmark-detection",
+  "mri-xr-hololens",
   "ardm-imputation",
   "diabetic-retinopathy",
-  "amr-resistance-prediction",
-  "melanoma-classification",
-  "tka-landmark-detection",
   "ppo-continuous-control",
-  "mri-xr-hololens",
   "dna-join",
   "albir-vision-robot"
 ]
