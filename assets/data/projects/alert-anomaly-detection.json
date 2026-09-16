@@ -13,7 +13,7 @@
     "Machine Learning",
     "NLP & LLMs"
   ],
-  "summary": "A hybrid unsupervised system that ranks public-health alerts by how unusual they are, catching outbreaks no single method would flag alone.",
+  "summary": "A hybrid unsupervised framework that ranks consolidated public-health alerts by how atypical they are, combining a semantic and a structural signal that prove to be almost independent.",
   "stack": [
     "Python",
     "sentence-transformers",
@@ -30,10 +30,18 @@
   "sections": [
     {
       "heading": "The problem",
+      "body": [
+        "Public health surveillance aims to detect unusual infectious-disease events early enough to act on them. Formal clinical and laboratory channels are validated but slow, reporting only once cases have been confirmed through institutional pathways. Event-based surveillance shortens that gap using news articles, institutional communications and web reports."
+      ],
       "list": [
-        "Public health surveillance teams get more open-source alerts than anyone can manually review, most from informal, unverified sources",
-        "Collecting alerts was never the hard part; figuring out which of the thousands already in the system deserve a person's attention is",
-        "Most NLP work in this space generates or filters alerts; almost none ranks the ones that already exist"
+        "Once those reports are consolidated into structured alert records, a triage problem remains: which individual alerts deserve expert review. Relevance is difficult to pose as a fixed classification task, as it depends on severity, geographic context, source profile and text at once.",
+        "Most NLP work in epidemic intelligence addresses the stage before an alert exists, through article classification, entity extraction and relevance filtering. Comparatively little addresses prioritising the alerts that already exist."
+      ]
+    },
+    {
+      "heading": "Approach",
+      "body": [
+        "The objective was to test whether a hybrid unsupervised framework can prioritise and characterise international human-health alerts by combining textual, epidemiological, geographic, temporal and source-related information. No reference set records which alerts an epidemiologist would have flagged, so the ranking layer had to be unsupervised throughout."
       ],
       "images": [
         {
@@ -44,14 +52,38 @@
       ]
     },
     {
-      "heading": "Approach",
+      "heading": "Data pipeline and alert repository",
       "body": [
-        "End-to-end pipeline: an ETL layer pulls alert text, epi data, geography and timing into one structured data model, feeding a Power BI dashboard and an unsupervised anomaly-ranking layer underneath (no labelled \"priority\" data exists, so ranking has to be unsupervised). It combines two signals that don't talk to each other:"
+        "Alerts were obtained from an external epidemiological API aggregating formal and informal sources. An ETL process normalised formats and identifiers, applied validation rules and stored the result in a SQL Server repository, preserving the incoming flow over time."
+      ],
+      "list": [
+        "The relational model has three tables, Signals, Locations and Sources, which preserve traceability to the original report. It supports automated reports and a Power BI dashboard, which replaced a weekly compilation analysts had assembled by hand, as well as the analytical layer.",
+        "The analytical dataset was 2,282 alerts, 8,088 location records and 2,283 source records over six months. Consistent with event-based surveillance, 83.1% came from informal open-source reports."
       ]
     },
     {
+      "heading": "Feature construction",
       "list": [
-        "Track A (semantic): embed the alert text, score its distance from the centre of its disease cluster"
+        "Geographic extent was measured both as the number of distinct countries and as the mean pairwise great-circle distance between an alert's coordinates, since three countries in one sub-region and three on separate continents give the same count but very different situations.",
+        "Temporal context was the number of previous alerts for the same disease in the preceding fourteen days, excluding future information so that each alert is represented only by what was available at scoring time.",
+        "Counts and case-fatality ratio were log-transformed, as a few very large values would otherwise dominate through magnitude alone. Missing counts were not treated as zeros, since an unreported value may reflect under-reporting rather than absence, and three binary indicators record whether each was originally reported."
+      ]
+    },
+    {
+      "heading": "Anomaly detection layer",
+      "body": [
+        "Two tracks score each alert independently, one over the narrative text and one over the structured fields, before being fused into a single ranking."
+      ]
+    },
+    {
+      "subheading": "1. Semantic track",
+      "body": [
+        "The semantic track scores how far an alert departs from the language typical of similar records."
+      ],
+      "list": [
+        "Four multilingual sentence-embedding models were compared and clustered with K-means across K = 2 to 15. MPNet was selected on the silhouette coefficient, giving 13 clusters, with validity checked against the Davies-Bouldin and Calinski-Harabasz indices and a permutation null.",
+        "Clusters were labelled by their most distinctive terms and recovered recognisable reporting profiles, from flood-associated leptospirosis to poliovirus environmental surveillance. The partition aligned closely with the operational disease taxonomy (Cramer's V = 0.872).",
+        "The score is the cosine distance to the cluster centroid, normalised within the cluster so that it measures atypicality relative to the relevant semantic context rather than absolute magnitude."
       ],
       "images": [
         {
@@ -62,9 +94,14 @@
       ]
     },
     {
+      "subheading": "2. Structural track",
+      "body": [
+        "The structural track scores the non-textual record as nine features covering epidemiological magnitude, spatial extent, temporal context and field availability. Two detectors were paired to cover complementary notions of a structural anomaly."
+      ],
       "list": [
-        "Track B (structural): an Isolation Forest and an autoencoder over 9 features (severity, geographic spread, recency)",
-        "Both scores are percentile-ranked, fused into one hybrid score, and checked against WHO risk criteria with a zero-shot classifier"
+        "An Isolation Forest flags extreme or sparsely populated individual values and supports per-feature attribution through SHAP. An autoencoder flags alerts whose joint feature configuration is poorly reproduced by the corpus.",
+        "They agreed only moderately (Spearman 0.57). SHAP attributed the Isolation Forest score mainly to death counts and case-fatality ratio, whereas the autoencoder was driven by geographic dispersion and the number of affected countries.",
+        "Both were percentile-mapped and averaged. The fused score correlated at 0.88 with each, and its top-decile overlap with each exceeded the overlap the two detectors shared, so fusion preserved priority alerts from both rather than collapsing onto either."
       ],
       "images": [
         {
@@ -75,9 +112,19 @@
       ]
     },
     {
-      "heading": "Result",
+      "subheading": "3. Hybrid ranking and verification",
       "list": [
-        "The two tracks catch almost completely different alerts: of 2,282 analysed, only 23 scored highly on both"
+        "Both tracks were percentile-mapped and combined with equal weight. A zero-shot layer then tested the highest-ranked alerts against three criteria derived from Annex 2 of the International Health Regulations: international spread, unusually high mortality, and unknown or undiagnosed disease. The travel-and-trade criterion was excluded as it is not observable in alert text.",
+        "Each top-decile alert was assigned a track-based profile and a priority-ordered anomaly type, so that the ranking states why an alert was surfaced rather than only that it was."
+      ]
+    },
+    {
+      "heading": "Results",
+      "list": [
+        "The two tracks proved almost independent, with a rank correlation of -0.027 (p = 0.196) and a top-decile overlap of 0.053, indicating that they prioritise largely different alerts.",
+        "Of the 2,282 alerts, 206 were high on the semantic track alone, 206 on the structural track alone, and only 23 on both. That overlap is close to the count expected under statistical independence, which corroborates the correlation result.",
+        "Fusion moved prioritisation away from raw severity while retaining it: correlation with case-fatality ratio fell from 0.562 to 0.415 and with log-transformed death counts from 0.543 to 0.373. The hybrid drew comparably from both tracks, with top-decile overlaps of 0.225 and 0.218.",
+        "The zero-shot layer was only weakly associated with the ranking (Spearman 0.24), indicating that it identified a risk-oriented subset that was not redundant with the unsupervised scores."
       ],
       "images": [
         {
@@ -89,9 +136,8 @@
       ]
     },
     {
-      "list": [
-        "Fusing them surfaced 68 confirmed outbreaks (yellow fever, Lassa fever, cholera) that never scored extremely high on either method alone, just moderately on both, which no single detector would have caught",
-        "Replaced a manual weekly compilation an analyst used to do by hand"
+      "body": [
+        "The largest group in the top decile, 68 of 229 alerts, matched none of the predefined anomaly categories. Direct inspection showed these to be confirmed outbreaks with documented mortality, including yellow fever in Colombia, Lassa fever in Nigeria and cholera in Mozambique. They reached the top decile through moderate-to-high signal accumulating across components, without any single detector crossing its own threshold. Under the same selection rule, no individual detector would have surfaced them."
       ],
       "images": [
         {
@@ -100,6 +146,14 @@
           "caption": "Spearman correlation across scores: the semantic track (score_A) barely correlates with the structural sub-scores, which is what fusing captures.",
           "size": "small"
         }
+      ]
+    },
+    {
+      "heading": "Limitations",
+      "list": [
+        "There are no ground-truth priority labels. The system identifies alerts that are atypical relative to the corpus, but cannot establish that they are operational priorities, so the ranking is a prioritisation aid rather than a validated measure of expert priority.",
+        "The count fields do not separate incident figures from cumulative totals quoted as context, so a cumulative total can inflate the structural score for reasons unrelated to the immediate alert. This matters because death counts and case-fatality ratio drive that score most. A local LLM pipeline was built to re-extract the four fields separately, but on roughly 150 manually annotated alerts it did not reach a standard suitable for the final system, so the raw fields were retained.",
+        "The observation window covers less than a full epidemiological year, so seasonal variation cannot yet be reliably separated from anomaly. A longer corpus would support seasonal baselines and richer temporal features in place of the single recent-activity variable used here."
       ]
     },
     {
