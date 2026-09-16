@@ -79,7 +79,7 @@
       ]
     },
     {
-      "heading": "Limitation",
+      "heading": "Limitations",
       "list": [
         "Tabular transfer: accuracy beat random (0.40–0.56 vs. 0.04), but test loss never closed the gap to validation loss, likely a data-size or vocabulary-design issue, left unresolved"
       ]

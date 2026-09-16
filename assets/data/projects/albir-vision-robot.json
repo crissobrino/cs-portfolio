@@ -13,7 +13,7 @@
     "Computer Vision",
     "Robotics & Embedded Systems"
   ],
-  "summary": "A single-camera mobile robot that tracks moving targets, judges obstacle distance from monocular geometry, and explores an unknown grid - all reasoning happening on the microcontroller itself, no external computer or localization.",
+  "summary": "A single-camera mobile robot that tracks moving targets, judges obstacle distance from monocular geometry, and explores an unknown grid, with all reasoning happening on the microcontroller itself and no external computer or localization.",
   "stack": [
     "Python (MicroPython on OpenMV)",
     "MATLAB"
@@ -25,7 +25,7 @@
     {
       "heading": "The problem",
       "body": [
-        "Give a small wheeled robot everything it needs to navigate using nothing but a single onboard camera and a microcontroller - no GPS, no external localization, no offboard compute. That splits into three connected problems."
+        "Give a small wheeled robot everything it needs to navigate using nothing but a single onboard camera and a microcontroller: no GPS, no external localization, no offboard compute. That splits into three connected problems."
       ],
       "list": [
         "Track a moving visual target in closed loop",
@@ -51,7 +51,7 @@
       "list": [
         "A PID controller keeps the pan servo locked onto a coloured blob, tuned by physically running the robot against a monitor playing a moving target at swept frequencies (0.03-2.8 Hz) and swept gains, logging error and angle at every step",
         "Obstacle distance comes from a single-camera trick: calibrate once against a reference object of known real-world size, then convert an obstacle's apparent size and position into a real distance and bearing using the law of cosines, accounting for the blind zone directly beneath the camera's field of view",
-        "The exploration and mapping logic builds an internal grid incrementally from blob-based landmarks. It went through six full rewrites, and is the part I iterated on hardest"
+        "The exploration and mapping logic builds an internal grid incrementally from blob-based landmarks. It went through six full rewrites"
       ]
     },
     {
@@ -61,7 +61,7 @@
       ],
       "list": [
         "28 run attempts, of which only 17 reached a working calibration",
-        "66 outright calibration failures - mostly the pan servo's required sweep being defeated by how the robot was physically angled at the screen",
+        "66 outright calibration failures, mostly the pan servo's required sweep being defeated by how the robot was physically angled at the screen",
         "2 clean completions"
       ]
     },

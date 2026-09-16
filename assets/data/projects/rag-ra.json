@@ -34,7 +34,7 @@
       ],
       "list": [
         "System takes a research direction in plain language and returns the closest prior work, with a structured comparison of overlap and novelty",
-        "Core challenge: not retrieval, but preventing the model from inventing overlaps that aren't there"
+        "Core challenge: retrieval was straightforward, preventing the model from inventing overlaps was not"
       ]
     },
     {

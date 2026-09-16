@@ -15,7 +15,7 @@
   "thumb": {
     "src": "assets/img/icr-genome-assembly/contact-map-thumb.png"
   },
-  "summary": "Assembling a personal cancer genome from ultra-high-resolution chromatin data, with no reference genome used - the first attempt to test this particular technique for genome assembly.",
+  "summary": "Assembling a personal cancer genome from ultra-high-resolution chromatin data, with no reference genome used: the first attempt to test this particular technique for genome assembly.",
   "stack": [
     "Python",
     "Bash",
@@ -35,7 +35,7 @@
         "Most cancer genomics compares a tumour's DNA against a single standard reference genome. That works for a normal genome, but cancer genomes are often heavily restructured."
       ],
       "list": [
-        "The cell line here is HT-29, colorectal cancer, and hypertriploid - a modal chromosome number of 71 against a normal 46",
+        "The cell line here is HT-29, colorectal cancer, and hypertriploid, with a modal chromosome number of 71 against a normal 46",
         "Forcing that onto a reference built for a normal genome loses real structural information, and GRCh38 carries its own biases: it is largely one individual, 70% of it a single male",
         "The alternative is de novo assembly: building the genome from the cell's own sequencing data, with no reference at all"
       ]
@@ -43,30 +43,30 @@
     {
       "heading": "Approach",
       "body": [
-        "Whole-genome sequencing combined with Micro-C, a newer variant of Hi-C with a much better signal-to-noise ratio for short-range chromatin contacts. Both capture which regions of DNA sit physically close together in the nucleus - the signal scaffolding tools use to order fragments into chromosomes. No published study had used Micro-C for assembly before, so part of the question was simply whether the extra resolution helps."
+        "Whole-genome sequencing combined with Micro-C, a newer variant of Hi-C with a much better signal-to-noise ratio for short-range chromatin contacts. Both capture which regions of DNA sit physically close together in the nucleus: the signal scaffolding tools use to order fragments into chromosomes. No published study had used Micro-C for assembly before, so part of the question was simply whether the extra resolution helps."
       ],
       "list": [
         "Three scaffolders ran in parallel on the same draft assembly, on the institute's HPC cluster: 3d-dna, HapHiC and Puzzle Hi-C",
-        "Only 3d-dna completed. HapHiC and Puzzle Hi-C both hung during multiprocessing - an incompatibility between their Python multiprocessing implementations and the cluster's memory limits, not a flaw in the underlying method",
+        "Only 3d-dna completed. HapHiC and Puzzle Hi-C both hung during multiprocessing, an incompatibility between their Python multiprocessing implementations and the cluster's memory limits, not a flaw in the underlying method",
         "Juicer's explicit memory allocation threw persistent SLURM errors. Adapting its scripts to the institute's cluster fixed it, and left them reusable for other projects",
-        "Of the four pipelines, only Puzzle Hi-C had no checkpointing, so every crash meant restarting from scratch. I patched the local code to add a save point after initial file creation - purely to make debugging survivable"
+        "Of the four pipelines, only Puzzle Hi-C had no checkpointing, so every crash meant restarting from scratch. I patched the local code to add a save point after initial file creation, purely to make debugging survivable"
       ],
       "imageLayout": "triple",
       "images": [
         {
           "src": "assets/img/icr-genome-assembly/pipeline-3ddna.png",
           "alt": "Pipeline diagram: WGS data through w2wrap to a draft assembly, Micro-C data through Juicer to .hic files, both feeding 3D-DNA, then a candidate assembly reviewed in JBAT to a final assembly",
-          "caption": "3d-dna - the one that finished."
+          "caption": "3d-dna: the one that finished."
         },
         {
           "src": "assets/img/icr-genome-assembly/pipeline-haphic.png",
           "alt": "Pipeline diagram: the same draft assembly route, with Micro-C data aligned and filtered through BWA and SAMtools, feeding HapHiC instead of 3D-DNA",
-          "caption": "HapHiC - same skeleton, different scaffolder."
+          "caption": "HapHiC: same skeleton, different scaffolder."
         },
         {
           "src": "assets/img/icr-genome-assembly/pipeline-puzzlehic.png",
           "alt": "Pipeline diagram: the same draft assembly and Juicer route, feeding Puzzle Hi-C instead of 3D-DNA",
-          "caption": "Puzzle Hi-C - the third variant."
+          "caption": "Puzzle Hi-C: the third variant."
         }
       ]
     },
@@ -76,7 +76,7 @@
       ],
       "list": [
         "3d-dna ignores contigs under 15,000bp by default. The first contact map came out accurate only in its top-left corner until the draft assembly and the paired-contacts file were both filtered to match",
-        "All nine Micro-C reads together exceeded the maximum memory available on the cluster, so only the two best reads made it into the final run - which may itself have cost accuracy",
+        "All nine Micro-C reads together exceeded the maximum memory available on the cluster, so only the two best reads made it into the final run, which may itself have cost accuracy",
         "Five rounds of scaffolding, each one measurably better than the last, which suggests the assembly was still improving when the rounds stopped"
       ]
     },
@@ -106,16 +106,16 @@
         "This had a clear answer, and it ran the opposite way from what I expected."
       ],
       "list": [
-        "Micro-C's advantage is short-range detail - and that is exactly what caused problems here",
+        "Micro-C's advantage is short-range detail, and that is exactly what caused problems here",
         "At native resolution it produced far more small scaffolds than the tool was built to handle",
         "Those scaffolds were visible only at 5kb zoom, too fine to compare against other regions, so no further manual adjustment could be made",
-        "3d-dna is tuned for standard Hi-C resolution. More detail didn't just fail to help; it worked against the tool's own assumptions"
+        "3d-dna is tuned for standard Hi-C resolution. The extra detail worked against the tool's own assumptions rather than helping"
       ],
       "images": [
         {
           "src": "assets/img/icr-genome-assembly/microc-fragmentation.png",
           "alt": "Contact map zoomed to 5kb resolution across a roughly 400kb window, showing a long run of small green Micro-C scaffold boxes along the diagonal",
-          "caption": "The same assembly at 5kb zoom. Green squares are Micro-C scaffolds - a 400kb window carrying a whole run of them, with nothing else in view to compare against."
+          "caption": "The same assembly at 5kb zoom. Green squares are Micro-C scaffolds: a 400kb window carrying a whole run of them, with nothing else in view to compare against."
         }
       ]
     },

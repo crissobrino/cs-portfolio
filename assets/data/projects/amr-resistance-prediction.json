@@ -52,7 +52,7 @@
     },
     {
       "list": [
-        "Pseudo-labelling: filled the gaps with high-confidence synthetic labels, the obvious move given 43% missing"
+        "Pseudo-labelling: filled the gaps with high-confidence synthetic labels, given 43% missing"
       ],
       "images": [
         {
@@ -95,7 +95,7 @@
     {
       "heading": "What the evaluation found",
       "list": [
-        "Pseudo-labelling made it worse, not just for the target it was meant to fix but across every antibiotic: filling missing labels with model predictions reinforced what the model already believed rather than adding information",
+        "Pseudo-labelling made it worse across every antibiotic, including the ones it was not meant to fix: filling missing labels with model predictions reinforced what the model already believed rather than adding information",
         "Simple ensembles beat complex stacking: the rank-averaged combination outperformed the meta-learning setup despite the latter being more sophisticated",
         "The ensemble didn't win everywhere: it beat CatBoost on six of the eight antibiotics but lost on Ampicillin (0.930 vs 0.933) and Amoxicillin/Clavulanic acid (0.731 vs 0.736), the two targets where a specialist model was already doing something the ensemble diluted",
         "Public score was 0.844 against 0.816 private. The gap runs in the direction that suggests some fitting to the public split, worth reporting rather than quoting the better number"

@@ -48,18 +48,18 @@
         {
           "src": "assets/img/ppo/ppo-walker-test-B.jpg",
           "alt": "The same Walker2D robot collapsed forward onto the floor, torso down and leg folded",
-          "caption": "And down - the failure mode that ends the episode. Everything the reward measures sits on the other side of not doing this."
+          "caption": "And down: the failure mode that ends the episode. Everything the reward measures sits on the other side of not doing this."
         }
       ]
     },
     {
       "heading": "Approach",
       "body": [
-        "Implemented PPO from its actual derivation rather than just calling a library function - the clipped surrogate objective, the advantage estimation, and why the clipping term exists at all. It keeps each policy update close to the previous policy, which is what makes PPO stable enough to use off-the-shelf on a continuous control problem like this one."
+        "Implemented PPO from its actual derivation rather than just calling a library function: the clipped surrogate objective, the advantage estimation, and why the clipping term exists at all. It keeps each policy update close to the previous policy, which is what makes PPO stable enough to use off-the-shelf on a continuous control problem like this one."
       ],
       "list": [
         "Trained with Stable-Baselines3 using hyperparameters from rl-baselines3-zoo, so the results reflect PPO's actual learning behaviour rather than my own hyperparameter search",
-        "Written up as a public technical article - theory, implementation and this experiment - rather than kept as a private coursework submission"
+        "Written up as a public technical article (theory, implementation and this experiment) rather than kept as a private coursework submission"
       ]
     },
     {
@@ -75,7 +75,7 @@
     },
     {
       "body": [
-        "That decline is worth explaining rather than smoothing over. The reward distribution across training is bimodal - a cluster of low-reward early episodes and a separate cluster near the final performance, with almost nothing in between. Combined with the late-training dip, that is consistent with the policy starting to overfit to the specifics of this environment rather than learning a more general walking strategy. It's the kind of thing you'd check with a second training run or a KL-divergence penalty, so I'd rather say that directly than present the peak number as the final result."
+        "That decline is worth explaining rather than smoothing over. The reward distribution across training is bimodal: a cluster of low-reward early episodes and a separate cluster near the final performance, with almost nothing in between. Combined with the late-training dip, that is consistent with the policy starting to overfit to the specifics of this environment rather than learning a more general walking strategy. A second training run or a KL-divergence penalty would confirm it, so I'd rather say that directly than present the peak number as the final result."
       ]
     }
   ]
