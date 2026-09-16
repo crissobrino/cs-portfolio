@@ -32,8 +32,8 @@
     {
       "heading": "Approach",
       "list": [
-        "Two related tables generated with a standard database benchmark tool, sharing a join key",
-        "Each record translated into a DNA sequence: numeric fields converted to base 4, each digit mapped to a nucleotide"
+        "Two related tables generated with a standard database benchmark tool, sharing a join key.",
+        "Each record translated into a DNA sequence: numeric fields converted to base 4, each digit mapped to a nucleotide."
       ]
     },
     {
@@ -53,9 +53,9 @@
         "The lab process ran in three stages."
       ],
       "list": [
-        "Amplification PCR to build up material from both oligo pools",
-        "A restriction enzyme reaction to cut the primers off and expose the complementary overhangs",
-        "A final annealing step where the two pools were combined, at which point matching join keys bind together, physically executing the join"
+        "Amplification PCR to build up material from both oligo pools.",
+        "A restriction enzyme reaction to cut the primers off and expose the complementary overhangs.",
+        "A final annealing step where the two pools were combined, at which point matching join keys bind together, physically executing the join."
       ],
       "images": [
         {
@@ -80,14 +80,14 @@
     {
       "heading": "Result",
       "list": [
-        "11% of sequenced reads matched a correct join: 29,780 of 275,000",
-        "Every possible join for one partKey was recovered completely; the other produced zero correct joins"
+        "11% of sequenced reads matched a correct join: 29,780 of 275,000.",
+        "Every possible join for one partKey was recovered completely; the other produced zero correct joins."
       ]
     },
     {
       "body": [
-        "That split is diagnostic rather than just disappointing. The electropherogram from the cleaving step shows why: some sequences cleaved on one side only, others didn't cleave at all: a specific, visible failure at a specific stage, not a general breakdown of the method.",
-        "Since the other partKey went through the identical protocol and worked completely, the approach itself holds. Something specific to the failed oligo, most likely a synthesis error in that sequence or a cleaving issue tied to its composition, is a better explanation than a flaw in the join mechanism."
+        "The electropherogram from the cleaving step locates it: some sequences cleaved on one side only, others did not cleave at all.",
+        "The other partKey went through the identical protocol and worked completely, which points to that specific oligo: most likely a synthesis error, or a cleaving issue tied to its composition."
       ]
     }
   ]

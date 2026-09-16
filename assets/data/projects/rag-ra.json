@@ -33,8 +33,8 @@
         "Checking whether a research idea is novel requires reading a large volume of papers to find the ones that overlap with it."
       ],
       "list": [
-        "System takes a research direction in plain language and returns the closest prior work, with a structured comparison of overlap and novelty",
-        "Core challenge: retrieval was straightforward, preventing the model from inventing overlaps was not"
+        "System takes a research direction in plain language and returns the closest prior work, with a structured comparison of overlap and novelty.",
+        "Core challenge: retrieval was straightforward, preventing the model from inventing overlaps was not."
       ]
     },
     {
@@ -57,11 +57,11 @@
         }
       ],
       "list": [
-        "Two-stage retrieval: approximate nearest-neighbour search pulls 20 candidates, then a cross-encoder reranks them by query-document interaction rather than vector proximity alone",
-        "Hallucination guard 1: similarity threshold of 0.35 (tuned by simulating the rejection distribution across candidate values, validated on a held-out set), below which the system refuses and skips the LLM call entirely",
-        "Hallucination guard 2: temperature fixed at 0 for reproducibility",
-        "Hallucination guard 3: external prompt templates enforce a fixed five-section output and forbid content outside the retrieved context",
-        "Queries in five languages are translated to English for retrieval; answers are generated back in the user's language"
+        "Two-stage retrieval: approximate nearest-neighbour search pulls 20 candidates, then a cross-encoder reranks them by query-document interaction rather than vector proximity alone.",
+        "Hallucination guard 1: similarity threshold of 0.35 (tuned by simulating the rejection distribution across candidate values, validated on a held-out set), below which the system refuses and skips the LLM call entirely.",
+        "Hallucination guard 2: temperature fixed at 0 for reproducibility.",
+        "Hallucination guard 3: external prompt templates enforce a fixed five-section output and forbid content outside the retrieved context.",
+        "Queries in five languages are translated to English for retrieval; answers are generated back in the user's language."
       ]
     },
     {
@@ -70,24 +70,24 @@
         "Three criteria: answer quality, retrieval coverage, response time."
       ],
       "list": [
-        "Test set: nine hand-labelled queries, five on-topic, one multilingual, one borderline, two off-topic. The off-topic pair is refused by the guardrail, so seven reach the judge",
-        "Judge: GPT-4o-mini, chosen for independence from the Qwen pipeline and reliable structured output",
-        "RAGAS fix: answers are comparative and reference the query, so the query is prepended as explicit context. Without it, valid comparisons score as hallucinations",
-        "Custom relevancy metric: built-in RAGAS penalises non-committal language, but \"insufficient context\" is the correct answer here. Replaced with a judge scoring the five required sections 0-10, validated on 11 synthetic responses spanning good, poor and intermediate cases",
-        "Retrieval: an eval mode runs approximate and exact search on the same query, returning both result sets, their runtimes and relative recall. Scored on Recall@5, MRR and NDCG@5"
+        "Test set: nine hand-labelled queries, five on-topic, one multilingual, one borderline, two off-topic. The off-topic pair is refused by the guardrail, so seven reach the judge.",
+        "Judge: GPT-4o-mini, chosen for independence from the Qwen pipeline and reliable structured output.",
+        "RAGAS fix: answers are comparative and reference the query, so the query is prepended as explicit context. Without it, valid comparisons score as hallucinations.",
+        "Custom relevancy metric: built-in RAGAS penalises non-committal language, but \"insufficient context\" is the correct answer here. Replaced with a judge scoring the five required sections 0-10, validated on 11 synthetic responses spanning good, poor and intermediate cases.",
+        "Retrieval: an eval mode runs approximate and exact search on the same query, returning both result sets, their runtimes and relative recall. Scored on Recall@5, MRR and NDCG@5."
       ]
     },
     {
       "heading": "Result",
       "list": [
-        "Approximate search held recall above 0.9, and cross-encoder reranking pushed NDCG back to the exact-search gold standard at a tenth of the latency",
-        "Faithfulness 0.918, answer relevancy 0.926 on the 8b model, evaluated with RAGAS using GPT-4o-mini as an independent judge",
-        "Context recall was 1.00 on every query except the healthcare one, where both models scored 0.00: the corpus is cs.CL and cs.IR only. Identical scores across models confirmed the pipeline, since context recall depends only on retrieval"
+        "Approximate search held recall above 0.9, and cross-encoder reranking pushed NDCG back to the exact-search gold standard at a tenth of the latency.",
+        "Faithfulness 0.918, answer relevancy 0.926 on the 8b model, evaluated with RAGAS using GPT-4o-mini as an independent judge.",
+        "Context recall was 1.00 on every query except the healthcare one, where both models scored 0.00: the corpus is cs.CL and cs.IR only. Identical scores across models confirmed the pipeline, since context recall depends only on retrieval."
       ]
     },
     {
       "list": [
-        "The larger model wasn't worth it: Qwen3:32b scored marginally higher (0.965 vs 0.918 faithfulness) but took 94.3s per query against 5.6s, 17x slower for a 0.05 gain. For an interactive system, the 8b model was the right choice"
+        "The 8b model was the better trade-off: Qwen3:32b scored marginally higher (0.965 vs 0.918 faithfulness) but took 94.3s per query against 5.6s, 17x slower for a 0.05 gain. For an interactive system, the smaller model was the right choice."
       ],
       "images": [
         {
@@ -99,7 +99,7 @@
     },
     {
       "list": [
-        "The multilingual benchmark exposed a translation penalty: German held 0.92 recall against English, Italian 0.84, Spanish 0.80, and French dropped to 0.72. Translation flattens specific academic terminology enough to shift the query in embedding space, and Romance languages lose the most"
+        "The multilingual benchmark exposed a translation penalty: German held 0.92 recall against English, Italian 0.84, Spanish 0.80, and French dropped to 0.72. Translation flattens specific academic terminology enough to shift the query in embedding space, and Romance languages lose the most."
       ],
       "images": [
         {
@@ -111,7 +111,7 @@
     },
     {
       "list": [
-        "LLM generation accounts for 97% of end-to-end latency; the full retrieval stack is under 3%"
+        "LLM generation accounts for 97% of end-to-end latency; the full retrieval stack is under 3%."
       ]
     }
   ]

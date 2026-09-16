@@ -45,7 +45,7 @@
     {
       "heading": "Approach",
       "body": [
-        "190 CT scans from 95 patients (ethics-approved, Charing Cross Hospital), narrowed to 99 scans containing all three regions of interest. Four observers independently annotated 16 landmarks per scan, verified for clinical usability by an orthopaedic surgeon. Averaging across observers gave us the training labels, but it also gave us something more useful: a measurement of how much humans disagree with each other, before asking whether a model could do better."
+        "190 CT scans from 95 patients (ethics-approved, Charing Cross Hospital), narrowed to 99 containing all three regions of interest. Four observers independently annotated 16 landmarks per scan, verified by an orthopaedic surgeon. Averaging across observers produced the training labels and, at the same time, a measurement of how much observers disagree."
       ]
     },
     {
@@ -80,7 +80,7 @@
     {
       "heading": "Result",
       "body": [
-        "Measuring inter-observer agreement produced an unexpected finding. The TAC, an ankle landmark that prior literature reports as almost perfectly reliable (ICC 1.0), scored 0.314 in this data, one of the least reliable landmarks in the whole set. The landmark behind Whiteside's line, a long-disputed reference in TKA planning, also scored poorly (0.643), which lines up with existing debate over whether that line should be trusted alone for femoral cuts. Both results suggest these landmarks are less reliable than their reputation."
+        "Measuring inter-observer agreement produced an unexpected finding. The TAC, an ankle landmark that prior literature reports as almost perfectly reliable (ICC 1.0), scored 0.314 here. The landmark behind Whiteside's line, a long-disputed reference in TKA planning, scored 0.643, consistent with the existing debate over whether that line should be trusted alone for femoral cuts."
       ],
       "images": [
         {
@@ -93,7 +93,7 @@
     {
       "heading": "Localisation error",
       "body": [
-        "The model's landmark localisation needs more compute than this project had access to. Mean error was 37.3mm (hip), 84.4mm (knee) and 28.7mm (ankle), well above the sub-2mm reported for comparable 2D pipelines, and an order of magnitude worse than the observers it was measured against."
+        "Landmark localisation was compute-bound. Mean error was 37.3mm (hip), 84.4mm (knee) and 28.7mm (ankle), against the sub-2mm reported for comparable 2D pipelines, which sets the margin that further training would need to close."
       ],
       "images": [
         {
@@ -104,14 +104,14 @@
         {
           "src": "assets/img/tka/boxplot_test.png",
           "alt": "Boxplot of prediction error per landmark in millimetres, grouped by region: hip landmarks around 20-25mm, knee landmarks around 80-100mm, ankle landmarks around 30mm",
-          "caption": "Error by landmark, grouped by region. The knee, the region carrying 11 of the 16 landmarks, is also the region the model handles worst."
+          "caption": "Error by landmark, grouped by region. The knee, which carries 11 of the 16 landmarks, also carries the largest error."
         }
       ]
     },
     {
       "body": [
         "The training curves show precisely why: loss was still decreasing at epoch 150, the ceiling of the available compute, and validation loss ran consistently higher and noisier than training loss throughout: the signature of a model with more capacity than 99 scans can constrain. That diagnosis points directly at the fix: a smaller architecture or more aggressive data augmentation.",
-        "Split by axis, the error spreads roughly evenly across x, y and z rather than concentrating in one direction, and the hip and ankle stay well below the knee in every axis. The failure is uniform, not a systematic offset in one plane."
+        "Split by axis, the error spreads roughly evenly across x, y and z, with hip and ankle below the knee in every axis. It is uniform rather than a systematic offset in one plane."
       ],
       "images": [
         {

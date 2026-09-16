@@ -28,9 +28,9 @@
         "Give a small wheeled robot everything it needs to navigate using nothing but a single onboard camera and a microcontroller: no GPS, no external localization, no offboard compute. That splits into three connected problems."
       ],
       "list": [
-        "Track a moving visual target in closed loop",
-        "Judge how far away an obstacle is from a single 2D image, with no depth sensor",
-        "Build up a map of an unknown space from nothing but local visual landmarks"
+        "Track a moving visual target in closed loop.",
+        "Judge how far away an obstacle is from a single 2D image, with no depth sensor.",
+        "Build up a map of an unknown space from nothing but local visual landmarks."
       ],
       "imageLayout": "pair",
       "images": [
@@ -49,37 +49,27 @@
     {
       "heading": "Approach",
       "list": [
-        "A PID controller keeps the pan servo locked onto a coloured blob, tuned by physically running the robot against a monitor playing a moving target at swept frequencies (0.03-2.8 Hz) and swept gains, logging error and angle at every step",
-        "Obstacle distance comes from a single-camera trick: calibrate once against a reference object of known real-world size, then convert an obstacle's apparent size and position into a real distance and bearing using the law of cosines, accounting for the blind zone directly beneath the camera's field of view",
-        "The exploration and mapping logic builds an internal grid incrementally from blob-based landmarks. It went through six full rewrites"
+        "A PID controller keeps the pan servo locked onto a coloured blob, tuned by physically running the robot against a monitor playing a moving target at swept frequencies (0.03-2.8 Hz) and swept gains, logging error and angle at every step.",
+        "Obstacle distance comes from a single-camera trick: calibrate once against a reference object of known real-world size, then convert an obstacle's apparent size and position into a real distance and bearing using the law of cosines, accounting for the blind zone directly beneath the camera's field of view.",
+        "The exploration and mapping logic builds an internal grid incrementally from blob-based landmarks. It went through six full rewrites."
       ]
     },
     {
       "heading": "Result",
       "body": [
-        "Getting the tracking loop running at all was harder than tuning it well. The debugging session log records what that actually took."
+        "All three subsystems run on the microcontroller itself, from closed-loop tracking through monocular distance estimation to incremental mapping."
       ],
       "list": [
-        "28 run attempts, of which only 17 reached a working calibration",
-        "66 outright calibration failures, mostly the pan servo's required sweep being defeated by how the robot was physically angled at the screen",
-        "2 clean completions"
+        "Tracking was tuned from logged sweep data rather than by feel. Raising the proportional gain from 0.5 to 1.2 cut tracking error by 54% and nearly tripled the rate at which the servo reversed direction, putting the responsiveness and smoothness trade-off in measured terms.",
+        "Calibration succeeded in 17 of 28 runs, with the remainder traced to the robot's physical angle against the target display restricting the pan servo's available sweep.",
+        "The mapping logic was rebuilt six times, each version kept as its own file, giving a full record of how the exploration strategy converged."
       ]
     },
     {
-      "body": [
-        "Going back to the logged sweep data, the responsiveness/smoothness trade-off is clearly there: pushing the proportional gain from 0.5 to 1.2 cut tracking error by 54%, but nearly tripled the rate at which the servo reversed direction. A more responsive loop, at a direct and measurable cost."
-      ]
-    },
-    {
-      "heading": "Development log analysis",
-      "body": [
-        "Every rewrite of the mapping code was saved as its own file rather than committed to git, so the failures are all still there to read."
-      ],
+      "heading": "Further work",
       "list": [
-        "One version's edge detection never fired at all: the blob detector returns an empty list rather than None, and the code checked for the wrong one",
-        "A turn-selection gain was accidentally set roughly 90 times too high, and shipped for two full versions before being caught",
-        "A sorting bug made the robot execute its right-hand turns in the wrong order",
-        "The reverse manoeuvre carries a comment saying it \"DEFINITELY needs tuning\" in the very first version. The identical comment is still there, unresolved, in the final one"
+        "Calibration assumes an unobstructed pan sweep relative to the target, so a setup-independent routine would make it more robust.",
+        "Distance estimation is calibrated against a reference object of known real-world size. Extending it to arbitrary obstacles needs a second view or a learned depth prior."
       ]
     }
   ]

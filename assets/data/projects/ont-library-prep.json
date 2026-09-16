@@ -65,7 +65,7 @@
       ],
       "list": [
         "ONT was chosen for its cost, minimal infrastructure requirements and long reads that need no fragmentation.",
-        "The FeliX was the liquid handler available at the London Biofoundry with the characteristics required for this task. It takes custom scripts, and integrates the two modules the protocol needs: a heater-shaker and a magnetic separation plate"
+        "The FeliX was the liquid handler available at the London Biofoundry with the characteristics required for this task. It takes custom scripts, and integrates the two modules the protocol needs: a heater-shaker and a magnetic separation plate."
       ]
     },
     {
@@ -208,14 +208,14 @@
       ]
     },
     {
-      "heading": "Limitations",
+      "heading": "Further work",
       "list": [
-        "Dead volume in reagent wells was the most persistent issue: several early failures were not scripting errors but reagent failing to reach the tip.",
-        "Runs A and B used identical end-prep offsets yet gave very different yields, as construct A had been prepared with Taq polymerase, which leaves A-overhangs and bypasses end-repair entirely.",
-        "No intermediate QC was possible. NanoDrop and gels cannot read these concentrations and a TapeStation was outside the budget, so every failure had to be diagnosed from a full sequencing run.",
-        "The Biopython aligner overflowed above 700bp, so the Run C constructs were inspected manually in Geneious Prime.",
-        "CyBio Composer lacks search, version control and crash recovery, which made debugging laborious and ties the workflow to one vendor.",
-        "Flow cell loading remained manual, as air bubbles damage nanopores and the FeliX cannot control dispensing angle or depth without visual or pressure feedback."
+        "Reagent dead volume was the main constraint on reliability, handled by overfilling wells and adjusting aspiration offsets. Microfluidic handling would remove it at source.",
+        "Runs A and B used identical end-prep offsets yet gave different yields, as construct A had been prepared with Taq polymerase, which leaves A-overhangs and bypasses end-repair. Input preparation is therefore worth recording alongside the protocol.",
+        "Intermediate QC would shorten the debug loop. NanoDrop and gels cannot read these concentrations, so a TapeStation or equivalent low-input readout is the next addition.",
+        "The Biopython aligner overflows above 700bp, so longer constructs need a different aligner for automated analysis.",
+        "CyBio Composer has no search, version control or crash recovery. Porting the workflow to an open framework such as PyLabRobot would make it portable across platforms.",
+        "Flow cell loading is still manual, as the FeliX cannot control dispensing angle or depth without feedback. Vision or pressure sensing would close the loop."
       ]
     },
     {

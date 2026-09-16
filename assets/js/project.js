@@ -46,7 +46,8 @@
       frame.append(el("span", "mono", "Image"));
       figure.append(frame);
     }
-    if (image.size === "small") figure.classList.add("figure--small");
+    if (["small", "medium"].includes(image.size))
+      figure.classList.add(`figure--${image.size}`);
     if (image.caption) figure.append(el("figcaption", null, image.caption));
     return figure;
   };

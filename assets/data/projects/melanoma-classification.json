@@ -30,12 +30,12 @@
     {
       "heading": "The problem",
       "body": [
-        "Skin cancer is usually curable if caught early, and often fatal if it isn't. The bottleneck is access: dermatologists are scarce, and most people don't get a lesion looked at until it's obvious. A model that works on ordinary photographs rather than specialist dermoscopy could triage lesions where no dermatologist is available.",
-        "The images are 15x15mm tiles cropped from 3D total body photography, so they look much closer to smartphone photos than to clinical dermoscopy. Each lesion also comes with clinical metadata: age, sex, anatomical site, and morphometric and colour measurements."
+        "Skin cancer is usually curable if caught early, and often fatal if it isn't. The bottleneck is access: dermatologists are scarce, and most people don't get a lesion looked at until it's obvious. A model that works on ordinary photographs rather than specialist dermoscopy could triage lesions where no dermatologist is available."
       ],
       "list": [
-        "~400,000 benign lesions against 343 malignant ones",
-        "At that ratio a model that predicts \"benign\" every time is right 99.9% of the time and clinically useless"
+        "Images are 15x15mm tiles cropped from 3D total body photography, closer to smartphone photos than to clinical dermoscopy, each paired with clinical metadata: age, sex, anatomical site, morphometric and colour measurements.",
+        "~400,000 benign lesions against 343 malignant ones.",
+        "At that ratio a model that predicts \"benign\" every time is right 99.9% of the time and clinically useless."
       ],
       "images": [
         {
@@ -48,12 +48,19 @@
     {
       "heading": "Approach",
       "body": [
-        "Three things dealt with the imbalance, and they had to work together. A weighted sampler oversampled malignant cases, with a fixed 4,000 samples per epoch so batches stayed roughly balanced. Oversampling alone just shows the model the same 343 images repeatedly, so the malignant class also got deliberately stronger augmentation (more aggressive crops, wider rotations, heavier colour jitter, higher erasing probability) to generate variety rather than repetition. Loss weighting handled the rest."
+        "Three things dealt with the imbalance, and they had to work together:"
+      ],
+      "list": [
+        "Weighted sampler: oversamples malignant cases, with a fixed 4,000 samples per epoch so batches stay roughly balanced.",
+        "Stronger augmentation on the malignant class: oversampling alone shows the model the same 343 images repeatedly, so heavier crops, rotations, colour jitter and erasing generate variety rather than repetition.",
+        "Loss weighting handled the rest."
       ]
     },
     {
-      "body": [
-        "For the images, backbones were pretrained on ISIC 2019/2020 9-class data rather than ImageNet, since those have already learnt pigment networks, border irregularity and vascular structure. Each backbone was frozen and only a new binary head trained on top: with 343 positive examples, fine-tuning a full backbone would have overfitted almost immediately. The head itself used five parallel dropout branches averaged at output, as a further regulariser."
+      "list": [
+        "Backbones pretrained on ISIC 2019/2020 9-class data rather than ImageNet, as those already encode pigment networks, border irregularity and vascular structure.",
+        "Each backbone frozen, with only a new binary head trained on top: with 343 positives, fine-tuning a full backbone would have overfitted almost immediately.",
+        "The head used five parallel dropout branches averaged at output, as a further regulariser."
       ],
       "images": [
         {
@@ -65,8 +72,8 @@
     },
     {
       "list": [
-        "Thirty CNNs total: EfficientNet B4-B7, ResNeSt101 and SE-ResNeXt101, five folds each",
-        "Separately, four models on the metadata alone: MLP, XGBoost, LightGBM, CatBoost"
+        "Thirty CNNs total: EfficientNet B4-B7, ResNeSt101 and SE-ResNeXt101, five folds each.",
+        "Separately, four models on the metadata alone: MLP, XGBoost, LightGBM, CatBoost."
       ],
       "images": [
         {
@@ -77,9 +84,11 @@
       ]
     },
     {
-      "body": [
-        "Preventing leakage mattered as much as the modelling. Folds were grouped by patient, so no patient appears in both train and validation: without that, the model can recognise a person rather than a lesion. Columns derived from the diagnosis (lesion identifiers, thickness, mitotic index, existing DNN scores) were removed, since they'd be unavailable at prediction time in reality.",
-        "The ensemble collapsed the 30 CNNs into three signals by averaging within each architecture family, plus one averaged metadata signal. Those four fed a logistic regression trained on a small held-out set that no base model had seen. Keeping the meta-model to four inputs and a linear form meant it had almost nothing to overfit with."
+      "list": [
+        "Folds grouped by patient, so no patient appears in both train and validation; otherwise the model can recognise a person rather than a lesion.",
+        "Diagnosis-derived columns removed (lesion identifiers, thickness, mitotic index, existing DNN scores), since they would be unavailable at prediction time.",
+        "The 30 CNNs collapsed into three signals by averaging within each architecture family, plus one averaged metadata signal.",
+        "Those four fed a logistic regression trained on a small held-out set no base model had seen, keeping the meta-model to four inputs and a linear form."
       ],
       "images": [
         {
@@ -91,13 +100,13 @@
     },
     {
       "heading": "Result",
-      "body": [
-        "0.961 AUC on the private leaderboard, against 0.968 on validation.",
-        "That gap is the result I'd point at. A 0.007 drop between validation and a held-out test set means the validation setup was honest: the patient-grouped folds and the removed diagnosis-proxy columns did their job. It's easy to score well on this kind of dataset by leaking patient identity into validation and then watch it collapse on the leaderboard.",
-        "AUC alone hides the tradeoff a clinical threshold actually faces. At the default 0.5 cutoff, the ensemble caught 47 of 70 malignant cases (67% recall) while raising only 5 false alarms across 430 benign ones (99% specificity), a threshold worth revisiting depending on whether the deployment context favours catching more malignant cases or minimising false alarms.",
-        "The logistic regression coefficients also gave a free interpretability result: image features contributed roughly 52% of the final prediction and metadata 48%. The model isn't leaning on either source alone, which matters for a clinical tool: metadata like age and anatomical site carries real signal, but a model that mostly predicts from demographics rather than the lesion itself wouldn't be trustworthy."
-      ],
       "imageLayout": "pair",
+      "list": [
+        "0.961 AUC on the private leaderboard, against 0.968 on validation.",
+        "The 0.007 gap indicates the validation setup held: the patient-grouped folds and the removed diagnosis-proxy columns did their job.",
+        "At the default 0.5 cutoff, 47 of 70 malignant cases caught (67% recall) with 5 false alarms across 430 benign ones (99% specificity), a threshold worth revisiting depending on whether deployment favours catching more malignant cases or fewer false alarms.",
+        "The logistic regression coefficients give interpretability for free: image features contribute roughly 52% of the prediction and metadata 48%, so neither source dominates."
+      ],
       "images": [
         {
           "src": "assets/img/melanoma-classification/roc-curve.png",
@@ -114,10 +123,13 @@
     {
       "heading": "Explainability",
       "body": [
-        "Two checks on what the models were actually learning, beyond the leaderboard score. Grad-CAM heatmaps show which pixels each CNN backbone weighted most heavily for a given prediction: on the same lesion, EfficientNet B5 concentrates on the lesion's core, while EfficientNet B7 spreads its attention across both irregular lobes. Different backbones attending to different regions of the same lesion is exactly the kind of decorrelated error the ensemble exists to exploit: models that disagree for different reasons average out better than models that agree for the same wrong one.",
-        "Projecting the frozen backbone's embeddings down to two principal components tells a similar story at the feature level: malignant lesions separate out from the benign cluster even before the classification head sees them, which is consistent with fine-tuning the head alone being enough, as the pretrained representation was already doing most of the discriminative work."
+        "Two checks on what the models were learning, beyond the leaderboard score:"
       ],
       "imageLayout": "pair",
+      "list": [
+        "Grad-CAM: on the same lesion, EfficientNet B5 concentrates on the core while B7 spreads across both irregular lobes. Backbones attending to different regions is the decorrelated error the ensemble exists to exploit.",
+        "Embedding PCA: malignant lesions separate from the benign cluster before the classification head sees them, consistent with fine-tuning the head alone being enough."
+      ],
       "images": [
         {
           "src": "assets/img/melanoma-classification/gradcam-effnetb5.png",

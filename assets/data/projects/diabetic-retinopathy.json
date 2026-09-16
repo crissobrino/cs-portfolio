@@ -30,8 +30,8 @@
         "Detect diabetic retinopathy from fundus photographs. Original labels: a 0-4 clinical severity scale, collapsed to binary for the competition (73/27 class split)."
       ],
       "list": [
-        "2,000 training / 500 validation / 1,000 test images, across two tracks: train a CNN from scratch, or fine-tune an ImageNet backbone",
-        "Constant risk on both tracks: overfitting on only 2,000 training images"
+        "2,000 training / 500 validation / 1,000 test images, across two tracks: train a CNN from scratch, or fine-tune an ImageNet backbone.",
+        "Constant risk on both tracks: overfitting on only 2,000 training images."
       ]
     },
     {
@@ -49,11 +49,11 @@
     },
     {
       "list": [
-        "380px instead of the usual 224 on the fine-tuning track, since microaneurysms, the main early signal, are small",
-        "±180° rotation instead of ±15°: fundus cameras have no fixed orientation, so the narrow range throws away most valid rotations",
-        "From-scratch track: 5-block CNN, ~1M params, averaged over 3 seeds",
-        "Fine-tuning track: weighted ensemble of DenseNet121, DenseNet169, ResNeXt50, unfrozen in two stages, ensemble weights via grid search",
-        "Both tracks: 4-pass test-time augmentation"
+        "380px instead of the usual 224 on the fine-tuning track, since microaneurysms, the main early signal, are small.",
+        "±180° rotation instead of ±15°: fundus cameras have no fixed orientation, so the narrow range throws away most valid rotations.",
+        "From-scratch track: 5-block CNN, ~1M params, averaged over 3 seeds.",
+        "Fine-tuning track: weighted ensemble of DenseNet121, DenseNet169, ResNeXt50, unfrozen in two stages, ensemble weights via grid search.",
+        "Both tracks: 4-pass test-time augmentation."
       ]
     },
     {
@@ -70,14 +70,14 @@
       ]
     },
     {
-      "heading": "Negative results",
+      "heading": "Ablations",
       "list": [
-        "CLAHE broke the crop step by changing the global intensity the crop depended on",
-        "A dtype bug in contrast normalisation turned every image grey, sending results below baseline until found",
-        "SE blocks + residual connections on the custom CNN overfit immediately",
-        "±180° augmentation that helped pretrained models failed completely from scratch (0.53 AUC)",
-        "Unfreezing a third DenseNet block overfit, so two stages was the right place to stop",
-        "Dropped a 4th backbone (SE-ResNeXt50) from the ensemble: it correlated too closely with ResNeXt50 to add value"
+        "CLAHE disrupted the crop step by changing the global intensity the crop depended on.",
+        "A dtype bug in contrast normalisation turned every image grey, sending results below baseline until found.",
+        "SE blocks + residual connections on the custom CNN overfit immediately.",
+        "The ±180° augmentation that helped pretrained models did not transfer to the from-scratch track (0.53 AUC).",
+        "Unfreezing a third DenseNet block overfit, so two stages was the right place to stop.",
+        "Dropped a 4th backbone (SE-ResNeXt50) from the ensemble: it correlated too closely with ResNeXt50 to add value."
       ]
     }
   ]

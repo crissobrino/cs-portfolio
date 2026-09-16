@@ -690,6 +690,23 @@ main.shell {
   height: auto;
 }
 
+/* Medium: three quarters of the text measure, for figures that are legible
+   smaller but still need more room than an inset. */
+.section-images .figure--medium {
+  width: calc(var(--measure) * 0.75);
+  max-width: 100%;
+  align-self: center;
+}
+
+.section-images .figure--medium .figure__frame {
+  width: 100%;
+}
+
+.section-images .figure--medium .figure__frame img {
+  width: 100%;
+  height: auto;
+}
+
 .gallery {
   display: flex;
   flex-wrap: wrap;
@@ -937,7 +954,8 @@ main.shell {
 @media (max-width: 640px) {
   /* An inset is unreadable on a phone — give small figures the full
      column back. */
-  .section-images .figure--small {
+  .section-images .figure--small,
+  .section-images .figure--medium {
     width: 100%;
   }
 

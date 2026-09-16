@@ -30,8 +30,8 @@
         "Diabetes care is assessed in snapshots (HbA1c every few months); metabolic state changes hour by hour."
       ],
       "list": [
-        "Test whether unsupervised representation learning can organise patient-days by metabolic similarity, with zero clinical labels",
-        "Test whether adding insulin and wearable physiology to glucose alone produces a richer representation"
+        "Test whether unsupervised representation learning can organise patient-days by metabolic similarity, with zero clinical labels.",
+        "Test whether adding insulin and wearable physiology to glucose alone produces a richer representation."
       ]
     },
     {
@@ -40,8 +40,8 @@
         "Baseline: a CGM-only convolutional VAE. Multimodal version: fuses glucose, insulin, and wearable physiology through a Product-of-Experts layer, which combines each modality's posterior into one shared latent and handles missing modalities for free, which matters since wearable data only existed for a small slice of patients."
       ],
       "list": [
-        "Data: 379,849 patient-days (13 studies) for training, 69,894 held-out days (305 patients) for evaluation",
-        "Main challenge: posterior collapse, addressed with a 32-dim latent space, KL annealing, and per-dimension free bits"
+        "Data: 379,849 patient-days (13 studies) for training, 69,894 held-out days (305 patients) for evaluation.",
+        "Main challenge: posterior collapse, addressed with a 32-dim latent space, KL annealing, and per-dimension free bits."
       ],
       "images": [
         {
@@ -54,21 +54,21 @@
     {
       "heading": "Result",
       "list": [
-        "Both models converge on the same clinically interpretable latent axis (correlates with time-in-range, inversely with mean glucose), despite never seeing a clinical label",
-        "Multimodal did not clearly beat the baseline: worse patient-centroid alignment with glucose metrics (+0.448 vs +0.593 on time-in-range)",
-        "Cause: every evaluation metric was derived from CGM, biasing comparisons toward the CGM-only model",
-        "Insulin reconstruction also failed on sharp bolus events: MSE rewards predicting the average, not a spike"
+        "Both models converge on the same clinically interpretable latent axis (correlates with time-in-range, inversely with mean glucose), despite never seeing a clinical label.",
+        "The multimodal model matched rather than exceeded the baseline on CGM-derived metrics, with patient-centroid alignment of +0.448 against +0.593 on time-in-range.",
+        "Cause: every evaluation metric was derived from CGM, biasing comparisons toward the CGM-only model.",
+        "Insulin reconstruction smoothed over sharp bolus events, as MSE rewards predicting the average rather than a spike."
       ]
     },
     {
       "heading": "Training diagnostics",
       "body": [
-        "A few early models looked healthy on train/validation loss while being completely broken underneath, only caught by digging into reconstructed traces, per-dimension KL values, and latent structure."
+        "A few early models looked healthy on train/validation loss while being mis-specified underneath, caught only by inspecting reconstructed traces, per-dimension KL values, and latent structure."
       ],
       "list": [
-        "One decoder was only reconstructing the first few hours of each day",
-        "One checkpoint got selected before the KL term even kicked in: good reconstruction loss, totally unregularised latent space",
-        "The insulin encoder was partly responding to a normalisation artefact"
+        "One decoder was only reconstructing the first few hours of each day.",
+        "One checkpoint was selected before the KL term had taken effect: good reconstruction loss, unregularised latent space.",
+        "The insulin encoder was partly responding to a normalisation artefact."
       ]
     }
   ]

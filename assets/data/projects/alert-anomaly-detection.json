@@ -149,11 +149,11 @@
       ]
     },
     {
-      "heading": "Limitations",
+      "heading": "Further work",
       "list": [
-        "There are no ground-truth priority labels. The system identifies alerts that are atypical relative to the corpus, but cannot establish that they are operational priorities, so the ranking is a prioritisation aid rather than a validated measure of expert priority.",
-        "The count fields do not separate incident figures from cumulative totals quoted as context, so a cumulative total can inflate the structural score for reasons unrelated to the immediate alert. This matters because death counts and case-fatality ratio drive that score most. A local LLM pipeline was built to re-extract the four fields separately, but on roughly 150 manually annotated alerts it did not reach a standard suitable for the final system, so the raw fields were retained.",
-        "The observation window covers less than a full epidemiological year, so seasonal variation cannot yet be reliably separated from anomaly. A longer corpus would support seasonal baselines and richer temporal features in place of the single recent-activity variable used here."
+        "Validating the ranking against expert judgement is the next step. No reference set records which alerts epidemiologists would have flagged, so the output stands as a prioritisation aid until one exists.",
+        "Separating incident from cumulative counts would sharpen the structural score, since death counts and case-fatality ratio drive it most. A local LLM re-extraction pipeline was built and benchmarked against roughly 150 manually annotated alerts, where it did not reach a standard suitable for the final system. Refining it is the clearest route to that.",
+        "A longer corpus would support seasonal baselines and richer temporal features, in place of the single recent-activity variable used here. The current window covers less than a full epidemiological year."
       ]
     },
     {

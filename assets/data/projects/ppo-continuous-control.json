@@ -31,12 +31,12 @@
     {
       "heading": "The problem",
       "body": [
-        "The original plan wasn't Walker2D. It was applying PPO to anatomical landmark detection in medical images, extending earlier work that used DQN for the same task. That codebase was written in TensorFlow 1, which Google Colab had already deprecated. After spending real time trying to port it to TensorFlow 2, I made the call to switch environments entirely rather than keep burning the available time on a dependency problem instead of on reinforcement learning itself."
+        "The original plan was to apply PPO to anatomical landmark detection in medical images, extending earlier DQN work. That codebase was written in TensorFlow 1, which Google Colab had deprecated, so after attempting the port I switched environments to spend the time on reinforcement learning itself."
       ],
       "list": [
-        "Walker2D is a harder environment in its own right: a 2D robot with seven body parts and six torque-controlled joints",
-        "Both the action and observation spaces are continuous",
-        "The policy has to learn to stay upright before it can learn to move forward at all"
+        "Walker2D is a harder environment in its own right: a 2D robot with seven body parts and six torque-controlled joints.",
+        "Both the action and observation spaces are continuous.",
+        "The policy has to learn to stay upright before it can learn to move forward at all."
       ],
       "imageLayout": "pair",
       "images": [
@@ -58,8 +58,8 @@
         "Implemented PPO from its actual derivation rather than just calling a library function: the clipped surrogate objective, the advantage estimation, and why the clipping term exists at all. It keeps each policy update close to the previous policy, which is what makes PPO stable enough to use off-the-shelf on a continuous control problem like this one."
       ],
       "list": [
-        "Trained with Stable-Baselines3 using hyperparameters from rl-baselines3-zoo, so the results reflect PPO's actual learning behaviour rather than my own hyperparameter search",
-        "Written up as a public technical article (theory, implementation and this experiment) rather than kept as a private coursework submission"
+        "Trained with Stable-Baselines3 using hyperparameters from rl-baselines3-zoo, so the results reflect PPO's actual learning behaviour rather than my own hyperparameter search.",
+        "Written up as a public technical article (theory, implementation and this experiment) rather than kept as a private coursework submission."
       ]
     },
     {
@@ -68,14 +68,14 @@
         "The learning curve is the whole story in one image."
       ],
       "list": [
-        "Near-zero reward for the first ~25,000 timesteps, while the agent is just falling over",
-        "A steep climb as it learns to balance, peaking around 350 near timestep 75,000",
-        "Then a slight decline, settling into a plateau around 300-320"
+        "Near-zero reward for the first ~25,000 timesteps, while the agent is just falling over.",
+        "A steep climb as it learns to balance, peaking around 350 near timestep 75,000.",
+        "Then a slight decline, settling into a plateau around 300-320."
       ]
     },
     {
       "body": [
-        "That decline is worth explaining rather than smoothing over. The reward distribution across training is bimodal: a cluster of low-reward early episodes and a separate cluster near the final performance, with almost nothing in between. Combined with the late-training dip, that is consistent with the policy starting to overfit to the specifics of this environment rather than learning a more general walking strategy. A second training run or a KL-divergence penalty would confirm it, so I'd rather say that directly than present the peak number as the final result."
+        "The reward distribution across training is bimodal: a cluster of low-reward early episodes and a separate cluster near the final performance, with almost nothing in between. With the late-training dip, that is consistent with the policy fitting to the specifics of this environment. A second training run or a KL-divergence penalty would confirm it."
       ]
     }
   ]

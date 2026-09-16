@@ -34,9 +34,9 @@
         "Determining which antibiotics will work against a bacterial infection normally means culturing the sample and testing susceptibility, which takes days. A MALDI-TOF mass spectrum takes minutes: predicting resistance directly from the spectrum cuts diagnosis from days to minutes, which matters clinically, since the patient is on a best-guess antibiotic until then."
       ],
       "list": [
-        "Task: predict resistance to 8 antibiotics from spectra of 3,360 bacterial isolates",
-        "Labels were incomplete: some isolates were only tested against a few antibiotics, so the gaps are unknowns rather than negatives, and around 43% were missing for one target",
-        "Isolates spanned four bacterial species with genuinely different resistance mechanisms, so species is a feature that changes what the spectrum means, not just metadata"
+        "Task: predict resistance to 8 antibiotics from spectra of 3,360 bacterial isolates.",
+        "Labels were incomplete: some isolates were only tested against a few antibiotics, so the gaps are unknowns rather than negatives, and around 43% were missing for one target.",
+        "Isolates spanned four bacterial species with genuinely different resistance mechanisms, so species is a feature that changes what the spectrum means, not just metadata."
       ]
     },
     {
@@ -47,12 +47,12 @@
     },
     {
       "body": [
-        "The eight targets needed different things. Carbapenems were nearly saturated: almost any model got them right. The beta-lactams were far harder, and Amoxicillin/Clavulanic acid was the worst of them, both the most heterogeneous target and the one missing most of its labels."
+        "The eight targets needed different things. Carbapenems were nearly saturated: almost any model got them right. The beta-lactams were more demanding, with Amoxicillin/Clavulanic acid the hardest of them, both the most heterogeneous target and the one missing most of its labels."
       ]
     },
     {
       "list": [
-        "Pseudo-labelling: filled the gaps with high-confidence synthetic labels, given 43% missing"
+        "Pseudo-labelling: filled the gaps with high-confidence synthetic labels, given 43% missing."
       ],
       "images": [
         {
@@ -64,13 +64,14 @@
     },
     {
       "list": [
-        "Stacking: fed out-of-fold predictions from three related antibiotics (Ampicillin, Cefotaxime, Cefuroxime) in as features, on the theory that resistance patterns are correlated"
+        "Stacking: fed out-of-fold predictions from three related antibiotics (Ampicillin, Cefotaxime, Cefuroxime) in as features, on the theory that resistance patterns are correlated."
       ],
       "images": [
         {
           "src": "assets/img/amr-resistance-prediction/label-correlation.png",
           "alt": "Pearson correlation matrix across the 8 antibiotic resistance labels, showing clusters of correlated targets",
-          "caption": "Resistance labels correlate in clusters, the motivation for stacking related antibiotics' predictions as features."
+          "caption": "Resistance labels correlate in clusters, the motivation for stacking related antibiotics' predictions as features.",
+          "size": "medium"
         }
       ]
     },
@@ -95,10 +96,10 @@
     {
       "heading": "Error analysis",
       "list": [
-        "Pseudo-labelling made it worse across every antibiotic, including the ones it was not meant to fix: filling missing labels with model predictions reinforced what the model already believed rather than adding information",
-        "Simple ensembles beat complex stacking: the rank-averaged combination outperformed the meta-learning setup despite the latter being more sophisticated",
-        "The ensemble didn't win everywhere: it beat CatBoost on six of the eight antibiotics but lost on Ampicillin (0.930 vs 0.933) and Amoxicillin/Clavulanic acid (0.731 vs 0.736), the two targets where a specialist model was already doing something the ensemble diluted",
-        "Public score was 0.844 against 0.816 private. The gap runs in the direction that suggests some fitting to the public split, worth reporting rather than quoting the better number"
+        "Pseudo-labelling did not improve any antibiotic, including the target it was meant to fix: filling missing labels with model predictions reinforced what the model already believed rather than adding information.",
+        "Simple ensembles beat complex stacking: the rank-averaged combination outperformed the meta-learning setup despite the latter being more sophisticated.",
+        "The ensemble beat CatBoost on six of the eight antibiotics, with Ampicillin (0.930 vs 0.933) and Amoxicillin/Clavulanic acid (0.731 vs 0.736) going to the specialist model.",
+        "Public score was 0.844 against 0.816 private, a gap consistent with some fitting to the public split."
       ]
     }
   ]
