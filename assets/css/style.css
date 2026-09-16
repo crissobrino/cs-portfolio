@@ -152,6 +152,7 @@ main.shell {
   position: relative;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   min-height: calc(100svh - var(--nav-h));
   border-bottom: 1px solid var(--rule);
   background:
@@ -171,7 +172,7 @@ main.shell {
 /* padding-block only — .shell owns the horizontal gutter */
 /* Cover: name across the top, then info left and image right */
 .masthead__inner {
-  flex: 1;
+  flex: 0 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -184,7 +185,7 @@ main.shell {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: stretch;
   gap: clamp(1.75rem, 4vw, 3.25rem);
-  margin-top: clamp(2rem, 5vh, 3.5rem);
+  margin-top: clamp(2.75rem, 7.5vh, 5rem);
   width: 100%;
   max-width: 920px;
   margin-inline: auto;
@@ -203,7 +204,13 @@ main.shell {
 
 .masthead__text .masthead__lede {
   max-width: none;
+  text-align: center;
   color: rgba(255, 255, 255, 0.78);
+}
+
+/* Contact row follows the centred lede rather than sitting left of it */
+.masthead__text .contact {
+  justify-content: center;
 }
 
 .masthead__text .contact a {
@@ -227,7 +234,7 @@ main.shell {
 .masthead__foot {
   display: flex;
   justify-content: center;
-  padding-block: 0 clamp(2rem, 4.5vh, 3rem);
+  padding-block: clamp(2.25rem, 5vh, 3.25rem) clamp(1rem, 2vh, 1.5rem);
 }
 
 .cue {
@@ -274,7 +281,7 @@ main.shell {
 }
 
 .masthead__name {
-  font-size: clamp(2.5rem, 9vw, 4.5rem);
+  font-size: clamp(2.75rem, 9.5vw, 5.25rem);
   letter-spacing: -0.035em;
   text-align: center;
   text-wrap: balance; /* if it wraps, split the lines evenly */
@@ -283,7 +290,9 @@ main.shell {
 .masthead__lede {
   max-width: 38ch;
   margin: 0;
-  font-size: clamp(1rem, 1.4vw, 1.125rem);
+  /* Deliberately below .degree__title (1.1875rem) so the degrees stay the
+     louder line in the hero. */
+  font-size: clamp(0.9375rem, 1.15vw, 1.0625rem);
   color: var(--muted);
 }
 
@@ -306,7 +315,7 @@ main.shell {
 
 /* Sans for the degree itself — mono is for labels and numbers, not content */
 .degree__title {
-  font-size: 1.1875rem;
+  font-size: 1.375rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--ink);
@@ -315,7 +324,7 @@ main.shell {
 .degree__meta {
   font-family: var(--font-mono);
   font-weight: 500;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--muted);
@@ -889,6 +898,43 @@ main.shell {
   }
 }
 
+/* Short viewports, at any width. Browser chrome varies (a bookmarks bar alone
+   costs ~40px), so a window that fits the hero in one browser can push the
+   scroll cue below the fold in another. Compress the vertical rhythm and cap
+   the image by viewport height so the cue always lands on the first screen.
+   The cap is applied to WIDTH (height x 1.58, the image's own ratio) so the
+   picture shrinks rather than letterboxing. */
+@media (max-height: 820px) {
+  .masthead__inner {
+    padding-block: clamp(1rem, 2.5vh, 1.75rem) clamp(0.5rem, 1.5vh, 1rem);
+  }
+
+  .masthead__name {
+    font-size: clamp(2.25rem, 6.5vw, 4rem);
+  }
+
+  .degrees {
+    margin-top: clamp(0.75rem, 1.5vh, 1rem);
+  }
+
+  .masthead__split {
+    margin-top: clamp(1.5rem, 3.5vh, 2.25rem);
+  }
+
+  .masthead__text {
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+  }
+
+  .cover {
+    max-width: min(100%, calc(40vh * 1.58));
+    margin-inline: auto;
+  }
+
+  .masthead__foot {
+    padding-block: clamp(1.5rem, 3.5vh, 2.25rem) clamp(0.75rem, 1.5vh, 1.25rem);
+  }
+}
+
 /* ---------- Small screens ---------- */
 
 /* 1024px, not 900: half of a 1920 screen is 960px wide, which was falling
@@ -961,11 +1007,16 @@ main.shell {
 
   /* Mono runs wide — keep long degree titles on one line */
   .degree__title {
+    font-size: 1rem;
+  }
+
+  /* Degrees shrink here too, so the lede has to come down with them */
+  .masthead__lede {
     font-size: 0.875rem;
   }
 
   .degree__meta {
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
   }
 
   .grid {
