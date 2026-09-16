@@ -671,6 +671,26 @@ main.shell {
   margin-bottom: 0.375rem;
 }
 
+/* A single figure marked small: a centred inset rather than a full-width
+   plate. Frame and image are pinned to the figure so neither can hold it
+   open at the image's natural width. */
+.section-images .figure--small {
+  width: 20rem;
+  max-width: 100%;
+  /* align-self, not auto margins: `.figure { margin: 0 }` is defined later at
+     equal specificity and would reset them. */
+  align-self: center;
+}
+
+.section-images .figure--small .figure__frame {
+  width: 100%;
+}
+
+.section-images .figure--small .figure__frame img {
+  width: 100%;
+  height: auto;
+}
+
 .gallery {
   display: flex;
   flex-wrap: wrap;
@@ -879,6 +899,12 @@ main.shell {
 }
 
 @media (max-width: 640px) {
+  /* An inset is unreadable on a phone — give small figures the full
+     column back. */
+  .section-images .figure--small {
+    width: 100%;
+  }
+
   /* Mono runs wide — keep long degree titles on one line */
   .degree__title {
     font-size: 0.875rem;

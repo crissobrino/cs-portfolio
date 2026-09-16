@@ -83,7 +83,8 @@
         {
           "src": "assets/img/alert-anomaly-detection/scatter.png",
           "alt": "Scatter plot showing Track A and Track B scores are nearly uncorrelated across alerts",
-          "caption": "Each dot is an alert. Only 23 of 2,282 scored highly on both tracks; the two signals are almost independent."
+          "caption": "Each dot is an alert. Only 23 of 2,282 scored highly on both tracks; the two signals are almost independent.",
+          "size": "small"
         }
       ]
     },
@@ -96,9 +97,13 @@
         {
           "src": "assets/img/alert-anomaly-detection/result.png",
           "alt": "Correlation heatmap across the semantic score, structural sub-scores, zero-shot score, and the fused hybrid score",
-          "caption": "Spearman correlation across scores: the semantic track (score_A) barely correlates with the structural sub-scores, which is what fusing captures."
+          "caption": "Spearman correlation across scores: the semantic track (score_A) barely correlates with the structural sub-scores, which is what fusing captures.",
+          "size": "small"
         }
       ]
+    },
+    {
+      "note": "Full report and presentation available upon request."
     }
   ]
 }
