@@ -179,27 +179,24 @@ main.shell {
   padding-block: clamp(2.25rem, 7vh, 5rem) clamp(1rem, 2vh, 1.5rem);
 }
 
-/* Both columns stretch to one shared top and bottom edge, at equal width */
+/* One centred column: the cover image, then the contact buttons in a row */
 .masthead__split {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: stretch;
-  gap: clamp(1.75rem, 4vw, 3.25rem);
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: clamp(1.25rem, 3vh, 2rem);
   margin-top: clamp(2.75rem, 7.5vh, 5rem);
   width: 100%;
   max-width: 920px;
   margin-inline: auto;
 }
 
+/* No panel of its own: the three contact links are the grey boxes, sized to
+   their text and centred under the cover image. */
 .masthead__text {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
   justify-content: center;
-  padding: clamp(1.5rem, 4.5vw, 3rem);
-  border-radius: calc(var(--radius) + 4px);
-  background: var(--panel);
-  color: var(--surface);
+  width: 100%;
 }
 
 .masthead__text .masthead__lede {
@@ -221,10 +218,50 @@ main.shell {
   color: var(--surface);
 }
 
+/* Three grey boxes side by side, each hugging its text. They wrap onto a
+   second centred line when the row runs out of room, as on a phone. */
+.masthead__text .contact--stack {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  padding-top: 0;
+}
+
+.masthead__text .contact--stack .contact__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius);
+  white-space: nowrap;
+  text-align: center;
+  background: var(--panel);
+  color: var(--surface);
+  font-size: 0.6875rem;
+  /* Underlined label marks it as a link, in place of the old arrows */
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  transition: background-color 0.18s, color 0.18s;
+}
+
+.masthead__text .contact--stack .contact__btn:hover {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .masthead__text .contact--stack .contact__btn {
+    transition: none;
+  }
+}
+
+/* Capped by viewport height (width = height x 1.58, the image's ratio) so the
+   image and the button row under it still fit the first screen. */
 .cover {
   width: 100%;
+  max-width: min(100%, calc(36vh * 1.58));
   height: auto;
-  align-self: stretch;
   object-fit: contain;
   border: 1px solid var(--rule);
   border-radius: calc(var(--radius) + 4px);
@@ -234,7 +271,7 @@ main.shell {
 .masthead__foot {
   display: flex;
   justify-content: center;
-  padding-block: clamp(2.25rem, 5vh, 3.25rem) clamp(1rem, 2vh, 1.5rem);
+  padding-block: clamp(3rem, 7vh, 4.5rem) clamp(1rem, 2vh, 1.5rem);
 }
 
 .cue {
@@ -302,7 +339,7 @@ main.shell {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.75rem clamp(2rem, 5vw, 4rem);
-  margin: clamp(1.5rem, 3.5vh, 2.5rem) 0 0;
+  margin: clamp(2.25rem, 5vh, 3.25rem) 0 0;
   padding: 0;
   list-style: none;
   text-align: center;
@@ -906,7 +943,7 @@ main.shell {
    picture shrinks rather than letterboxing. */
 @media (max-height: 820px) {
   .masthead__inner {
-    padding-block: clamp(1rem, 2.5vh, 1.75rem) clamp(0.5rem, 1.5vh, 1rem);
+    padding-block: clamp(2.5rem, 5.5vh, 3.25rem) clamp(0.5rem, 1.5vh, 1rem);
   }
 
   .masthead__name {
@@ -914,24 +951,20 @@ main.shell {
   }
 
   .degrees {
-    margin-top: clamp(0.75rem, 1.5vh, 1rem);
+    margin-top: clamp(1.25rem, 3vh, 1.75rem);
   }
 
   .masthead__split {
-    margin-top: clamp(1.5rem, 3.5vh, 2.25rem);
-  }
-
-  .masthead__text {
-    padding: clamp(1rem, 2.5vw, 1.5rem);
+    margin-top: clamp(2.25rem, 5vh, 3rem);
   }
 
   .cover {
-    max-width: min(100%, calc(40vh * 1.58));
+    max-width: min(100%, calc(34vh * 1.58));
     margin-inline: auto;
   }
 
   .masthead__foot {
-    padding-block: clamp(1.5rem, 3.5vh, 2.25rem) clamp(0.75rem, 1.5vh, 1.25rem);
+    padding-block: clamp(2.25rem, 5vh, 3.25rem) clamp(0.75rem, 1.5vh, 1.25rem);
   }
 }
 
@@ -947,25 +980,21 @@ main.shell {
     gap: clamp(1.75rem, 5vh, 2.5rem);
   }
 
-  .masthead__text {
-    padding: clamp(1.25rem, 5vw, 1.75rem);
-  }
-
   /* Stacked, the whole hero has to fit one screen, so the vertical rhythm is
      compressed and the image is capped by viewport height. The cap is applied
      to WIDTH (height x 1.58, the image's own ratio) so the picture simply gets
      smaller instead of being letterboxed into a grey band or cropped. */
   .masthead__inner {
-    padding-block: clamp(1.25rem, 3vh, 2rem) clamp(0.75rem, 1.5vh, 1rem);
+    padding-block: clamp(2.75rem, 6vh, 3.5rem) clamp(0.75rem, 1.5vh, 1rem);
   }
 
   .degrees {
-    margin-top: clamp(0.875rem, 2vh, 1.25rem);
+    margin-top: clamp(1.25rem, 3vh, 1.75rem);
     gap: 0.5rem clamp(1.25rem, 4vw, 2rem);
   }
 
   .masthead__split {
-    margin-top: clamp(1rem, 2.5vh, 1.5rem);
+    margin-top: clamp(1.75rem, 4.5vh, 2.5rem);
   }
 
   .masthead__lede {
@@ -982,7 +1011,7 @@ main.shell {
   }
 
   .masthead__foot {
-    padding-block: 0 clamp(1rem, 2vh, 1.5rem);
+    padding-block: clamp(1.5rem, 4vh, 2.5rem) clamp(1rem, 2vh, 1.5rem);
   }
 }
 
@@ -1005,6 +1034,22 @@ main.shell {
     width: 100%;
   }
 
+  /* Larger than the base and short-screen sizes, which bottom out around
+     36-44px on a phone; balance splits it over two even lines if needed. */
+  .masthead__name {
+    font-size: clamp(2.75rem, 13vw, 3.75rem);
+  }
+
+  /* Smaller image and buttons free up height, which goes to the gap above
+     the name instead of the hero filling edge to edge. */
+  .masthead__inner {
+    padding-top: clamp(3.5rem, 18vh - 3.5rem, 6rem);
+  }
+
+  .cover {
+    max-width: min(100%, calc(22vh * 1.58));
+  }
+
   /* Mono runs wide — keep long degree titles on one line */
   .degree__title {
     font-size: 1rem;
@@ -1017,6 +1062,12 @@ main.shell {
 
   .degree__meta {
     font-size: 0.75rem;
+  }
+
+  /* Contact labels no louder than the degree lines above them */
+  .masthead__text .contact--stack .contact__btn {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.625rem;
   }
 
   .grid {
