@@ -12,6 +12,9 @@
   "themes": [
     "Software Engineering"
   ],
+  "thumb": {
+    "src": "assets/img/mri-xr/use-case-diagram.png"
+  },
   "summary": "An XR tool that converts breast MRI scans into an interactive 3D hologram, built with hand-tracking and eye-tracking controls for radiologists on Microsoft HoloLens 2.",
   "stack": [
     "Unity",
@@ -59,7 +62,8 @@
       ],
       "images": [
         {
-          "alt": "The application's start scene as built in Unity, with a press-to-start prompt for the radiologist and a key combination for administrator file upload",
+          "src": "assets/img/mri-xr/start-scene.jpg",
+          "alt": "The Unity editor with the application's start scene in the Game view: an 'MRI Visualizer' title over an image of Earth, a press-to-start button for the radiologist, and 'admin login: press ctrl+alt+shift' for administrator file upload",
           "caption": "The app's start scene, built in Unity: press to start as the radiologist, or a key combination for admin file upload."
         }
       ]
@@ -78,12 +82,6 @@
       "heading": "Result",
       "body": [
         "Five people, no prior Unity or C# experience, one working end-to-end pipeline: DICOM upload, through volume rendering, to an interactive hologram on a real HoloLens 2, demonstrated on video."
-      ],
-      "images": [
-        {
-          "alt": "The rendered MRI volume as a hologram, viewed through HoloLens 2 during the demo",
-          "caption": "The volume as a hologram on the headset: the end of the pipeline, and the only part a radiologist would actually see."
-        }
       ]
     },
     {
