@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PETase screen automation design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --white:#ffffff; --sky:#54c1f7; --teal:#297373; --ink:#2e2532; --alert:#ef6462;
+  --sky-05:#f4fbff; --sky-12:#e6f5fe; --sky-25:#cfecfd;
+  --line:rgba(46,37,50,.12); --line-strong:rgba(46,37,50,.22); --muted:rgba(46,37,50,.58);
+  --sans:'Inter','Helvetica Neue',Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--white);color:var(--ink);font-family:var(--sans);
+  font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1360px;margin:0 auto;padding:0 40px 110px}
+.lab{font-family:var(--mono);font-size:15px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--teal);font-weight:600}
+.lab.muted{color:var(--muted)}
+p{max-width:68ch}
+a{color:var(--teal)}
+
+/* header */
+.appbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:16px 0 0}
+.appbar-in{max-width:1360px;margin:0 auto;padding:0 40px}
+.appbar-top{display:flex;align-items:center;justify-content:space-between;gap:24px}
+h1.title{font-size:38px;font-weight:700;letter-spacing:-.025em;margin:0;line-height:1.1;transition:font-size .15s}
+h1.title span{color:var(--teal)}
+.appbar.on-home h1.title{font-size:60px;letter-spacing:-.03em}
+.appbar.on-home .render img{width:116px;height:116px}
+.render{flex:none;display:block}
+.render img{width:88px;height:88px;object-fit:contain;display:block}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;padding-bottom:18px}
+.home{width:50px;height:50px;border-radius:12px;border:2px solid var(--teal);background:var(--teal);
+  display:grid;place-items:center;cursor:pointer;color:#fff;flex:none;font-size:23px;line-height:1;transition:.15s}
+.home:hover{background:#1f5c5c;border-color:#1f5c5c}
+.tab{font:inherit;font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  height:50px;padding:0 18px;border-radius:12px;white-space:nowrap;
+  border:2px solid var(--teal);background:var(--teal);color:#ffffff;cursor:pointer;transition:.15s}
+.tab:hover{background:#1f5c5c;border-color:#1f5c5c}
+.tab[aria-selected="true"]{background:rgba(41,115,115,.16);border:3px solid var(--teal);color:var(--teal)}
+.tab[aria-selected="true"]:hover{background:rgba(41,115,115,.22);border-color:var(--teal);color:var(--teal)}
+.appbar.on-home .home{background:rgba(41,115,115,.16);border:3px solid var(--teal);color:var(--teal)}
+.appbar.on-home .home:hover{background:rgba(41,115,115,.22)}
+
+.pane{padding:46px 0 30px}
+.pane[hidden]{display:none}
+h2{font-size:38px;font-weight:600;letter-spacing:-.025em;margin:10px 0 14px;line-height:1.15}
+h3{font-size:23px;font-weight:600;margin:42px 0 10px}
+.lede{font-size:21px;color:var(--muted);max-width:60ch;margin:0 0 30px;line-height:1.5}
+
+
+
+
+/* protocol boards */
+.proto{border:2px solid var(--line-strong);border-radius:16px;padding:0 0 26px;margin:26px 0 40px;overflow:hidden}
+.proto-head{display:inline-block;margin:22px 0 4px 22px;border:2px solid var(--teal);border-radius:10px;
+  padding:10px 16px;font-family:var(--mono);font-size:15px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--teal);background:rgba(41,115,115,.08)}
+.setup{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:18px 22px 6px}
+@media(max-width:860px){.setup{grid-template-columns:1fr}}
+.setupbox{border:2px solid var(--line-strong);border-radius:12px;padding:14px 16px 16px}
+.setupbox .t{font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--teal);border:2px solid var(--teal);border-radius:8px;padding:5px 10px;display:inline-block;margin-bottom:14px}
+.inputs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.inp{text-align:center}
+.inp .code{font-family:var(--mono);font-size:12px;border:1.5px solid var(--line-strong);border-radius:6px;
+  padding:2px 6px;display:inline-block;margin-bottom:6px}
+.inp .nm{font-family:var(--mono);font-size:11px;line-height:1.4;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.psteps{list-style:none;margin:10px 0 0;padding:0 22px;position:relative}
+.psteps li{display:flex;gap:16px;align-items:flex-start;padding-bottom:14px;position:relative}
+.pnum{width:34px;height:34px;flex:none;border-radius:50%;border:2px solid var(--teal);color:var(--teal);
+  display:grid;place-items:center;font-family:var(--mono);font-size:15px;font-weight:600;background:var(--white);z-index:2}
+.psteps li:not(:last-child)::before{content:'';position:absolute;left:16px;top:34px;bottom:0;width:2px;background:var(--teal)}
+.pbox{flex:1;border:2px solid var(--line-strong);border-radius:10px;padding:13px 16px;
+  font-family:var(--mono);font-size:14px;line-height:1.55;text-transform:uppercase;letter-spacing:.03em;
+  display:flex;gap:16px;align-items:center;justify-content:space-between}
+.pbox.col{display:block}
+.pbox.info{background:rgba(84,193,247,.11);border-color:rgba(84,193,247,.6)}
+.pbox.gate{background:rgba(239,100,98,.09);border-color:rgba(239,100,98,.55)}
+.pbox ul{margin:12px 0 0;padding-left:18px}
+.pbox li{display:list-item;padding:0 0 6px}
+.chip{font-family:var(--mono);font-size:12px;border:2px solid rgba(84,193,247,.6);background:rgba(84,193,247,.14);
+  border-radius:8px;padding:5px 10px;white-space:nowrap}
+.chip.calc{display:inline-block;margin:10px 10px 0 0;text-transform:none;letter-spacing:0}
+.pbox .sub{display:block;font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:8px;text-transform:none;letter-spacing:0}
+.vals{border:2px solid var(--line-strong);border-radius:8px;padding:10px 14px;font-family:var(--mono);
+  font-size:12.5px;line-height:1.8;white-space:nowrap}
+.glyph{flex:none}
+.gaterow{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.outbox{border:2px solid rgba(84,193,247,.6);background:rgba(84,193,247,.14);border-radius:8px;padding:9px 13px;
+  font-family:var(--mono);font-size:12.5px}
+/* plate layout with labels */
+.gridlay{display:grid;grid-template-columns:22px repeat(12,minmax(0,1fr));gap:5px;align-items:center;margin:16px 0 0}
+.gridlay .hd{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:center}
+.lw{aspect-ratio:1;border-radius:50%;border:2px solid;display:grid;place-items:center;
+  font-family:var(--mono);font-size:11px;font-weight:500}
+.lw.var{background:rgba(84,193,247,.3);border-color:rgba(84,193,247,.85);color:#15485f}
+.lw.std{background:rgba(46,37,50,.16);border-color:rgba(46,37,50,.4);color:var(--ink);font-size:9.5px}
+.lw.wt{background:var(--teal);border-color:var(--teal);color:#fff}
+.lw.ntc{background:var(--ink);border-color:var(--ink);color:#fff;font-size:9.5px}
+.lw.mt{border-color:rgba(46,37,50,.3);border-style:dashed;color:var(--muted);font-size:9px}
+
+.qmark.bang{border-color:var(--alert);background:rgba(239,100,98,.14);color:#a33937}
+.qmark.bang:hover{background:rgba(239,100,98,.24)}
+.why-wrap.pinned .qmark.bang{background:var(--alert);color:#fff}
+.why-box.bang{border-color:var(--alert)}
+.why-box .asmlink{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:14px;color:#a33937;
+  font-weight:600;text-decoration:none;border:2px solid rgba(239,100,98,.5);border-radius:8px;padding:6px 10px}
+.why-box .asmlink:hover{background:rgba(239,100,98,.1)}
+a.cite{color:var(--teal);font-weight:600;text-decoration:none;white-space:nowrap}
+a.cite:hover{text-decoration:underline}
+a.backlink{color:var(--teal);text-decoration:none;font-size:15px;margin-left:4px}
+a.backlink:hover{text-decoration:underline}
+.flash{animation:flashbg 1.6s ease-out}
+@keyframes flashbg{0%{background:rgba(84,193,247,.55)}100%{background:transparent}}
+/* biology sections */
+.bsec{border-top:2px solid var(--line-strong);padding-top:26px;margin-top:40px}
+.bnum{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--teal);letter-spacing:.1em}
+.figure{border:2px solid var(--line-strong);border-radius:14px;padding:18px;margin:16px 0 24px;background:var(--white)}
+.figure svg{display:block;width:100%;height:auto}
+.figcap{font-family:var(--mono);font-size:14px;color:var(--muted);margin-top:10px;line-height:1.5}
+.optgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin:22px 0}
+@media(max-width:900px){.optgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.opt{border:2px solid var(--line-strong);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.opt .tag{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.opt b{font-size:16px;font-weight:600;line-height:1.3}
+.opt p{font-size:14px;color:var(--muted);margin:0}
+.opt .verdict{margin-top:auto;font-family:var(--mono);font-size:13px;font-weight:600}
+.opt .pt{font-size:14px;color:var(--ink);margin:0;padding-left:16px;position:relative;line-height:1.45}
+.opt .pt::before{content:'';position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.opt.out .pt::before{background:rgba(46,37,50,.45)}
+.opt.pick{border-color:var(--teal);background:rgba(41,115,115,.09)}
+.opt.pick .verdict{color:var(--teal)}
+.opt.out{opacity:.5}
+.opt.out .verdict{color:var(--muted)}
+.opt .ico{height:72px;display:grid;place-items:center}
+.opt .ico img{max-height:72px;width:auto;display:block}
+.twocol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:22px 0}
+@media(max-width:760px){.twocol{grid-template-columns:1fr}}
+/* approach slides */
+.deck{border:2px solid var(--line-strong);border-radius:16px;overflow:hidden;margin:26px 0 44px}
+.slide{display:none;padding:42px 46px 38px;min-height:320px}
+.slide.on{display:block}
+.slide h3{margin:8px 0 16px;font-size:30px}
+.slide p{font-size:18px}
+.slide .todo{color:var(--muted);font-style:normal}
+.slide > .bsec{border-top:0;padding-top:0;margin-top:0}
+/* approach slides: icon + reasoning */
+.apsplit{display:grid;grid-template-columns:148px minmax(0,1fr);gap:34px;align-items:start}
+@media(max-width:760px){.apsplit{grid-template-columns:1fr;gap:20px}}
+.apicon{border:2px solid var(--line-strong);border-radius:14px;padding:16px 12px 18px;
+  display:flex;flex-direction:column;align-items:center;gap:12px;background:rgba(41,115,115,.05)}
+.apicon .lab{font-size:14px}
+.apsvg{width:76px;height:76px;color:var(--teal);display:block}
+.apbody h3{margin:0 0 10px;font-size:30px}
+.aplede{font-size:18px;color:var(--muted);max-width:64ch;margin:0 0 20px;line-height:1.5}
+.aplist{list-style:none;margin:0;padding:0}
+.aplist li{position:relative;padding:0 0 13px 22px;font-size:17px;line-height:1.5;max-width:72ch}
+.aplist li::before{content:'';position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;background:var(--teal)}
+.apout{margin-top:10px;display:flex;gap:11px;align-items:baseline;border:2px solid rgba(84,193,247,.6);
+  background:rgba(84,193,247,.14);border-radius:10px;padding:10px 14px;font-family:var(--mono);
+  font-size:13px;line-height:1.55;max-width:72ch}
+.apout span{color:var(--teal);font-weight:700;letter-spacing:.08em;text-transform:uppercase;flex:none}
+.slide > .bsec h3{margin:8px 0 16px;font-size:30px}
+#biodeck .slide{height:clamp(540px,calc(100vh - 250px),800px);overflow:auto;padding:30px 34px 24px}
+#biodeck .slide > .bnum{margin-bottom:2px}
+#biodeck .slide > h3{margin:4px 0 12px;font-size:28px}
+.bsplit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:30px;align-items:start}
+.bsplit > div{min-width:0}
+.bsplit .figure{margin:0 0 14px}
+.bsplit .figure img{width:100% !important;max-width:100% !important}
+.bsplit .twocol{grid-template-columns:1fr;gap:14px;margin:16px 0}
+.bsplit .decisions{margin:14px 0 0}
+.bsplit .decisions li{padding:13px 0;font-size:17px}
+.bsplit > div > p:first-child{margin-top:0}
+.bsol{margin:18px 0 0;align-items:stretch}
+.bsol .note,.bsol .card{margin:0;max-width:none}
+.bsol .note{padding:22px 24px 20px;color:var(--ink)}
+.bsol .note strong{color:var(--teal)}
+#bs2 .optgrid{margin:16px 0 0;gap:12px}
+#bs2 .opt{padding:13px;gap:7px}
+#bs2 .opt .ico{height:52px}
+#bs2 .opt .ico img{max-height:52px}
+#bs2 .opt p{font-size:13px}
+#bs2 .opt .pt{font-size:13px}
+#bs2 .opt b{font-size:15px}
+@media(max-width:900px){
+  #biodeck .slide{height:auto;overflow:visible}
+  .bsplit{grid-template-columns:1fr}
+}
+.decknav{display:flex;align-items:center;gap:14px;padding:16px 24px;border-top:2px solid var(--line-strong);
+  background:rgba(41,115,115,.05)}
+.arrow-btn{width:52px;height:52px;border-radius:12px;border:2px solid var(--teal);background:var(--teal);
+  color:#fff;font-size:22px;line-height:1;cursor:pointer;transition:.15s}
+.arrow-btn:hover{background:#1f5c5c;border-color:#1f5c5c}
+.arrow-btn:disabled{opacity:.35;cursor:default}
+.deckcount{font-family:var(--mono);font-size:15px;color:var(--muted);margin-left:4px}
+.dots{display:flex;gap:10px;margin-left:auto}
+.dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--teal);background:transparent;
+  cursor:pointer;padding:0}
+.dot.on{background:var(--teal)}
+/* automation boards */
+.bsel{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+.bchip{border:2px solid var(--teal);background:var(--white);color:var(--teal);border-radius:10px;
+  padding:9px 14px;font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;cursor:pointer;transition:.15s}
+.bchip[aria-selected="true"]{background:rgba(41,115,115,.16);border-width:3px;padding:8px 13px}
+.bpane[hidden]{display:none}
+.board{border:2px solid var(--line-strong);border-radius:16px;padding:16px 18px 18px;background:var(--white)}
+.board-t{display:inline-block;border:2px solid var(--teal);border-radius:10px;padding:7px 14px;
+  font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--teal);margin:0 0 14px}
+.bsetup{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:8px;margin-bottom:14px}
+.bcard{border:2px solid rgba(84,193,247,.6);background:rgba(84,193,247,.11);border-radius:10px;padding:8px 10px}
+.bcard .k{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--teal);font-weight:700;margin-bottom:3px}
+.bcard .v{font-family:var(--mono);font-size:11.5px;color:var(--ink);line-height:1.35;text-transform:uppercase}
+.bmain{display:grid;grid-template-columns:1.65fr 1fr;gap:16px;align-items:start}
+.bsteps{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px}
+.bstep{display:flex;gap:7px;align-items:flex-start}
+.bstep .n{flex:none;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--teal);color:var(--teal);
+  font-family:var(--mono);font-size:10.5px;font-weight:700;display:grid;place-items:center;margin-top:2px}
+.bstep .b{flex:1;border:1.5px solid var(--line-strong);border-radius:7px;padding:5px 8px;
+  font-family:var(--mono);font-size:11.5px;line-height:1.35;text-transform:uppercase;letter-spacing:.01em}
+.bstep .b em{font-style:normal;color:var(--teal);font-weight:700}
+.bstep .b.hi{background:rgba(84,193,247,.11);border-color:rgba(84,193,247,.6)}
+.bstep .b.gate{background:rgba(239,100,98,.09);border-color:rgba(239,100,98,.55)}
+.bside{display:flex;flex-direction:column;gap:12px}
+.bbox{border:2px solid var(--line-strong);border-radius:10px;padding:10px 12px}
+.bbox h5{margin:0 0 7px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--teal);font-weight:700}
+.bbox ul{margin:0;padding-left:15px}
+.bbox li{font-family:var(--mono);font-size:11.5px;line-height:1.45;margin-bottom:4px}
+.bflow{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.bflow span{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;
+  border:1.5px solid var(--line-strong);border-radius:6px;padding:4px 6px}
+.bflow i{font-style:normal;color:var(--teal);font-weight:700}
+@media(max-width:1000px){.bmain{grid-template-columns:1fr}.bsteps{grid-template-columns:1fr}}
+.boardfig{margin:0;text-align:center}
+.boardfig img{max-height:calc(100vh - 250px);max-width:100%;width:auto;height:auto;
+  border:2px solid var(--line-strong);border-radius:14px;background:var(--white)}
+.acc.pseudo{margin-top:18px;border-top:2px solid var(--line-strong)}
+.acc.pseudo .body{padding-left:0}
+.boardfig figcaption{font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:10px}
+@media(max-width:1000px){.boardfig img{max-height:none;width:100%}}
+/* plate maps */
+.platewrap{display:flex;gap:30px;flex-wrap:wrap;margin:22px 0 10px}
+.plate{border:2px solid var(--line-strong);border-radius:12px;padding:16px 18px;background:var(--white)}
+.plate h4{margin:0 0 4px;font-size:17px;font-weight:600}
+.plate .cap{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:14px;display:block}
+.grid96{display:grid;grid-template-columns:18px repeat(12,20px);gap:4px;align-items:center}
+.grid96 .hd{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center}
+.well{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line-strong);background:var(--white)}
+.well.v{background:rgba(84,193,247,.55);border-color:rgba(84,193,247,.9)}
+.well.wt{background:var(--teal);border-color:var(--teal)}
+.well.nt{background:var(--ink);border-color:var(--ink)}
+.well.std{background:var(--alert);border-color:var(--alert)}
+.well.edge{border-style:dashed;border-color:rgba(46,37,50,.3);background:var(--white)}
+.grid96.mini{grid-template-columns:12px repeat(12,13px);gap:3px;margin:14px 0 12px}
+.grid96.mini .well{width:13px;height:13px;border-width:1px}
+.grid96.mini .hd{font-size:8px}
+.legend{display:flex;gap:20px;flex-wrap:wrap;margin:16px 0 0;font-size:15px}
+.legend > span{display:flex;align-items:center;gap:8px;color:var(--muted)}
+.legend i{width:16px;height:16px;border-radius:50%;display:block;border:1.5px solid}
+/* why popovers and decision lists */
+.decisions{list-style:none;margin:20px 0 26px;padding:0}
+.decisions li{border-top:1px solid var(--line);padding:18px 0;font-size:18px;line-height:1.5}
+.decisions li:last-child{border-bottom:1px solid var(--line)}
+.decisions b{font-weight:600}
+.decisions .sub{display:block;font-size:16px;color:var(--muted);margin-top:4px}
+.why-wrap{position:relative;display:inline-block;vertical-align:middle;margin-left:6px}
+.qmark{width:28px;height:28px;border-radius:50%;border:2px solid var(--teal);
+  background:rgba(41,115,115,.12);color:var(--teal);font:inherit;font-size:16px;font-weight:700;
+  cursor:pointer;line-height:1;display:inline-grid;place-items:center;padding:0;transition:.15s}
+.qmark:hover{background:rgba(41,115,115,.22)}
+.why-wrap.pinned .qmark{background:var(--teal);color:#fff}
+.why-box{position:absolute;z-index:60;left:-12px;top:38px;width:min(520px,78vw);background:var(--white);
+  border:3px solid var(--teal);border-radius:14px;padding:20px 22px;font-size:17px;line-height:1.6;
+  color:var(--ink);font-weight:400;text-align:left;display:none;
+  box-shadow:0 18px 40px -22px rgba(46,37,50,.6)}
+.why-box p{margin:0 0 12px;max-width:none}
+.why-box p:last-child{margin-bottom:0}
+.why-box .pb{display:block;margin:0 0 12px}
+.why-box .pb:last-of-type{margin-bottom:0}
+.why-box{display:none !important}
+.why-wrap:hover > .why-box, .why-wrap.pinned > .why-box{display:block !important}
+.why-wrap.right .why-box{left:auto;right:-12px}
+
+/* device cards */
+.devgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:24px 0 34px}
+@media(max-width:780px){.devgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.devcard{border:2px solid var(--line-strong);border-radius:14px;padding:18px 20px 20px;background:var(--white)}
+.devcard img{width:100%;height:150px;object-fit:contain;display:block;margin-bottom:14px}
+.devcard b{display:block;font-size:17px;font-weight:600;margin-bottom:4px}
+.devcard span{display:block;font-size:15px;color:var(--muted);line-height:1.5}
+.devrow{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;margin:18px 0}
+.devrow img{width:150px;height:auto;flex:none}
+.devrow div{flex:999 1 340px;min-width:0}
+
+/* automation sub-navigation */
+.subwrap{display:flex;gap:40px;flex-wrap:wrap;margin-top:18px}
+.subnav{flex:0 0 250px;display:flex;flex-direction:column;gap:10px;align-self:flex-start;position:sticky;top:170px}
+@media(max-width:860px){.subnav{position:static;flex:1 1 100%;flex-direction:row;flex-wrap:wrap}}
+.subtab{font:inherit;font-size:16px;font-weight:600;text-align:left;padding:15px 18px;border-radius:12px;
+  border:2px solid var(--line-strong);background:var(--white);color:var(--ink);cursor:pointer;transition:.15s}
+.subtab:hover{border-color:var(--teal)}
+.subtab[aria-selected="true"]{background:rgba(41,115,115,.16);border:3px solid var(--teal);color:var(--teal)}
+.subcontent{flex:999 1 540px;min-width:0}
+.subpane[hidden]{display:none}
+.subpane h3:first-of-type{margin-top:0}
+.decklay{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:24px 0}
+@media(max-width:760px){.decklay{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.slot{border:2px solid var(--line-strong);border-radius:12px;padding:16px 18px;min-height:104px}
+.slot .num{display:block;font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:8px}
+.slot b{display:block;font-size:16px;font-weight:600;margin-bottom:6px}
+.slot span{font-family:var(--mono);font-size:13px;color:#574f5e}
+.slot.sky{border-color:rgba(84,193,247,.6);background:rgba(84,193,247,.11)}
+.slot.teal{border-color:rgba(41,115,115,.5);background:rgba(41,115,115,.09)}
+.slot.ghost{border-style:dashed}
+pre{font-family:var(--mono);font-size:15px;background:rgba(46,37,50,.04);border:2px solid var(--line);
+  border-radius:12px;padding:20px 22px;overflow-x:auto;line-height:1.65;margin:18px 0}
+
+/* system overview */
+.sysmap{border:2px solid var(--line-strong);border-radius:16px;padding:12px 28px;margin:34px 0 48px}
+.lane{display:flex;gap:24px;align-items:center;padding:22px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.lane:last-child{border-bottom:0}
+.lane-label{font-family:var(--mono);font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--teal);width:150px;flex:none}
+.lane-row{display:flex;align-items:center;flex-wrap:wrap;flex:1}
+.sbox{border:2px solid var(--line-strong);border-radius:12px;padding:14px 18px;font-size:16px;
+  font-weight:600;min-width:132px;background:var(--white)}
+.sbox em{display:block;font-family:var(--mono);font-size:14px;font-weight:500;font-style:normal;
+  color:#574f5e;margin-top:7px}
+.sbox.gate{border-color:var(--teal);background:rgba(41,115,115,.1);color:var(--teal)}
+.sbox.out{border-color:rgba(84,193,247,.65);background:rgba(84,193,247,.14)}
+.sarr{width:30px;height:2px;background:var(--line-strong);flex:none;position:relative}
+.sarr::after{content:'';position:absolute;right:0;top:-4px;border-left:7px solid var(--line-strong);
+  border-top:5px solid transparent;border-bottom:5px solid transparent}
+.hero{display:flex;gap:48px;align-items:flex-start;flex-wrap:wrap}
+.hero-text{flex:999 1 520px;min-width:0}
+.hero-art{flex:1 1 260px;display:flex;justify-content:center}
+.hero-art img{width:100%;max-width:300px;height:auto;display:block}
+
+/* flow */
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin:20px 0 6px}
+.node{font:inherit;font-size:16px;font-weight:600;padding:16px 18px;min-width:148px;
+  border:2px solid var(--line-strong);border-radius:12px;background:var(--white);cursor:pointer;
+  text-align:left;transition:.15s;line-height:1.3}
+.node:hover{transform:translateY(-1px);box-shadow:0 6px 14px -10px rgba(46,37,50,.7)}
+.node .n{display:block;font-family:var(--mono);font-size:14px;color:#574f5e;letter-spacing:.1em;margin-bottom:7px;font-weight:600}
+.node.dna{border-color:rgba(46,37,50,.3);background:rgba(46,37,50,.07)}
+.node.express{border-color:rgba(84,193,247,.75);background:rgba(84,193,247,.14)}
+.node.quant{border-color:#6fa8a8;background:rgba(111,168,168,.18)}
+.node.gate{border-color:var(--alert);background:rgba(239,100,98,.1)}
+.node.gate .n{color:#a33937}
+.node.purify{border-color:var(--teal);background:rgba(41,115,115,.12)}
+.node.assay{border-color:var(--ink);background:rgba(46,37,50,.14)}
+.node.out{border-color:rgba(46,37,50,.4);border-style:dashed;background:var(--white)}
+.arrow{width:26px;height:2px;background:var(--line-strong);position:relative;flex:none}
+.arrow::after{content:'';position:absolute;right:0;top:-4px;border-left:7px solid var(--line-strong);
+  border-top:5px solid transparent;border-bottom:5px solid transparent}
+.hint{font-size:16px;color:var(--muted);margin:16px 0 0}
+
+
+/* serpentine protocol flow */
+.snake{display:grid;grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr) 34px minmax(0,1fr);
+  align-items:center;margin:24px 0 8px}
+.snake .node{width:100%;height:112px;min-width:0;display:flex;flex-direction:column;
+  justify-content:center;text-align:left}
+.snake .arrow{width:100%}
+.arrow.left::after{right:auto;left:0;border-left:0;border-right:7px solid var(--line-strong)}
+.drop{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr) 34px minmax(0,1fr)}
+.arrow.down{width:2px;height:46px;justify-self:center;margin:6px 0}
+.arrow.down::after{right:auto;top:auto;bottom:0;left:-4px;border-left:5px solid transparent;
+  border-right:5px solid transparent;border-top:7px solid var(--line-strong);border-bottom:0}
+.arrow.down.right{grid-column:5}
+.arrow.down.left{grid-column:1}
+.node.c1{border-color:#9fd8fa;background:var(--sky-12)}
+.node.c2{border-color:rgba(46,37,50,.32);background:rgba(46,37,50,.07)}
+.node.c3{border-color:var(--sky);background:rgba(84,193,247,.28)}
+.node.c4,.node.c7{border-color:#6fa8a8;background:rgba(111,168,168,.22)}
+.node.c5{border-color:var(--alert);background:rgba(239,100,98,.12)}
+.node.c5 .n{color:#a33937}
+.node.c6{border-color:var(--teal);background:rgba(41,115,115,.14)}
+.node.c8{border-color:var(--ink);background:rgba(46,37,50,.16)}
+.node.c9{border-color:#8a8292;background:rgba(179,173,184,.35)}
+@media(max-width:900px){
+  .snake,.drop{grid-template-columns:1fr}
+  .snake .arrow:not(.down){display:none}
+  .drop{display:none}
+  .snake .node{height:auto;padding:16px 18px;margin-bottom:10px}
+}
+
+/* detail */
+.back{font:inherit;font-size:17px;font-weight:600;color:var(--teal);background:none;border:0;
+  padding:8px 0;cursor:pointer;display:inline-flex;align-items:center;gap:8px;margin-bottom:12px}
+.back:hover{text-decoration:underline}
+.detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;
+  padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+@media(max-width:780px){.grid2,.grid3{grid-template-columns:1fr}}
+.card{border:2px solid var(--line-strong);border-radius:14px;padding:22px 24px 20px;background:var(--white)}
+.card.tint{background:rgba(84,193,247,.11);border-color:rgba(84,193,247,.6)}
+.card h4{font-size:17px;font-weight:600;margin:12px 0 14px}
+.card ul{margin:0;padding:0;list-style:none}
+.card li{display:flex;justify-content:space-between;gap:16px;font-size:16px;
+  padding:10px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.card li:last-child{border-bottom:0}
+.card li > span{font-family:var(--mono);font-size:15px;color:var(--muted);text-align:right;flex:none}
+.card p{font-size:16px;color:var(--muted);margin:0}
+
+/* stats */
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin:30px 0}
+.stat{border:2px solid rgba(84,193,247,.6);background:rgba(84,193,247,.11);border-radius:14px;
+  padding:18px 24px;min-width:148px}
+.stat b{display:block;font-size:38px;font-weight:700;letter-spacing:-.025em;line-height:1.1;margin-bottom:4px}
+.stat.alert{border-color:rgba(239,100,98,.6);background:rgba(239,100,98,.1)}
+.stat.teal{border-color:rgba(41,115,115,.55);background:rgba(41,115,115,.1)}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:16px;margin:20px 0}
+th{text-align:left;font-family:var(--mono);font-size:15px;letter-spacing:.1em;text-transform:uppercase;
+  color:#574f5e;font-weight:600;padding:0 18px 14px 0;border-bottom:2px solid var(--line-strong)}
+td{padding:15px 18px 15px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td:last-child,th:last-child{padding-right:0}
+code{font-family:var(--mono);font-size:15px;background:var(--sky-12);padding:3px 7px;border-radius:5px}
+
+/* accordion */
+.acc{border-top:1px solid var(--line)}
+.acc:last-of-type{border-bottom:1px solid var(--line)}
+.acc summary{list-style:none;cursor:pointer;padding:22px 2px;display:flex;align-items:center;
+  gap:16px;font-size:20px;font-weight:600}
+.acc summary::-webkit-details-marker{display:none}
+.plus{width:32px;height:32px;border-radius:10px;border:2px solid var(--teal);flex:none;
+  display:grid;place-items:center;font-family:var(--mono);font-size:18px;line-height:1;
+  color:var(--teal);background:rgba(41,115,115,.1);transition:.15s}
+.acc[open] .plus{background:var(--teal);border-color:var(--teal);color:#fff;transform:rotate(45deg)}
+.acc .body{padding:0 2px 26px 48px;font-size:17px;color:var(--muted)}
+.acc .body p{max-width:66ch;margin:0 0 12px}
+.acc .body p:last-child{margin-bottom:0}
+.acc .body strong{color:var(--ink)}
+
+/* callouts */
+.callout{border:2px solid rgba(239,100,98,.55);background:rgba(239,100,98,.1);border-radius:14px;
+  padding:20px 24px;display:flex;gap:16px;font-size:17px;margin:26px 0;max-width:78ch}
+.callout .dot{width:10px;height:10px;border-radius:50%;background:var(--alert);flex:none;margin-top:11px}
+.note{border:2px solid rgba(41,115,115,.45);background:rgba(41,115,115,.08);border-radius:14px;
+  padding:18px 24px;margin:26px 0;font-size:17px;color:var(--muted);max-width:78ch}
+.badge{display:inline-block;font-family:var(--mono);font-size:13px;letter-spacing:.1em;
+  text-transform:uppercase;padding:5px 10px;border-radius:6px;background:var(--sky-12);
+  color:var(--teal);font-weight:600}
+.badge.open{background:rgba(239,100,98,.14);color:#a33937}
+.rule{height:1px;background:var(--line);margin:34px 0 0}
+footer{padding:36px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);margin-top:40px}
+</style>
+</head>
+<body>
+
+<div class="appbar on-home">
+  <div class="appbar-in">
+    <div class="appbar-top">
+      <div>
+        <h1 class="title">PETase <span>Screen</span> Automation</h1>
+      </div>
+      <div class="render"><img src="assets/petase.png" alt="PETase structure with bound HEMT"></div>
+    </div>
+    <div class="tabs">
+      <button class="home" title="Home" aria-label="Home" onclick="go('home')"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class=""><path d="M3 11 12 3l9 8"></path><path d="M5.5 10.5V20h13v-9.5"></path></svg></button>
+      <button class="tab" data-pane="biology" aria-selected="false" onclick="go('biology',this)">The biology</button>
+      <button class="tab" data-pane="protocol" aria-selected="false" onclick="go('protocol',this)">Protocol</button>
+      <button class="tab" data-pane="automation" aria-selected="false" onclick="go('automation',this)">Automation</button>
+      <button class="tab" data-pane="data" aria-selected="false" onclick="go('data',this)">Data model</button>
+      <button class="tab" data-pane="future" aria-selected="false" onclick="go('future',this)">Future</button>
+      <button class="tab" data-pane="assumptions" aria-selected="false" onclick="go('assumptions',this)">Assumptions</button>
+      <button class="tab" data-pane="references" aria-selected="false" onclick="go('references',this)">References</button>
+      <!-- labels render uppercase via .tab text-transform -->
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ============================ HOME ============================ -->
+<div class="pane" id="home">
+  <div class="hero">
+    <div class="hero-text">
+      <div class="lab">Overview</div>
+      <h2>Automating the PETase variant screen</h2>
+      <p class="lede">We are given a library of PETase variants and four stages: express each one, check it expressed, purify it, and measure how well it degrades PET. This project assembles the protocol from the literature and the automation around it.</p>
+    </div>
+    <div class="hero-art">
+      <img src="assets/petase.png" alt="PETase structure with the HEMT substrate analogue bound in the active site">
+    </div>
+  </div>
+
+  <h3>Where this sits</h3>
+  <div class="figure"><svg viewBox="0 0 1240 540" role="img" aria-label="Design, Build, Test, Learn cycle mapped onto this screen" class="">
+  <path d="M 350.5 234.9 A 252.0 252.0 0 0 1 513.8 33.2 L 504.9 8.8 L 593.2 74.1 L 561.0 162.9 L 552.1 138.4 A 140.0 140.0 0 0 0 461.4 250.5 Z" fill="#54c1f7" stroke="#2e2532" stroke-width="3" stroke-linejoin="round"></path><text x="468.9" y="143.2" text-anchor="middle" font-family="Inter,sans-serif" font-size="54" font-weight="700" fill="#ffffff">D</text><path d="M 635.1 20.5 A 252.0 252.0 0 0 1 836.8 183.8 L 861.2 174.9 L 795.9 263.2 L 707.1 231.0 L 731.6 222.1 A 140.0 140.0 0 0 0 619.5 131.4 Z" fill="#297373" stroke="#2e2532" stroke-width="3" stroke-linejoin="round"></path><text x="745.7" y="157.8" text-anchor="middle" font-family="Inter,sans-serif" font-size="54" font-weight="700" fill="#ffffff">B</text><path d="M 849.5 305.1 A 252.0 252.0 0 0 1 686.2 506.8 L 695.1 531.2 L 606.8 465.9 L 639.0 377.1 L 647.9 401.6 A 140.0 140.0 0 0 0 738.6 289.5 Z" fill="#6fa8a8" stroke="#2e2532" stroke-width="3" stroke-linejoin="round"></path><text x="731.1" y="434.6" text-anchor="middle" font-family="Inter,sans-serif" font-size="54" font-weight="700" fill="#ffffff">T</text><path d="M 564.9 519.5 A 252.0 252.0 0 0 1 363.2 356.2 L 338.8 365.1 L 404.1 276.8 L 492.9 309.0 L 468.4 317.9 A 140.0 140.0 0 0 0 580.5 408.6 Z" fill="#b3adb8" stroke="#2e2532" stroke-width="3" stroke-linejoin="round"></path><text x="454.3" y="420.0" text-anchor="middle" font-family="Inter,sans-serif" font-size="54" font-weight="700" fill="#ffffff">L</text><rect x="8" y="10" width="310" height="146" rx="14" fill="#ffffff" stroke="#54c1f7" stroke-width="3" class=""></rect><text x="24" y="46" font-family="Inter,sans-serif" font-size="23" font-weight="700" fill="#54c1f7" letter-spacing="1.6">DESIGN</text><text x="24" y="78" font-family="Inter,sans-serif" font-size="20" font-weight="600" fill="#2e2532" class="">PETase variants</text><text x="24" y="107" font-family="Inter,sans-serif" font-size="16.5" fill="#574f5e" class="">Gene fragments are designed and&nbsp;</text><text x="24" y="131" font-family="Inter,sans-serif" font-size="16.5" fill="#574f5e" class="">adapted for protocol compatibility.</text><rect x="922" y="10" width="310" height="146" rx="14" fill="rgba(41,115,115,.08)" stroke="#297373" stroke-width="3"></rect><text x="938" y="46" font-family="Inter,sans-serif" font-size="23" font-weight="700" fill="#297373" letter-spacing="1.6" class="">BUILD</text><text x="938" y="78" font-family="Inter,sans-serif" font-size="20" font-weight="600" fill="#2e2532">Expression and purification</text><text x="938" y="107" font-family="Inter,sans-serif" font-size="16.5" fill="#574f5e" class="">Cell-free TX-TL, then</text><text x="938" y="131" font-family="Inter,sans-serif" font-size="16.5" fill="#574f5e" class="">Purification.</text><rect x="922" y="197" width="310" height="146" rx="14" fill="rgba(239,100,98,.08)" stroke="#ef6462" stroke-width="3" class=""></rect><text x="938" y="233" font-family="Inter,sans-serif" font-size="23" font-weight="700" fill="#ef6462" letter-spacing="1.6">QC</text><text x="938" y="265" font-family="Inter,sans-serif" font-size="20" font-weight="600" fill="#2e2532">Split-GFP</text><text x="938" y="294" font-family="Inter,sans-serif" font-size="16.5" fill="#574f5e" class="">Quantification of soluble enzyme</text><text x="938" y="318" font-family="Inter,sans-serif" font-size="16.5" fill="#574f5e" class="">per well, used as gate.</text><rect x="922" y="384" width="310" height="146" rx="14" fill="rgba(111,168,168,.12)" stroke="#6fa8a8" stroke-width="3" class=""></rect><text x="938" y="420" font-family="Inter,sans-serif" font-size="23" font-weight="700" fill="#6fa8a8" letter-spacing="1.6">TEST</text><text x="938" y="452" font-family="Inter,sans-serif" font-size="20" font-weight="600" fill="#2e2532">PET assay</text><text x="938" y="481" font-family="Inter,sans-serif" font-size="16.5" fill="#574f5e" class="">Measure enzyme activity by</text><text x="938" y="505" font-family="Inter,sans-serif" font-size="16.5" fill="#574f5e" class="">tracking PET degradation over time&nbsp;</text><rect x="8" y="384" width="310" height="146" rx="14" fill="#ffffff" stroke="#8a8292" stroke-width="3" class=""></rect><text x="24" y="420" font-family="Inter,sans-serif" font-size="23" font-weight="700" fill="#8a8292" letter-spacing="1.6" class="">LEARN</text><text x="24" y="452" font-family="Inter,sans-serif" font-size="20" font-weight="600" fill="#2e2532" class="">Analysis of the outputs</text><text x="24" y="481" font-family="Inter,sans-serif" font-size="16.5" fill="#574f5e" class="">Conclusions for the next round</text><text x="24" y="505" font-family="Inter,sans-serif" font-size="16.5" fill="#574f5e" class="">from expression &amp; activity results</text><line x1="856" y1="270" x2="918" y2="270" stroke="#ef6462" stroke-width="3" stroke-dasharray="8 7"></line></svg></div>
+
+  <h3 class="">The approach</h3>
+  <div class="deck">
+    <div class="slide on" id="sl1">
+      <div class="apsplit">
+        <div class="apicon">
+          <div class="lab">01</div>
+          <svg class="apsvg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 16V9a3 3 0 0 1 3-3h7"></path><path d="M32 6h7a3 3 0 0 1 3 3v7"></path>
+            <path d="M42 32v7a3 3 0 0 1-3 3h-7"></path><path d="M16 42H9a3 3 0 0 1-3-3v-7"></path>
+            <circle cx="24" cy="24" r="6"></circle><path d="M24 13v5M24 30v5M13 24h5M30 24h5"></path>
+          </svg>
+        </div>
+        <div class="apbody">
+          <h3 class="">Understanding the objectives and biological implications</h3>
+          <ul class="aplist">
+            <li class="">Researched the enzyme, techniques and assay readouts.</li>
+            <li class="">Worked out what each stage is actually measuring, gates and normalization points.</li>
+            <li class="">Designed initial idea and workflow based on assumptions.</li>
+          </ul>
+          <div class="apout"><span class="">Output</span>Initial scope, research direaction and assupmtions.</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide" id="sl2">
+      <div class="apsplit">
+        <div class="apicon">
+          <div class="lab">02</div>
+          <svg class="apsvg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 5h10l7 7v19a3 3 0 0 1-3 3H19a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z"></path>
+            <path d="M29 5v7h7"></path><path d="M22 20h8M22 26h6"></path>
+            <path d="M11 15v23a5 5 0 0 0 5 5h14"></path>
+          </svg>
+        </div>
+        <div class="apbody">
+          <h3 class="">Rebuilding the protocol</h3>
+          <ul class="aplist">
+            <li class="">Reconstructed each stage from primary literature and vendor documentation (NEB, Twist and IBA manuals).&nbsp;</li>
+            <li class="">Reliability-checked sources before reading them, preferring primary papers and vendor manuals.</li>
+<li class="">Found the closest published screen and worked out which of its numbers transfer to mine</li>
+          </ul>
+          <div class="apout"><span>Output</span>Protocol divided into individual phases, each with its reagents, steps and conditions.</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide" id="sl3">
+      <div class="apsplit">
+        <div class="apicon">
+          <div class="lab">03</div>
+          <svg class="apsvg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 14h32"></path><path d="M24 10v30"></path><path d="M16 40h16"></path>
+            <path d="M12 14v4M36 14v4"></path>
+            <path d="M6 18a6 6 0 0 0 12 0z"></path><path d="M30 18a6 6 0 0 0 12 0z"></path>
+          </svg>
+        </div>
+        <div class="apbody">
+          <h3 class="">Calculations: checking protocol compatibility</h3>
+          <ul class="aplist">
+            <li class="">Ran through the protocol to work out the template amounts, the lysate budget, the usable wells, and the reaction volumes.</li>
+            <li class="">Added important stages to fit the volume calculations and output data model.&nbsp;</li>
+            <li class="">Even though I plan to keep these as parameters in a final model, for an initial approach, decided on replicates, controls and plate structure and compatible volumes.</li>
+          </ul>
+          <div class="apout"><span>Output</span> Documented decisions.&nbsp;</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide" id="sl4">
+      <div class="apsplit">
+        <div class="apicon">
+          <div class="lab">04</div>
+          <svg class="apsvg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="5" y="9" width="14" height="10" rx="2"></rect><rect x="29" y="9" width="14" height="10" rx="2"></rect>
+            <rect x="5" y="29" width="14" height="10" rx="2"></rect><rect x="29" y="29" width="14" height="10" rx="2"></rect>
+            <path d="M19 14h10" stroke-dasharray="3 3.5"></path><path d="M36 19v10" stroke-dasharray="3 3.5"></path>
+            <path d="M29 34H19" stroke-dasharray="3 3.5"></path><path d="M12 29V19" stroke-dasharray="3 3.5"></path>
+          </svg>
+        </div>
+        <div class="apbody">
+          <h3 class="">Automation flowcharts</h3>
+          <ul class="aplist">
+            <li class="">Revised protocols step by step to decide on automation hardware.&nbsp;</li>
+            <li class="">Drew flowcharts of automation steps for each protocol. Revised them thoroughly until all stages were accounted for. Noted important assumptions.</li>
+            <li class="">Decided to keep this as an instrument agnostic proof-of-concept for compatibility with any device. Adjustments should be made once specific devices are chosen.</li>
+          </ul>
+          <div class="apout"><span>Output</span> Pseudocode of automated steps for each protocol in flowchart form.&nbsp;&nbsp;</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide" id="sl5">
+      <div class="apsplit">
+        <div class="apicon">
+          <div class="lab">05</div>
+          <svg class="apsvg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M24 6 42 14 24 22 6 14z"></path><path d="M6 23 24 31 42 23"></path><path d="M6 32 24 40 42 32"></path>
+          </svg>
+        </div>
+        <div class="apbody">
+          <h3 class="">Code: Modeling and revising</h3>
+          <ul class="aplist">
+            <li class="">Started coding on PyLabRobot with Claude Code, in order to check what the library actually supports and to find the errors that only come out in practice.</li>
+            <li class="">Split the code in three layers to separate the biological implications and constants, the protocol and the robotic commands.&nbsp;</li>
+            <li class="">Ran all stages in simulation and addressed errors to improve the protocol assumptions.</li>
+          </ul>
+          <div class="apout"><span>Output</span> Corrections for the automated steps. PyLabRobot initial model.&nbsp;</div>
+        </div>
+      </div>
+    </div>
+    <div class="decknav">
+      <button class="arrow-btn" type="button" aria-label="Previous" onclick="slide(-1)" disabled="">←</button>
+      <button class="arrow-btn" type="button" aria-label="Next" onclick="slide(1)">→</button>
+      <span class="deckcount" id="slCount">1 / 5</span>
+      <span class="dots" id="slDots"><button class="dot on" type="button" aria-label="Slide 1" onclick="slGo(1)"></button><button class="dot" type="button" aria-label="Slide 2" onclick="slGo(2)"></button><button class="dot" type="button" aria-label="Slide 3" onclick="slGo(3)"></button><button class="dot" type="button" aria-label="Slide 4" onclick="slGo(4)"></button><button class="dot" type="button" aria-label="Slide 5" onclick="slGo(5)"></button></span>
+    </div>
+  </div>
+  <div class="note">Built the system as a series of individual steps that are compatible with each other. Each step's output is the next step's input. This allows them to be used and combined in other contexts.</div>
+
+  <h3>Summary of the solution</h3>
+  <div class="sysmap">
+    <div class="lane">
+      <div class="lane-label">DNA → template</div>
+      <div class="lane-row">
+        <div class="sbox">Twist plate<em class="">up to 24</em></div>
+        <div class="sarr"></div>
+        <div class="sbox">Resuspend<em class="">archival stock</em></div>
+        <div class="sarr"></div>
+        <div class="sbox">PCR<em class="">one per variant</em></div>
+        <div class="sarr"></div>
+        <div class="sbox">Clean &amp; quantify<em class="">normalise</em></div>
+        <div class="sarr"></div>
+        <div class="sbox">Template plate<em class="">working copy</em></div>
+      </div>
+    </div>
+    <div class="lane">
+      <div class="lane-label">Express → normalise</div>
+      <div class="lane-row">
+        <div class="sbox">Cell-free expression<em class="">CFPS, 24 × 3</em></div>
+        <div class="sarr"></div>
+        <div class="sbox">Split-GFP<em class="">µM soluble</em></div>
+        <div class="sarr"></div>
+        <div class="sbox gate">GATE<em class="">spend decision</em></div>
+        <div class="sarr"></div>
+        <div class="sbox">Purify<em>MagStrep</em></div>
+        <div class="sarr"></div>
+        <div class="sbox">Split-GFP<em>after elution</em></div>
+        <div class="sarr"></div>
+        <div class="sbox">Normalise<em class="">0.1 µM</em></div>
+      </div>
+    </div>
+    <div class="lane">
+      <div class="lane-label">Assay → numbers</div>
+      <div class="lane-row">
+        <div class="sbox">PET insert<em>68 °C, 24 h</em></div>
+        <div class="sarr"></div>
+        <div class="sbox">Sample<em>7 timepoints</em></div>
+        <div class="sarr"></div>
+        <div class="sbox">Read<em>A240</em></div>
+        <div class="sarr"></div>
+        <div class="sbox">Rate ÷ WT<em>normalised</em></div>
+        <div class="sarr"></div>
+        <div class="sbox out">Ranked constructs<em class="">with error bars</em></div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<!-- ============================ BIOLOGY ============================ -->
+<div class="pane" id="biology" hidden="">
+  <div class="lab">The biology</div>
+  <h2>Biological implications that influenced the protocol</h2>
+
+  <div class="deck" id="biodeck">
+  <div class="bsec slide on" id="bs1">
+    <div class="bnum">01</div>
+    <h3>PETase</h3>
+    <div class="bsplit">
+      <div><div class="figure"><img src="assets/figs/petase-structure.png" alt="Is-PETase structure in two orientations with both disulfide bonds and the catalytic triad labelled" style="width:65%;max-width:65%;height:auto;display:block;margin:0 auto"><div class="figcap">Is-PETase in two orientations. The two disulfide bonds are C203-C239, next to the active site, and C237-C289. The catalytic triad S160, D206 and H237 sits under the bound 2-HE(MHET)<sub>4</sub>. Figure from Joo <em>et al.</em> 2018 <a class="cite" id="cite-10-1" data-cite="10" href="#ref10" onclick="return citeTo(10,this)">[10]</a>, CC BY 4.0.</div></div></div>
+      <div><p>Is-PETase carries <strong>two disulfide bonds</strong>. They have to form for the enzyme to be stable and active, and whether they form depends on the chemistry of the expression system rather than on the variant.</p>
+      <div class="card"><div class="lab">Problem</div><h4>A reducing environment breaks them</h4><p>A standard <em>E. coli</em> lysate is full of reducing agents and the enzymes that regenerate them. The cysteines get pulled back to free thiols faster than they can pair up, so the protein folds badly, aggregates in part, and loses thermal stability.</p></div></div>
+    </div>
+    <div class="twocol bsol">
+      <div class="card tint"><div class="lab">Why it matters here</div><h4 class=""><span style="color: rgba(46, 37, 50, 0.58); font-size: 16px;" class="">Split-GFP would detect the protein and the activity assay would return a value, but the value would not be the variant's activity, because the enzyme is not functional. A silently wrong number is worse than a missing one.</span></h4></div>
+      <div class="note"><strong class="">Solution :</strong> a lysate kit with a documented disulfide supplement, NEBExpress with the PURExpress Disulfide Bond Enhancer <a class="cite" id="cite-12-1" data-cite="12" href="#ref12" onclick="return citeTo(12,this)">[12]</a>. The two alternatives, a reconstituted system or a lysate treated with iodoacetamide, an oxidising buffer and DsbC <a class="cite" id="cite-1-1" data-cite="1" href="#ref1" onclick="return citeTo(1,this)">[1]</a> <a class="cite" id="cite-2-1" data-cite="2" href="#ref2" onclick="return citeTo(2,this)">[2]</a>, are set out in the Protocol tab under phase 03.</div>
+    </div>
+  </div>
+  <div class="bsec slide" id="bs2">
+    <div class="bnum">02</div>
+    <h3>PET degradation</h3>
+    <div class="bsplit">
+      <div><div class="figure"><img src="assets/figs/pet-degradation.png" alt="PETase cuts PET to MHET, BHET and ethylene glycol; MHETase cuts MHET to TPA and ethylene glycol" style="width:100%;height:auto;display:block"><div class="figcap">PETase cuts the ester bonds in PET, releasing MHET, BHET and ethylene glycol. The three aromatic products are what the assay reads, together, as BHET equivalents. Figure from Urbanek <em>et al.</em> 2021 <a class="cite" id="cite-11-1" data-cite="11" href="#ref11" onclick="return citeTo(11,this)">[11]</a>, CC BY 4.0.</div></div></div>
+      <div class=""><p class="">PET is a polyester. PETase hydrolyses the ester bonds, releasing BHET, then MHET, then TPA and ethylene glycol. Because the bonds sit in a solid polymer this is a <strong>surface reaction</strong>, so rate depends on accessible surface and saturates at high enzyme loading.&nbsp;</p>
+    
+
+    </div>
+    </div>
+    <h4 style="font-size:20px;margin:26px 0 6px" class="">How can this be measured?</h4>
+    <div class="optgrid">
+      <div class="opt pick"><div class="ico"><img src="assets/devices/plate-reader.png" alt="Plate reader"></div><div class="tag">Option 1</div><b>UV absorbance, 240 nm</b><p>Soluble aromatic products read directly from the supernatant.</p><p class="pt">Reads all three products at once, so the number does not depend on how far a variant takes the reaction.</p><div class="verdict">Chosen</div></div>
+      <div class="opt out"><div class="ico"><img src="assets/devices/plate-reader.png" alt="Plate reader"></div><div class="tag">Option 2</div><b>Fenton fluorimetry</b><p>Hydroxyl radical converts TPA to a fluorescent product.</p><p class="pt">Sees TPA only, and the TPA to MHET ratio differs between variants, so it would rank product distribution rather than activity.</p><div class="verdict">Rejected</div></div>
+      <div class="opt out"><div class="ico"><img src="assets/devices/plate-reader.png" alt="Plate reader"></div><div class="tag">Option 3</div><b>pH indicator</b><p>Dye reports the protons released as esters are cut.</p><p class="pt">Has to be in the reaction from the start and needs it weakly buffered, so it changes the reaction instead of reading it.</p><div class="verdict">Rejected</div></div>
+      <div class="opt out"><div class="ico"><img src="assets/devices/plate-reader.png" alt="Plate reader"></div><div class="tag">Option 4</div><b>Model substrates</b><p>pNP esters or BHET in place of the polymer.</p><p class="pt">Measures a proxy rather than the PET we were given, and pNP esters suit preliminary assays only.</p><div class="verdict">Rejected</div></div>
+      <div class="opt out"><div class="ico"><img src="assets/devices/hplc.png" alt="HPLC system"></div><div class="tag">Option 5</div><b>HPLC</b><p>Separates and quantifies each product individually.</p><p class="pt">Not a plate readout, so it sits outside the set of options this screen was choosing between.</p><div class="verdict">Not at plate scale</div></div>
+    </div>
+    <ul class="decisions">
+      <li><b>Everything is read as BHET equivalents at 240 nm.</b><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">TPA, MHET and BHET share an extinction coefficient of approximately 13,800 M⁻¹cm⁻¹ at 240 nm, so a single reading reports total depolymerisation regardless of how far each variant drives the reaction toward the monomer <a class="cite" id="cite-8-1" data-cite="8" href="#ref8" onclick="return citeTo(8,this)">[8]</a> <a class="cite" id="cite-9-1" data-cite="9" href="#ref9" onclick="return citeTo(9,this)">[9]</a>.</span><span class="pb">That is the property the other plate readouts do not have. Fenton fluorimetry detects TPA exclusively, since MHET and BHET do not react with the hydroxyl radical, and the TPA to MHET ratio varies between variants, so it would confound product distribution with activity. The pH indicator needs a weakly buffered reaction, a constraint that propagates backwards into purification, and the dye has to be present from the start rather than added at readout. Model substrates replace the PET rather than measure its hydrolysis, and Pirillo <em>et al.</em> are explicit that pNP esters suit preliminary assays only <a class="cite" id="cite-9-2" data-cite="9" href="#ref9" onclick="return citeTo(9,this)">[9]</a>.</span><span class="pb">HPLC is the one that would give more information, as it resolves the individual products. However, it cannot be used as it is not a plate readout. It could be used for better characterization of the variants that pass the screening.</span></span></span></li>
+      <li><b class="">Absorbance overestimates against HPLC, but can be used in a variant ranking scenario like this.&nbsp;</b><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">The aggregate absorbance method runs roughly 15 to 40% high compared with chromatography, with an error floor around 1.3-fold <a class="cite" id="cite-8-2" data-cite="8" href="#ref8" onclick="return citeTo(8,this)">[8]</a>. Since the screen ranks variants against each other on the same plate and against a wild-type control measured alongside them, a consistent multiplicative offset does not change the order.</span></span></span></li>
+    </ul>
+  </div>
+  <div class="bsec slide" id="bs3">
+    <div class="bnum">03</div>
+    <h3>Cell-free expression types</h3>
+    <p class="">Two kinds of cell-free TX-TL exist:</p>
+    <div class="twocol">
+      <div class="card tint">
+        <div class="lab">Chosen</div><h4>1. Lysate</h4>
+        <p class="">Cellular extract with the native machinery. Cheaper per reaction, higher yield, and what the brief specifies. It is reducing by default, so it needs a disulfide supplement to be usable for PETase.</p>
+      </div>
+      <div class="card" style="opacity:.55">
+        <div class="lab muted">Not taken</div><h4>2. Reconstituted, recombinant</h4>
+        <p class="">Purified components only, so no reductases and nothing in it that was not put there. The cleanest route to disulfide formation, and should be considered when reviewing these protocols. However, it cannot be considered lysate.</p></div></div>
+  </div>
+
+  <div class="bsec slide" id="bs4">
+    <div class="bnum">04</div>
+    <h3>How does split-GFP work?</h3>
+    <div class="bsplit">
+      <div><div class="figure"><img src="assets/figs/split-gfp.png" alt="Split-GFP in four steps: tagged expression product, detector added in excess, complementation, fluorescent readout" style="width:50%;max-width:50%;height:auto;display:block;margin:0 auto"><div class="figcap">Only folded, soluble protein complements. Misfolded or aggregated protein keeps the tag inaccessible, so it never lights up, which is why this reports usable enzyme rather than total protein.</div></div></div>
+      <div><p class="">GFP11 is the eleventh β-strand of GFP and does nothing on its own. Add the GFP1-10 detector fragment and the two self-associate, the chromophore matures, and fluorescence develops in proportion to the molar concentration of tagged protein <a class="cite" id="cite-3-1" data-cite="3" href="#ref3" onclick="return citeTo(3,this)">[3]</a> <a class="cite" id="cite-4-1" data-cite="4" href="#ref4" onclick="return citeTo(4,this)">[4]</a>.</p>
+    
+    <ul class="decisions">
+      <li class=""><b>The DNA must be ordered with the tag.</b> <span class="why-wrap" data-asm="14"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!<br></button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> Variants arrive with the GFP11 tag and the Strep handle already in the sequence. We add neither.</span><a class="asmlink" href="#" onclick="return asmTo(14)">Assumption 14 in the list →</a></span></span><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">The construct we express is PETase · GS · GFP11 · GS · Twin-Strep · GS, and all of that has to be in the fragment Twist synthesises.</span></span></span></li>
+      <li class=""><b class="">The reference is WT-PETase-GFP11 on the same plate, never a literature value.</b> <span class="why-wrap" data-asm="13"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> Activities are comparable only within the GFP11-tagged series, and not against untagged literature values.</span><a class="asmlink" href="#" onclick="return asmTo(13)">Assumption 13 in the list →</a></span></span><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">Published GFP11 fusions retain 71 to 94% of untagged activity <a class="cite" id="cite-6-1" data-cite="6" href="#ref6" onclick="return citeTo(6,this)">[6]</a>, so the tagged enzyme assays cannot be compared to untagged enzyme assays.&nbsp;</span><span class="pb">Therefore, it is recommendable to add a reference as&nbsp;WT-PETase-GFP11 on the same plate. This allows quantification and correction of plate-to-plate variation.</span></span></span></li>
+    </ul>
+    <p class="hint">GFP1-10 should be produced separately, using, for example, the method in Müller <em>et al.</em> <a class="cite" id="cite-5-1" data-cite="5" href="#ref5" onclick="return citeTo(5,this)">[5]</a>.</p></div>
+    </div>
+  </div>
+  <div class="bsec slide" id="bs5">
+    <div class="bnum">05</div>
+    <h3>Strep-tag purification</h3>
+    <div class="bsplit">
+      <div><div class="figure"><img src="assets/figs/strep-purification.png" alt="Twin-Strep-Tag purification in four stages: expression product carrying the tag, capture on MagStrep type3 XT beads, magnetic separation with unbound proteins washed away, and elution of the purified tagged protein" style="width:50%;max-width:50%;height:auto;display:block;margin:0 auto"><div class="figcap">The four stages Twin-Strep-Tag purification. Batch mode in a plate rather than on a column, which is what makes it workable at 96 wells. The magnet holds the beads while the unbound lysate is drawn off, so the separation needs no spin and no filter.</div></div></div>
+      <div><p class="">The Twin-Strep-Tag binds Strep-Tactin on a magnetic bead. The plate goes onto a magnet, the unbound lysate is washed away, and the protein is released with Buffer BXT.</p>
+    
+    <ul class="decisions">
+      <li class=""><b>Affinity capture rather than a size or charge method.</b><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">Affinity capture is also the only plate-scale option that is indifferent to the variant: size and charge methods would separate variants differently from one another.</span><span class="pb"><b class="">Why Strep over His Tagging?&nbsp;</b>Mild, near-physiological elution conditions, and no imidazole to carry into a downstream reaction.</span></span></span></li>
+      <li><b>Purification buys a defined matrix. A cleaner one is a side effect.</b><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">The enzyme arrives in the assay well in a known buffer rather than in whatever the expression reaction left behind. That matters because the readout is absorbance in the UV, where cell-free components absorb.</span><span class="pb">The open question attached to it is in phase 06: Buffer BXT contains biotin, and biotin absorbs in the region being read at 240 nm.</span></span></span></li>
+    </ul></div>
+    </div>
+  </div>
+
+    <div class="decknav">
+      <button class="arrow-btn" type="button" aria-label="Previous" onclick="bio(-1)" disabled="">←</button>
+      <button class="arrow-btn" type="button" aria-label="Next" onclick="bio(1)">→</button>
+      <span class="deckcount" id="bioCount">1 / 5</span>
+      <span class="dots" id="bioDots"><button class="dot on" type="button" aria-label="Slide 1" onclick="bioGo(1)"></button><button class="dot" type="button" aria-label="Slide 2" onclick="bioGo(2)"></button><button class="dot" type="button" aria-label="Slide 3" onclick="bioGo(3)"></button><button class="dot" type="button" aria-label="Slide 4" onclick="bioGo(4)"></button><button class="dot" type="button" aria-label="Slide 5" onclick="bioGo(5)"></button></span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ PROTOCOL ============================ -->
+<div class="pane" id="protocol" hidden="">
+  <div id="flowview" class="">
+    <div class="lab">The protocol</div>
+    <h2 class="">Final reconstructed manual protocol</h2>
+    <p class="lede">Click any phase to open it.</p>
+
+    <div class="snake">
+      <button class="node c1" onclick="detail('p1')"><span class="n">01</span>TWIST plate<br>resuspension</button>
+      <div class="arrow"></div>
+      <button class="node c2" onclick="detail('p2')"><span class="n">02</span>PCR<br>amplification</button>
+      <div class="arrow"></div>
+      <button class="node c3" onclick="detail('p3')"><span class="n">03</span>Cell-free<br>expression</button>
+
+      <div class="drop"><div class="arrow down right"></div></div>
+
+      <button class="node c6" onclick="detail('p6')"><span class="n">06</span>Purification</button>
+      <div class="arrow left"></div>
+      <button class="node c5" onclick="detail('p5')"><span class="n">05 · gate</span>Gate &amp;<br>normalise</button>
+      <div class="arrow left"></div>
+      <button class="node c4" onclick="detail('p4')"><span class="n">04</span>Split-GFP<br>quantification</button>
+
+      <div class="drop"><div class="arrow down left"></div></div>
+
+      <button class="node c7" onclick="detail('p4')"><span class="n">07</span>Split-GFP<br>quantification</button>
+      <div class="arrow"></div>
+      <button class="node c8" onclick="detail('p7')"><span class="n">08</span>PET assay</button>
+      <div class="arrow"></div>
+      <button class="node c9" onclick="detail('p8')"><span class="n">09</span>Data out<br>&amp; ranking</button>
+    </div>
+
+    <h3 class="">Gates</h3>
+    <table>
+      <tbody><tr><th>Gate</th><th>Reads</th><th>Decides</th><th>Failure action</th></tr>
+      <tr><td><strong>Expression gate</strong><br><span class="lab muted">phase 04</span></td><td>Split-GFP concentration per well</td><td>Whether a variant is purified and given an assay slot at all</td><td>Dropped from the round, flagged with its concentration, retained for the next design round's input</td></tr>
+    </tbody></table>
+  </div>
+
+  <!-- ---------- phase details ---------- -->
+  <div id="detailview" class="" hidden="">
+    <button class="back" onclick="back()">← All phases</button>
+
+    <div class="pdet" id="p1" hidden="">
+      <div class="detail-head"><div><div class="lab">Phase 01</div><h2 class="">Resuspension of TWIST plate gene fragments</h2></div></div>
+      <p class="">The library arrives as lyophilised linear gene fragments, one variant per well, with the regulatory elements synthesised into the fragment: T7 promoter, RBS, the tagged ORF, terminator. The plate is treated as <strong>archival stock</strong> <span class="why-wrap" data-asm="1"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> Fragments arrive in 96-well format, lyophilised, with the T7 promoter, RBS and terminator already synthesised into the fragment.</span><a class="asmlink" href="#" onclick="return asmTo(1)">Assumption 01 in the list →</a></span></span>, resuspended in place, aliquoted out once, never used as a reaction vessel.
+      <div class="grid2">
+        <div class="card"><div class="lab">Inputs</div><div class="lab"><br></div><ul>
+          <li>Gene fragments <span>100 ng – 1 µg</span></li>
+          <li>Fragment length <span>~1,050 bp</span></li>
+          <li>Plate map (CSV) <span>from Twist</span></li>
+          <li>Format <span>96, dried</span></li>
+        </ul></div>
+        <div class="card"><div class="lab">Handling</div><h4 class="">Resuspension</h4><ul>
+          <li>Spin before opening <span>400 × g</span></li>
+          <li>Buffer <span>TE low-EDTA, not water</span></li>
+          <li>Target stock <span class="">≥ 10 ng/µL</span></li>
+          <li class="">Incubation after mixing <span>until in solution</span></li>
+        </ul></div>
+      </div>
+      <h3 class="">Decisions</h3>
+      <p class=""><strong class="">The plate map is ingested from TWIST documentation and used for well allocation and provenance throughout in a data model.</strong></p><p class=""><strong class="">Gene fragments must be amplified, as the concentration we receive is variable and can be too low to support replicates and sample retention.</strong></p>
+      <p class=""><strong class="">The plate is used as stock: gene fragments will be amplified, and samples of each construct will be stored in case further experimentation or troubleshooting is required.&nbsp;</strong></p>
+      <div class="callout"><div class="dot"></div><div class=""><span class="badge open">open</span> &nbsp;<strong>Twist plate geometry is not publicly specified <span class="why-wrap" data-asm="7"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> Well geometry of the Twist delivery plate is unknown, and nothing in the workflow depends on it.</span><a class="asmlink" href="#" onclick="return asmTo(7)">Assumption 07 in the list →</a></span></span></strong></div><div class="">The design does not depend on it, because material is moved into a plate we control before anything else happens.&nbsp;</div></div>
+    </div>
+
+    <div class="pdet" id="p2" hidden="">
+      <div class="detail-head"><div><div class="lab">Phase 02</div><h2>PCR amplification</h2></div></div>
+      <p class=""><b class="">Stage added to match DNA ng requirements.&nbsp;</b><span class="why-wrap" data-asm="15"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> Cycling, amplicon sizing and any spin-down are an existing automated stage that hands back a cycled plate in the labware this deck expects.</span><a class="asmlink" href="#" onclick="return asmTo(15)">Assumption 15 in the list &rarr;</a></span></span> Each variant is amplified in its own reaction off the universal adapters, cleaned, quantified and normalised into a working plate.&nbsp;</p>
+
+      <h3>Design decisions</h3>
+      <ul class="decisions">
+        <li class=""><b>Every variant is amplified before expression.</b> <span class="why-wrap" data-asm="6"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> The universal adapters are ordered, so one primer pair serves every well and a plate-wide master mix is possible.</span><a class="asmlink" href="#" onclick="return asmTo(6)">Assumption 06 in the list &rarr;</a></span></span><span class="why-wrap" data-asm="2"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> Every variant goes through the PCR, rather than only the wells that came in low.</span><a class="asmlink" href="#" onclick="return asmTo(2)">Assumption 02 in the list →</a></span></span><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb"><strong>Why is a PCR necessary?</strong> The Twist linear ds DNA yield is from 100 ng to 1 µg <a class="cite" id="cite-13-1" data-cite="13" href="#ref13" onclick="return citeTo(13,this)">[13]</a>, so we cannot make sure that there is enough DNA for the TX-TL to run correctly with repeats. Therefore, we amplify the DNA before the next step.</span><span class="pb">The numbers behind that: a 50 µL cell-free reaction wants 250 ng of linear template, which is NEB's own figure. So a well at the bottom of Twist's range does not fund even one reaction, let alone the three replicates each construct needs. A well at the top funds four.</span><span class="pb">That is a mass problem, and no choice of resuspension volume fixes it. Left alone it does something worse than running out: the library silently loses its low-yield wells, for reasons that have nothing to do with the variant. The tenfold spread also walks into the expression reaction, so yield differences between wells would partly be Twist's synthesis rather than the enzyme.</span><span class="pb">An earlier version of this design cut the PCR, arguing that ordering more material is cheaper than a thermocycler and a cleanup stage. Working the volumes backwards killed that: at the bottom of the guaranteed range a well cannot fund even one reaction, so the cut was buying simplicity with silent library loss.</span></span></span></li>
+        <li class=""><b class="">Bead cleanup, elution into water, then quantify and normalise.</b><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">Magnesium, dNTPs, primers and polymerase carried over into a reconstituted cell-free reaction interfere with it, and the PURExpress manual states explicitly that templates must be free of non-specific amplification products, so the PCR product has to be cleaned up before use.</span><span class="pb">Quantification after cleanup (TabeStation/Qubit) gives the final DNA concentration per well. That value goes into the data model, which then calculates how much template to use and how much to dilute for each cell-free reaction.</span></span></span></li>
+        <li class=""><b class="">The Twist plate is archival. If re-amplifications are required, they will be from the original plate.</b>&nbsp;<span class="why-wrap" data-asm="3"><button class="qmark bang" type="button" aria-label="Assumption">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> One amplification yields enough template for three expression runs plus retained stock, so the archival plate is not touched again.</span><a class="asmlink" href="#" onclick="return asmTo(3)">Assumption 03 in the list →</a></span></span><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">Re-amplifying an amplicon compounds both the error load and the fold amplification, and it is the fastest route to a jackpotted well <a class="cite" id="cite-14-1" data-cite="14" href="#ref14" onclick="return citeTo(14,this)">[14]</a>. If more material is needed, it comes from another amplification off the original stock, not from the working plate.</span></span></span></li></ul>
+    </div>
+
+    <div class="pdet" id="p3" hidden="">
+      <div class="detail-head"><div><div class="lab">Phase 03 · tier 1</div><h2>Cell-free expression</h2></div></div>
+      <p class="">Each variant is expressed from its normalised template in a cell-free transcription and translation reaction. <span class="why-wrap" data-asm="21"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> Every protocol here has already been optimised for PETase in these reactions, so the conditions are starting points that work rather than ones still to be tuned.</span><a class="asmlink" href="#" onclick="return asmTo(21)">Assumption 21 in the list &rarr;</a></span></span></p>
+      <div class="grid3">
+        <div class="card"><div class="lab">Reagents</div><h4>Per reaction</h4><ul>
+          <li>Reaction volume <span>50 µL</span></li>
+          <li>Template <span>5 µL</span></li>
+          <li>Lysate + buffer <span>78% v/v</span></li>
+          <li>GamS (linear DNA) <span>if crude</span></li>
+        </ul></div>
+        <div class="card"><div class="lab">Conditions</div><h4>Incubation</h4><ul>
+          <li>Temperature <span>37 °C</span></li>
+          <li>Duration <span>3 h</span></li>
+          <li>Seal <span>non-breathable</span></li>
+          <li>Plate <span>96 PCR, skirted</span></li>
+        </ul></div>
+        <div class="card"><div class="lab">Controls</div><h4>On every plate</h4><ul>
+          <li>WT-PETase-GFP11 <span>6–8 wells</span></li>
+          <li>No-template <span>6–8 wells</span></li>
+          <li>Untagged construct <span>background</span></li>
+          <li>GFP11 standard <span>curve</span></li>
+        </ul></div>
+      </div>
+      <h3>Design decisions</h3>
+      <ul class="decisions">
+        <li><b class="">A lysate system.</b><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">The project specification says lysate specifically. There are two types of cell-free TX-TL reactions, one that uses a reconstituted mixture of recombinant enzymes and the other that uses cellular lysate.</span><span class="pb">The kit is chosen to pin down a protocol that has all the characteristics the screen needs, and that protocol is what gets automated. So the assumption is that this kit is the lysate in question, because it is the one that works with this protein in this system.</span></span></span></li>
+
+        <li class=""><b>Kit: NEBExpress Cell-free <em>E. coli</em> Protein Synthesis System, with the PURExpress Disulfide Bond Enhancer.</b><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">It is a lysate, which is what the brief asks for. The protocol is public and explicit, unlike other proprietary disulfide kits, which is what is needed for a first automation approach: knowing what goes in and why is important for troubleshooting.</span><span class="pb">NEB recommend the combination in the NEBExpress manual itself: NEBExpress (E5360) plus PURExpress Disulfide Bond Enhancer (E6820), 2 µL of each enhancer per 50 µL reaction.</span></span></span></li>
+
+        <li class=""><b class="">Reagents to make sure disulfide bonds fold properly are required. This affects the kit choice.</b><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">Is-PETase has 2 disulfide bonds, so it is very important to have in mind the kit chosen for the expression, as in some lysates these will not form reliably, leading to a protein with low specific activity and poor thermal stability, or that partly aggregates.</span><span class="pb">For example, a standard <em>E. coli</em> lysate is full of reducing agents and the enzymes that keep regenerating them. If this lysate is used directly, PETase's cysteines would get pulled back to free thiols faster than they can pair up to form the disulfide bonds. This would give a result in the split-GFP and activity assays that could lead to misleading conclusions: the protein would be formed and detected, but its activity would not be the actual activity of the variant, as the protein is not functional for its lack of disulfide bonds.</span><span class="pb"><b>How can this be solved?</b></span><span class="pb"><b>1. Reconstituted (PURE) plus Disulfide Bond Enhancer.</b> PURE has no reductases because it only contains what was put in. It has no oxidation machinery either, but it is supplied by the enhancer. This would be the cleanest way but it is not lysate.</span><span class="pb"><b>2. Treated lysate: iodoacetamide, oxidising buffer and DsbC.</b> Use iodoacetamide to alkylate the free thiols to kill the reductases, then a glutathione buffer sets the redox potential and DsbC proofreads wrong pairings <a class="cite" id="cite-1-2" data-cite="1" href="#ref1" onclick="return citeTo(1,this)">[1]</a> <a class="cite" id="cite-2-2" data-cite="2" href="#ref2" onclick="return citeTo(2,this)">[2]</a>. Possible if the lysate is made in-house. It costs some overall yield and it is more work, but it is the only option that does not depend on a proprietary formulation.</span><span class="pb"><b>3. Lysate kit with a documented disulfide supplement.</b> For example, a well documented protocol is the NEBExpress Cell-free <em>E. coli</em> Protein Synthesis System (E5360) plus PURExpress Disulfide Bond Enhancer (E6820), 2 µL of each enhancer per 50 µL reaction. NEB recommend this in the NEBExpress manual itself. This is the option taken.</span><span class="pb">If the lysate were made in-house instead, the same requirement holds: it has to be treated so that the redox environment lets PETase's two disulfide bonds form, or the numbers coming out of this screen are not measuring the variant.</span></span></span></li>
+
+        <li class=""><b class="">50 µL reactions.</b>&nbsp;<span class="why-wrap" data-asm="8"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> The cell-free reaction runs at 50 µL, the kit's standard volume, for 3 h at 37 °C.</span><a class="asmlink" href="#" onclick="return asmTo(8)">Assumption 08 in the list →</a></span></span><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">The fixed components of the reaction occupy about 78% of any volume, so template plus water is roughly 22% of it. For the template transfer to stay at or above 3 µL, the volume below which air-displacement transfer stopped being reproducible in my own calibration work, with 2 µL failing, the reaction has to be at least 3 ÷ 0.22 ≈ 14 µL. Below that the slack is smaller than the smallest transfer that can be trusted, whatever concentration the stock is at.</span><span class="pb">With acoustic dispensing the arithmetic inverts <a class="cite" id="cite-15-1" data-cite="15" href="#ref15" onclick="return citeTo(15,this)">[15]</a>: sub-microlitre transfers become reliable, the reaction can drop to 10 µL or less, and the lysate goes twice as far. Reaction volume is a parameter, so that is a configuration change rather than a redesign.</span></span></span></li></ul>
+
+    </div>
+
+    <div class="pdet" id="p4" hidden="">
+      <div class="detail-head"><div><div class="lab">Phase 04 · 07</div><h2>Split-GFP quantification</h2></div></div>
+      <p class="">An aliquot of each expression reaction is combined with refolded GFP1-10 detector and left to complement, then read as fluorescence and converted to an absolute concentration against a standard curve.</p>
+      <div class="note"><strong class="">Protocol source.&nbsp;</strong> Based on Cabantous &amp; Waldo (2006) <a class="cite" id="cite-3-2" data-cite="3" href="#ref3" onclick="return citeTo(3,this)">[3]</a>, which is the original split-GFP quantification methodology. The cell-free synthesis application from Pham <em>et al.</em> (2024) <a class="cite" id="cite-4-2" data-cite="4" href="#ref4" onclick="return citeTo(4,this)">[4]</a> is used to fine-tune the timings. GFP1-10 can be made using the method outlined by Müller <em>et al.</em> (2021) <a class="cite" id="cite-5-2" data-cite="5" href="#ref5" onclick="return citeTo(5,this)">[5]</a>. The automated version of this protocol, which the automation steps build on, is collected in the study by Santos-Aberturas <em>et al.</em> (2015) <a class="cite" id="cite-6-2" data-cite="6" href="#ref6" onclick="return citeTo(6,this)">[6]</a>.</div>
+      <div class="grid2">
+        <div class="card"><div class="lab">Assay</div><h4>Per well</h4><ul>
+          <li>Sample <span class="">5 µL</span></li>
+          <li>GFP1-10 in TNG <span class="">15 µL</span></li>
+          <li>Complementation <span class="">25ºC for 2.5h</span></li>
+          <li>Read <span class="">ex 488 / em 530</span></li>
+        </ul></div>
+        <div class="card"><div class="lab">Calibration</div><h4>Per plate</h4><ul class="">
+          <li>Standard curve <span class="">0.11–14.3 µM</span></li><li>Dilution series <span>2-fold</span></li>
+          <li>Background <span>untagged lysate</span></li>
+          <li>Subtraction <span>per plate</span></li>
+        </ul></div>
+      </div>
+      <h3 class="">Decisions</h3>
+      <p class=""><strong class="">The sample volume is 5 µL.&nbsp;</strong><span class="">Diluting 5 µL into 15 µL of TNG puts the reading mid-curve and leaves 45 µL of each reaction for purification, and 40 µL for the activity assay.&nbsp;</span></p>
+      <p class=""><strong class="">Untagged-construct background control required&nbsp; per plate.</strong> Without it the fluorescence floor is unknown and every concentration carries an unmeasured offset, which then propagates into the normalisation and therefore into every activity number.</p><p class=""><b class="">Two standard curves.&nbsp;</b>Columns 1 and 2 carry duplicate GFP standard curves, pipetted with separate tips. A bad transfer in one curve then shows up as two slopes that disagree, rather than as a single wrong slope you have no way to catch. The curves sit on the sample plate itself because the slope depends on things that change from run to run: detector batch, complementation time, temperature, and reader gain..</p><p class=""><b class="">Split-GFP quantification is carried out before and after purification.&nbsp;</b><span class="">The first read is the gate: it says which variants made enough soluble protein to be worth putting on beads. It is also used in the output data to quantify expression of the proteins. The second read is required because the activity assay normalises every variant to 1 µM enzyme, and that concentration has to be measured.&nbsp;</span></p>
+    </div>
+
+    <div class="pdet" id="p5" hidden="">
+      <div class="detail-head"><div><div class="lab">Phase 05 · gate</div><h2 class="">Gate and normalise</h2></div></div>
+      <p class=""><span style="font-size: 23px; font-weight: 600;" class="">Design decisions</span></p><ul class="decisions"><li class=""><b>The gate is a spend decision.</b><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">A well below the concentration floor did not make usable enzyme. Spending beads on it and giving it an assay slot buys nothing, because a low activity reading from it cannot be told apart from no enzyme at all.</span><span class="pb">What the gate protects is finite: one tube of lysate and a bead budget. It keeps them pointed at wells that can produce an interpretable number.</span></span></span></li>
+        <li class=""><b class="">Normalisation is physical and happens before the assay.</b><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">Every passer is diluted to a common enzyme concentration before the assay, levelled to 1 µM then 1:10 into the reaction at 0.1 µM.</span><span class="pb">Dividing activity by concentration afterwards is the obvious shortcut and it is wrong here. PET hydrolysis is a heterogeneous surface reaction that saturates, so above some loading the rate stops scaling with enzyme concentration. Dividing after the fact then systematically penalises exactly the variants that expressed best.</span></span></span></li>
+        <li class=""><b class="">The threshold comes from the controls on the same plate.</b><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">The floor is set from the no-template and wild-type control distributions on that plate, so it travels with the plate's own background and detector lot rather than assuming those are constant between runs.</span></span></span></li>
+        </ul>
+      <table>
+        <tbody><tr><th>Parameter</th><th>Value</th><th>Status</th></tr>
+        <tr><td>Concentration floor for the gate</td><td>Set from the no-template and WT control distributions on the same plate</td><td><span class="badge">per plate</span></td></tr>
+        <tr><td class="">Levelling concentration</td><td>1 µM, diluted 1:10 into the assay</td><td><span class="badge">config</span></td></tr>
+        <tr><td class="">Assay slots available</td><td class="">72, that is 24 constructs at n = 3, with 24 wells kept for controls</td><td><span class="badge">geometry</span></td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="pdet" id="p6" hidden="">
+      <div class="detail-head"><div><div class="lab">Phase 06</div><h2 class="">Purification</h2></div></div>
+      <div class="grid2"><div class="card"><div class="lab">Purification</div><h4>Magnetic Strep capture</h4><ul>
+          <li>Resin <span>MagStrep type3 XT</span></li>
+          <li>Mode <span>batch, in-plate</span></li>
+          <li>Handle <span>Twin-Strep-Tag</span></li>
+          <li>Elution <span>Buffer BXT</span></li>
+          <li>Target mass <span>~33 kDa <span class="why-wrap" data-asm="17"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> The expressed construct is about 33 kDa: a mature PETase catalytic domain at 28 to 30 kDa, plus the Twin-Strep-Tag at roughly 3.5 kDa, GFP11 at 1.7 kDa and the GS linkers. The brief never fixes a parent scaffold, so this is a stated assumption rather than a calculation off a sequence.</span><span class="pb">It matters because the purification protocol has a mass ceiling: binding falls off above roughly 90 kDa. At 33 kDa the construct sits well under it.</span><a class="asmlink" href="#" onclick="return asmTo(17)">Assumption 17 in the list →</a></span></span></span></li>
+        </ul></div>
+        <div class="card"><div class="lab">Chemistry</div><h4>Capture and release</h4><ul>
+          <li>Binding <span>Twin-Strep to Strep-Tactin</span></li>
+          <li>Washes <span>remove lysate components</span></li>
+          <li>Elution <span>Buffer BXT, biotin analogue</span></li>
+          <li>After elution <span>re-quantify</span></li>
+        </ul></div>
+      </div>
+      <div class="note">The protocol has a ceiling near 90 kDa, above which binding degrades, so a 33 kDa construct is comfortably inside the window it was written for.&nbsp;</div>
+
+      <h3 class="">Why purify</h3>
+      <p class="">Groseclose <em>et al.</em> assay crude lysate after normalising it, and purify only the final one to ten variants.</p><p class="">Here, purification is added because the elution removes cell-free components from the assay well, which matters because the readout is absorbance in the UV where many of those components absorb.</p>
+      <p class=""><span class="why-wrap" data-asm="19"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> Whatever Buffer BXT carries into the assay well does not move the 240 nm reading, and if it does, the no-enzyme control on the same plate measures the offset and it is subtracted.</span><a class="asmlink" href="#" onclick="return asmTo(19)">Assumption 19 in the list &rarr;</a></span></span> <strong>Protein is re-quantified after elution.</strong> Purification yield is not uniform across wells, so the concentration that matters for levelling is the one measured after the beads.</p>
+      <p class="">IBA publish a 96-well batch protocol for these beads <a class="cite" id="cite-16-1" data-cite="16" href="#ref16" onclick="return citeTo(16,this)">[16]</a>.</p>
+      <div class="grid2">
+        <div class="card"><div class="lab">Labware</div><h4>300 µL V-bottom, PCR format</h4><ul>
+          <li>Binding plate <span>96 V-bottom, 300 µL</span></li>
+          <li>Elution plate <span>same format, fresh</span></li>
+          <li>Separator <span>96-well magnet, PCR profile</span></li>
+          <li>Shaker <span>microplate orbital</span></li>
+        </ul></div>
+        <div class="card tint"><div class="lab">Per well</div><h4>Volumes and capacity</h4><ul>
+          <li>Beads <span>40 µL of 5%, = 2 µL beads</span></li>
+          <li>Sample <span>200 µL</span></li>
+          <li>Wash <span>200 µL Buffer W, ×3 and ×3</span></li>
+          <li>Elution <span>100 µL BXT, twice</span></li>
+          <li>Capacity <span>1.7 nmol, about 56 µg</span></li>
+          <li>Fullest moment <span>240 µL of 300</span></li>
+        </ul></div>
+      </div>
+      <p>Binding is 60 min at room temperature with the plate shaking at 700 rpm, elution 10 min at 400 rpm, repeated once. The beads are not reusable.</p>
+      <h3 class="">Design decisions</h3><h3 class=""><span style="font-size: 17px;" class="">Using a 300 µL V-bottom plate. <span style="font-weight: normal;" class="">A</span><span style="font-weight: normal;" class="">&nbsp;V-bottom plate can collect the bead pellet into a narrower, steeper cone, which is the geometry the aspiration offset has to clear, so the supernatant can be drawn down further before the tip reaches beads.&nbsp;</span></span></h3>
+    </div>
+
+    <div class="pdet" id="p7" hidden="">
+      <div class="detail-head"><div><div class="lab">Phase 07</div><h2>PET activity assay</h2></div></div>
+      <p><span class="why-wrap" data-asm="12"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> One assay plate per 24 h is acceptable throughput, which is what keeps the scheduling trivial.</span><a class="asmlink" href="#" onclick="return asmTo(12)">Assumption 12 in the list &rarr;</a></span></span> Normalised enzyme is added to wells that already contain a PET insert, sealed, and held at 68&nbsp;°C. Supernatant is sampled at intervals and read as absorbance; the rise in aromatic product is the activity signal.</p>
+      <div class="note"><strong class="">Protocol source.</strong> This protocol was reconstructed from three papers. Groseclose <em>et al.</em> (ACS Catal. 2024) <a class="cite" id="cite-7-1" data-cite="7" href="#ref7" onclick="return citeTo(7,this)">[7]</a> supplied the operational parameters: substrate, loading, buffer, enzyme concentration, sealing, time points and units, drawn from the validation assay in their directed-evolution platform. Zhong-Johnson <em>et al.</em> (Sci. Rep. 2021) <a class="cite" id="cite-8-3" data-cite="8" href="#ref8" onclick="return citeTo(8,this)">[8]</a> supplied the readout characterisation: what the absorbance measures, the wavelength choice, and the error bounds within which differences can be called. Pirillo <em>et al.</em> (FEBS J. 2021) <a class="cite" id="cite-9-3" data-cite="9" href="#ref9" onclick="return citeTo(9,this)">[9]</a> supplied the method selection and the kinetic framework.</div>
+      <div class="grid3">
+        <div class="card"><div class="lab">Chemistry</div><h4>Reaction</h4><ul>
+          <li>Buffer <span>100 mM NaPi pH 8</span></li>
+          <li>Substrate <span>3 mm coupon</span></li>
+          <li>Insert mass <span>~2.5 mg</span></li>
+          <li>Loading <span>0.92% w/v</span></li>
+          <li>Enzyme <span>0.1 µM</span></li>
+        </ul></div>
+        <div class="card"><div class="lab">Format</div><h4>Plate</h4><ul>
+          <li>Plate <span>deep-well 96</span></li>
+          <li>Volume <span>500 µL</span></li>
+          <li>Temperature <span>68 °C</span></li>
+          <li>Wells used <span>all 96</span></li>
+          <li>Variant wells <span>72, 24 × 3</span></li>
+        </ul></div>
+        <div class="card"><div class="lab">Readout</div><h4>Sampling</h4><ul>
+          <li>Timepoints <span>2–24 h, ×7</span></li>
+          <li>Read <span>A240</span></li>
+          <li>Read plate <span>UV-transparent</span></li>
+          <li>Baseline <span>per-well t=0</span></li>
+          <li>Reported as <span>BHET equiv.</span></li>
+        </ul></div>
+      </div>
+      <h3>Decisions</h3>
+      <p><strong>A240 reads aggregate aromatics</strong> <span class="why-wrap" data-asm="9"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> The assay geometry transfers from Groseclose's platform: same substrate, loading, temperature and readout.</span><a class="asmlink" href="#" onclick="return asmTo(9)">Assumption 09 in the list →</a></span></span>, TPA, MHET and BHET together, so the reported quantity is total aromatic product in BHET equivalents, not a specific product. That is the right choice for a screen because different variants shift the TPA:MHET ratio, and a product-specific readout would rank variants partly on which product they happen to favour. It overestimates against HPLC by roughly 15–40%, consistently, which a ranking tolerates.
+      <p><strong>The read plate has to be UV-transparent.</strong> Standard polystyrene does not transmit at 240 nm. Supernatant is transferred into quartz or a UV-transparent plate for reading; the assay plate itself is deep-well polypropylene and never goes into the reader.</p>
+      <p><strong>The whole plate is used, edges included</strong> <span class="why-wrap" data-asm="10"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> A&nbsp; seal at every timepoint holds evaporation across the whole plate, edges included.&nbsp;</span><a class="asmlink" href="#" onclick="return asmTo(10)">Assumption 10 in the list →</a></span></span>, and it is resealed at every timepoint. The source platform left its edge wells empty as an evaporation precaution, which costs 36 of 96 wells. Here that precaution is treated as something to measure rather than inherit: an empty plate run on this hardware, with the seal and the sampling pattern we actually use, tells you whether the edges behave differently before a third of the plate is given up for them.</div>
+
+    <div class="pdet" id="p8">
+      <div class="detail-head"><div><div class="lab">Phase 08</div><h2>Data out</h2></div></div>
+      <table>
+        <tbody><tr><th>Field</th><th>Units</th><th>Meaning</th></tr>
+        <tr><td><code>variant_id</code></td><td>n/a</td><td>Identity from the Twist plate map, carried unchanged through every hop</td></tr>
+        <tr><td><code>soluble_conc</code></td><td>µM</td><td>Split-GFP concentration from the second read, on the eluate, against the on-plate calibration curves</td></tr>
+        <tr><td><code>gate_outcome</code></td><td>enum</td><td>pass · fail · queued. Read from <code>GateResult</code>, which keeps the threshold that produced it</td></tr>
+        <tr><td><code>product_release</code></td><td>µM BHET eq.</td><td>Baseline-subtracted A240 converted against the BHET standard, per timepoint</td></tr>
+        <tr><td><code>initial_rate</code></td><td>µM h⁻¹</td><td>Slope over the linear region, fitted from <code>TimeCourse</code> with the points used recorded</td></tr>
+        <tr><td><code>relative_activity</code></td><td>×WT</td><td>Rate relative to WT-PETase-GFP11, which sits among the 24 constructs on the same plate</td></tr>
+        <tr><td><code>qc_flags</code></td><td>list</td><td>Saturation, baseline drift, control failure, seal event missed. Carried on each <code>Reading</code></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ AUTOMATION ============================ -->
+<div class="pane" id="automation" hidden="">
+  <div class="lab">Automation</div>
+  <h2>How the protocol maps to hardware</h2>
+
+  <div class="subwrap">
+    <div class="subnav">
+      <button class="subtab" aria-selected="false" onclick="sub('a5',this)">Automation flowcharts</button>
+<button class="subtab" aria-selected="false" onclick="sub('a1',this)">Software</button>
+      <button class="subtab" aria-selected="false" onclick="sub('a2',this)">Robots &amp; devices</button>
+      <button class="subtab" aria-selected="false" onclick="sub('a3',this)">Deck setup</button>
+      <button class="subtab" aria-selected="true" onclick="sub('a4',this)">Plates, tips &amp; reagents</button>
+    </div>
+
+    <div class="subcontent">
+
+      <div class="subpane" id="a1" hidden="">
+        <div class="note"><strong>Repository.</strong> <a href="https://github.com/crissobrino/petase-screening-automation" target="_blank" rel="noopener">github.com/crissobrino/petase-screening-automation</a></div>
+        <p>The complete workflow was implemented in PyLabRobot to assess its end-to-end feasibility and identify potential issues or overlooked constraints.</p>
+        <p>The code is not yet ready for execution, as hardware-specific parameters and physical configurations still need to be defined. These are required inputs with no default values, ensuring that missing information is explicitly flagged rather than assumed.</p>
+
+        <h3>The five stages</h3>
+        <p>The screen carries DNA from a supplier plate through to an enzyme activity rate. Five stages: resuspension, cell-free expression, split-GFP quantification, Strep-tag purification, and a PET hydrolysis assay. Each stage plans as plain data and runs in simulation.</p>
+        <table>
+          <tbody><tr><th>Stage</th><th>Module</th><th>Does</th></tr>
+          <tr><td>0</td><td><code>planning/stage0_resuspension</code></td><td>Resuspends dried DNA on the supplier plate</td></tr>
+          <tr><td>2</td><td><code>planning/stage2_expression</code></td><td>Builds the master mix, runs cell-free expression</td></tr>
+          <tr><td>3</td><td><code>planning/stage3_quantification</code></td><td>Split-GFP read, calibration curve, gate</td></tr>
+          <tr><td>4</td><td><code>planning/stage4_purification</code></td><td>MagStrep bead capture and elution</td></tr>
+          <tr><td>5</td><td><code>planning/stage5_activity</code></td><td>PET hydrolysis, A240 time course, rate fit</td></tr>
+        </tbody></table>
+        <p>Each stage exposes one <code>plan_*</code> function returning a <code>Plan</code>. Stage 3 runs twice: once on the expression lysate to decide what is worth purifying, once on the eluate to measure what purification recovered.</p>
+
+        <h3>Architecture</h3>
+        <p>Three layers, each with one job.</p>
+        <div class="grid3">
+          <div class="card"><div class="lab">Layer 1</div><h4><code>domain/</code></h4><p>Holds the biology and the arithmetic. Plate layouts, master mix volumes, calibration curves, bead capacity, reaction rates, provenance. It works on numbers in a dict, so the chemistry is testable on its own.</p></div>
+          <div class="card"><div class="lab">Layer 2</div><h4><code>planning/</code></h4><p>Turns domain state into a <code>Plan</code>: an ordered list of immutable records. Each record names a role and a well, carries the reason it exists, and lists the variants it touches. A plan prints, diffs, and serialises to JSON before anything moves.</p></div>
+          <div class="card"><div class="lab">Layer 3</div><h4><code>execution/</code></h4><p>Resolves role names against a deck binding and calls PyLabRobot. PyLabRobot appears here and here alone, so retargeting to another robot means one binding file.</p></div>
+        </div>
+        <p>The operation vocabulary is eleven kinds, and the executor dispatches on kind and raises on anything else.</p>
+<pre>TRANSFER  MIX  DISCARD  MOVE_PLATE  SET_TEMPERATURE  INCUBATE
+SHAKE  SEAL  PEEL  READ  WAIT</pre>
+
+        <h3>Rules enforced in software</h3>
+        <ul class="aplist">
+          <li>A sealed plate cannot be pipetted or read</li>
+          <li>No transfer below 3 µL anywhere in the protocol <span class="why-wrap" data-asm="5"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> No transfer anywhere in the protocol goes below 3 µL, the volume at which air-displacement pipetting stopped being reproducible in my own calibration work.</span><a class="asmlink" href="#" onclick="return asmTo(5)">Assumption 05 in the list &rarr;</a></span></span></li>
+          <li>A mixing volume is checked against what the tube holds</li>
+          <li>Dead volume costed into every source before the plan is costed</li>
+          <li>Volume tracking on every well, tube and trough</li>
+          <li>Smallest tip that fits, and a stop when that size runs out</li>
+          <li>Tip tracking with a second rack that refills the first</li>
+          <li>Equal elapsed complementation time per well</li>
+          <li>No variant's replicates share a row or a column</li>
+          <li>One layout for every plate in the screen</li>
+          <li>Every measurement carries units and a parent reference</li>
+          <li>Departures from the supplier's protocol are printed with the plan</li>
+          <li>The executor raises on any operation it has no handler for</li>
+        </ul>
+
+        <h3>Simulation</h3>
+        <p>Everything runs on PyLabRobot's chatterbox backends. Volume tracking, tip tracking and <code>Strictness.STRICT</code> are all on at setup, so the simulation checks volumes and tips independently of the plan's own arithmetic. Both start from the same inputs, so agreement between them is evidence and disagreement is a bug.</p>
+        <p><code>device_extras_sim/</code> adds the devices PyLabRobot 0.2.2 leaves out: a sealer, a peeler, and a temperature controller that reports active cooling. It stays generic and reusable.</p>
+
+        <h3>Provenance</h3>
+        <p>One layout serves every plate in the screen, so a variant keeps the same well name from the Twist plate to the eluate.</p>
+        <p>Each stage writes a CSV of events. The accumulating record is those files joined in order, and it answers which wells hold a variant, whose material is in a given well, and whether every well a variant was drawn from is a well it had reached.</p>
+
+        <h3>Install and test</h3>
+<pre>python -m venv .venv
+.venv/bin/pip install -e ".[dev]"
+
+.venv/bin/python -m pytest</pre>
+        <p>Python 3.13 and above. PyLabRobot 0.2.2 is the one runtime dependency. 157 tests, around 5 seconds, run against the installed package.</p>
+
+        <h3>Structure</h3>
+<pre>src/
+  petase_screen/
+    domain/        11 modules — the science and the arithmetic
+    planning/       7 modules — stages and the operation vocabulary
+    execution/      2 modules — deck bindings and the executor
+  device_extras_sim/
+                    simulated sealer, peeler, active cooling
+tests/             10 modules, 157 tests</pre>
+      </div>
+
+      <div class="subpane" id="a2" hidden="">
+        <h3>Devices by capability</h3>
+        <p>Named instruments are one binding of these roles, not the design. Anything that satisfies the requirement column can be swapped in.</p>
+
+        <div class="devgrid">
+          <div class="devcard"><img src="assets/devices/liquid-handler.png" alt="Liquid handler with an open deck"><b>Liquid handler</b><span>Every transfer in the workflow. Single-channel access is what makes cherry-picking gate passers possible.</span></div>
+          <div class="devcard"><img src="assets/devices/robot-arm.png" alt="Robot arm on a rail"><b>Robot arm</b><span>Moves plates between deck positions and instrument drawers. Assumed separate from the handler's own gripper.</span></div>
+          <div class="devcard"><img src="assets/devices/heater-shaker.png" alt="Heater-shaker module"><b>Heater-shaker</b><span>Expression incubation, and the orbital mixing that replaces rotational mixing during bead binding.</span></div>
+          <div class="devcard"><img src="assets/devices/heat-cool.png" alt="Heat-cool plate module"><b>Heat-cool plate</b><span>Holds lysate and master mix below ambient while the reaction plate is built.</span></div>
+          <div class="devcard"><img src="assets/devices/magnet.png" alt="96-well magnetic separation block"><b>Magnet</b><span>Bead capture during purification, with clearance to aspirate without disturbing the pellet.</span></div>
+          <div class="devcard"><img src="assets/devices/peeler.png" alt="Plate peeler"><b>Peeler</b><span>Removes the seal before every read and every pipetting step.</span></div>
+          <div class="devcard"><img src="assets/devices/sealer.png" alt="Plate sealer with an open drawer"><b>Sealer</b><span>Seal before every incubation and before every assay timepoint. Off deck, drawer within the arm's reach, same pattern as the peeler.</span></div>
+          <div class="devcard"><img src="assets/devices/plate-reader.png" alt="Plate reader with a drawer"><b>Plate reader</b><span>One multimode reader, three reads: dsDNA quantification after the PCR cleanup, fluorescence at 488 / 530 for split-GFP, and absorbance at 240 nm for the assay. The wavelength is not the constraint, the labware is: only the 240 nm read needs UV-transparent plates.</span></div>
+        </div>
+        <table>
+          <tbody><tr><th>Role</th><th>Requirement</th><th>Phases</th></tr>
+          <tr><td>Liquid handler</td><td>Single-channel access for cherry-picking at the gate, multichannel for plate-wide distribution, reliable at 3 µL and above</td><td>01 to 07</td></tr>
+          <tr><td>Gripper / robotic arm</td><td>Moves plates between deck positions and instrument drawers. Assumed to be a separate arm, not the handler's own gripper</td><td>all</td></tr>
+          <tr><td>Cooler / heater plate</td><td>Holds lysate, polymerase mix and master mix below ambient while a plate is built, and heats the same position when a step needs it</td><td>02, 03, 06</td></tr>
+          <tr><td>Heater-shaker</td><td>Plate position, thermally controlled, orbital shaking for expression and bead binding</td><td>03, 06</td></tr>
+          <tr><td>Hot incubator</td><td>68 °C for 24 h, holds a sealed deep-well plate</td><td>07</td></tr>
+          <tr><td>Magnetic separator</td><td>Bead capture with clearance for aspiration without disturbing the pellet</td><td>02, 06</td></tr>
+          <tr><td>Sealer</td><td>Seals, off deck, drawer within the arm's reach</td><td>03, 07</td></tr>
+          <tr><td>Peeler</td><td>Removes seals before every read and every pipetting step</td><td>03, 04, 07</td></tr>
+          <tr><td>Plate reader, multimode</td><td>One instrument covers the whole screen: absorbance from 220 nm for the 240 nm assay read, fluorescence at 488 / 530 for split-GFP, and a dsDNA quant after the PCR cleanup. A CLARIOstar-class reader does all three</td><td>02, 04, 06, 07</td></tr>
+          </tbody></table>
+
+        <h3>Considered, not in the cell</h3>
+        <div class="devrow">
+          <img src="assets/devices/acoustic.png" alt="Acoustic liquid handler">
+          <div class="">
+            <b style="display:block;font-size:17px;margin-bottom:6px">Acoustic liquid handler</b>
+            <p style="margin:0 0 10px" class="">Currently, automation is designed for a standard tip-bsaed liquid handler to avoid dependance on specialized equipment.&nbsp;</p><p style="margin:0 0 10px" class="">However, if an acoustic liquid handler could be used, it would <a class="cite" id="cite-15-2" data-cite="15" href="#ref15" onclick="return citeTo(15,this)">[15]</a>:</p><ul data-spread="false" data-pm-slice="3 3 []"><li><p class="">enable nanolitre transfers without pipette tips</p></li><li><p class="">reduce reaction volumes to 10 µL or less</p></li><li><p class="">roughly double the number of rounds supported by the available lysate</p></li><li><p class="">reduce or eliminate the need for PCR amplification</p></li></ul>
+          </div>
+        </div>
+
+        <h3 class="">Workcell used for examples</h3>
+        <p data-pm-slice="1 3 []"><strong>Hardware setup</strong></p><ul data-spread="false" class=""><li><p>Hamilton STAR liquid handler with robotic arm for off-deck transfers</p></li><li><p>Cooling/heating plate and heater-shaker</p></li><li><p>On-deck magnetic separation</p></li><li><p>Standalone plate sealer and peeler</p></li><li><p class="">Fluorescence reader and UV-capable absorbance reader</p></li></ul>
+
+        <div class="note"><p data-pm-slice="1 3 []"><strong>Software and simulation</strong></p><ul data-spread="false"><li><p class="">All devices controlled through Python using PyLabRobot</p></li><li><p class="">PyLabRobot supports simulated operation for most devices, allowing protocols to run without physical hardware</p></li><li><p class="">Sealer and peeler lack simulation support, so custom simulators are needed <span class="why-wrap" data-asm="20"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> Drivers for the sealer and the peeler exist and are already implemented, so the only thing missing is their simulation backend.</span><a class="asmlink" href="#" onclick="return asmTo(20)">Assumption 20 in the list &rarr;</a></span></span></p></li></ul></div>
+      </div>
+
+      <div class="subpane" id="a3" hidden="">
+        <h3>Deck Layout Considerations</h3>
+        <p>The deck layout was not optimized, as it depends on the specific instrument and labware used. However, the following factors must be considered during implementation:</p>
+        <ul data-spread="false">
+          <li><p><strong>Instrument reach:</strong> Each pipetting head, gripper and robotic arm has different reach limits. All required positions must be accessible to the appropriate devices.</p></li>
+          <li><p><strong>Physical clearance:</strong> Labware height, equipment size and robotic movement paths must be checked to prevent collisions.</p></li>
+          <li><p><strong>Plate transfers:</strong> Each plate needs accessible pickup, destination and handoff positions, with enough space for the gripper to operate.</p></li>
+          <li><p><strong>Pipetting constraints:</strong> Tip compatibility, channel accuracy, minimum transfer volumes and liquid-level detection must be verified.</p></li>
+          <li><p><strong>Consumables and waste:</strong> Tip racks and waste containers must have sufficient capacity for a full unattended run.</p></li>
+          <li><p><strong>Temperature control:</strong> Heating and cooling positions must maintain the required conditions throughout the workflow.</p></li>
+          <li><p><strong>Deck occupancy:</strong> The layout must accommodate the maximum number of items needed simultaneously, including plates undergoing incubation. <span class="why-wrap" data-asm="4"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> The deck has room for everything the run needs, with no additional holder rack and no mid-run swap.</span><a class="asmlink" href="#" onclick="return asmTo(4)">Assumption 04 in the list &rarr;</a></span></span></p></li>
+          <li><p><strong>Labware compatibility:</strong> Each plate, tube and carrier requires a validated labware definition and instrument-specific positioning.</p></li>
+          <li><p><strong>Calibration:</strong> Reach, positioning and pipetting limits must be verified on the actual instrument before operation.</p></li>
+        </ul>
+      </div>
+
+      <div class="subpane" id="a4">
+        <h3>Consumables per round</h3>
+        <p class="">One round is 24 constructs, each expressed three times, so 72 variant wells and 24 control wells on every plate.&nbsp;</p>
+        <table>
+          <tbody><tr><th>Item</th><th>Format</th><th>Per round</th><th>Basis</th></tr>
+          <tr><td>Twist fragment plate</td><td>96, lyophilised</td><td>1 per four rounds</td><td>The input. Amplified once, then drawn on 24 constructs at a time. Kept as archival stock</td></tr>
+          <tr><td>PCR plate</td><td>96 PCR, skirted</td><td>1 per four rounds</td><td>One reaction per construct, cycled off deck, enough template for every round</td></tr>
+          <tr><td>Template plate</td><td>96 PCR, skirted</td><td>1 per four rounds</td><td>Cleaned, quantified, normalised working copy</td></tr>
+          <tr><td>Expression plate</td><td>96 PCR</td><td>1</td><td>72 variant wells, 24 constructs at n = 3, plus 6 control reactions</td></tr>
+          <tr><td>Split-GFP plate</td><td>MaxiSorp 96</td><td>1</td><td>200 µL per well</td></tr>
+          <tr><td>Binding plate</td><td>96 V-bottom, 300 µL, PCR format</td><td>1</td><td>Beads and sample. A V-bottom gives a steeper pellet than the round-well bottom the protocol suggests <a class="cite" id="cite-16-2" data-cite="16" href="#ref16" onclick="return citeTo(16,this)">[16]</a>. 300 µL is what lets the vendor volumes run unmodified, since the fullest moment is 240 µL</td></tr>
+          <tr><td>Elution plate</td><td>96 V-bottom, 300 µL, PCR format</td><td>1</td><td>Fresh plate. The eluate is transferred off the beads, so it cannot be the binding plate</td></tr>
+          <tr><td>Assay plate</td><td>deep-well 96</td><td>1</td><td>All 96 wells used: 72 variant wells and 24 controls</td></tr>
+          <tr><td>Read plate</td><td>UV-transparent 96</td><td>7</td><td class="">One per timepoint.&nbsp;</td></tr>
+          <tr><td class="">Seals</td><td>sealer roll</td><td>10 or more</td><td class="">Expression, split-GFP, and a fresh seal at every one of the seven assay timepoints</td></tr>
+          <tr><td>Tips</td><td>filtered</td><td>~1,600, estimate</td><td>96 PCR setups and cleanups, 78 template transfers, 96 quantification aliquots, four steps across 72 purification wells, 72 enzyme additions, then 7 × 96 sampling transfers</td></tr>
+        </tbody></table>
+
+        <h3>Tip size per step</h3>
+        <p class="">Tip size is a per-step choice depending on hardware. This is an example of tips that could be used for the Hamilton STAR.</p>
+        <p class="">The rule applied throughout: <strong>the smallest tip whose maximum covers the transfer</strong>.</p>
+        <table>
+          <tbody><tr><th>Step</th><th>Volume</th><th>Tip</th><th>Why</th></tr>
+          <tr><td>Template into PCR, and into expression</td><td>3 to 4 µL</td><td>10 µL</td><td>The smallest transfer in the workflow, and the one that sets the reaction volume. It gets the tip with the finest orifice</td></tr>
+          <tr><td>Master mix build, reagent into mix well</td><td>2 to 40 µL</td><td>50 µL</td><td>One tip class for the whole build keeps the step simple, and every component is inside the range</td></tr>
+          <tr><td>Master mix distribution</td><td>~16 µL</td><td>50 µL</td><td>Single tip across the plate, so the tip is pre-wetted once and the volume stays mid-range</td></tr>
+          <tr><td>Split-GFP sample aliquot</td><td>20 µL</td><td>50 µL</td><td>Mid-range, and the fresh tip per well matters more here than the size</td></tr>
+          <tr><td>Detector into read plate</td><td>180 µL</td><td>300 µL</td><td>Smallest tip that takes it in one aspiration, which halves the step count</td></tr>
+          <tr><td>Bead binding and washes</td><td>36 to 200 µL</td><td>300 µL</td><td>Covers both the bead slurry and the ethanol wash without a tip change between them</td></tr>
+          <tr><td>Assay buffer into wells</td><td>450 µL</td><td>1000 µL</td><td>The only step that needs the largest tip. One aspiration per well</td></tr>
+          <tr><td>Enzyme into assay well</td><td>50 µL</td><td>300 µL</td><td>Dispensed into a much larger volume, so the tip is chosen for clean delivery rather than for precision at the limit</td></tr>
+          <tr><td>Supernatant sampling</td><td>~50 µL</td><td>300 µL</td><td>Drawn from a 500 µL well with a PET coupon in it, so a wider orifice is less likely to foul</td></tr>
+        </tbody></table>
+
+        <h3 class="">Dead volume</h3>
+        <p class="">Every source holds liquid that cannot be aspirated: the cone at the bottom of a tube, the corner of a trough, the residual film left in a tip. <strong>PyLabRobot's volume tracking does not model it.</strong>&nbsp;</p>
+        <p class="">Therefore, dead volume is added explicitly in the planner. Each source carries a dead volume figure, the master mix is built with an excess over the arithmetic sum, and the plan is developed with the usable volume.</p>
+        <table>
+          <tbody><tr><th>Source</th><th>Allowance</th><th class="">Note</th></tr>
+          <tr><td>Master mix well or trough</td><td>Excess over the calculated need</td><td>Covers both the unaspirable residue and the per-transfer loss across a whole plate</td></tr>
+          <tr><td>Lysate tube</td><td>Subtracted from the usable volume</td><td>The finite reagent, so its dead volume directly reduces how many rounds are possible</td></tr>
+          <tr><td>Reagent reservoirs</td><td>Per-labware figure</td><td>Geometry-dependent, so it belongs in the labware definition rather than in the protocol</td></tr>
+          <tr><td>Elution and sample wells</td><td>Leave behind, do not chase</td><td>Aspirating to the bottom of a bead well risks carrying the pellet with it. The height the tip stops at is a calibrated number <span class="why-wrap" data-asm="16"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> The tip offset that lets a channel aspirate off a magnet without touching the bead pellet is already calibrated for this plate and this magnet, and holds for every well.</span><a class="asmlink" href="#" onclick="return asmTo(16)">Assumption 16 in the list →</a></span></span></td></tr>
+        </tbody></table>
+        <div class="note"><strong class="">The aspiration offset on the magnet must be calibrated properly calibrating.</strong>&nbsp;If it's too low, the tip pulls beads out with the supernatant, so enzyme is lost from that well and carried into the next step as a contaminant. If it's too high and supernatant is left behind, the wash is incomplete or an elution can be short, and the well reads low for a reason that has nothing to do with the variant.&nbsp;</div>
+
+        <h3>Reagents per round</h3>
+        <p>Everything below is listed at working strength, because reagent preparation sits outside the run <span class="why-wrap" data-asm="18"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> Anything that needs preparing before the run has been prepared. Concentrates are already at working strength, so a buffer supplied at 10× was diluted to 1× ahead of time, in one batch large enough for every run it has to serve. The detector is already refolded, stocks are already resuspended.</span><span class="pb">So no step in the protocol dilutes a stock, and no deck position holds a concentrate. Every reagent on the deck is ready to pipette.</span><a class="asmlink" href="#" onclick="return asmTo(18)">Assumption 18 in the list →</a></span></span>. One round is the unit, so a figure here multiplies by the number of rounds a batch has to cover.
+        <table>
+          <tbody><tr><th>Reagent</th><th>Per well</th><th>Per round</th><th>Note</th></tr>
+          <tr><td>Cell-free lysate and buffer</td><td>~39 µL of a 50 µL reaction</td><td>~3.0 mL</td><td>The finite shared tube. This is the number that decides how many rounds are possible</td></tr>
+          <tr><td>GFP1-10 detector in TNG</td><td>180 µL</td><td>~17 mL</td><td>The quiet cost of the design. Ten times the lysate volume, and it has to be refolded in advance</td></tr>
+          <tr><td>Resuspension buffer</td><td>~20 µL</td><td>~2 mL</td><td>Tris or TE, not water</td></tr>
+          <tr><td>MagStrep beads</td><td>40 µL of 5% suspension</td><td>~2.9 mL</td><td>2 µL of settled beads per well, holding up to 0.85 nmol each. Not reusable</td></tr>
+          <tr><td>Buffer W, 1×</td><td>~1.4 mL</td><td>~101 mL</td><td>Six washes of 200 µL, three to equilibrate and three after binding, plus making the sample up to 200 µL</td></tr>
+          <tr><td>Buffer BXT, 1×</td><td>100 µL</td><td>~7.2 mL</td><td>50 µL per µL of beads, eluted twice into the same well. <span class="badge open">open</span> biotin content versus the 240 nm read</td></tr>
+          <tr><td>Sodium phosphate, 100 mM pH 8</td><td>500 µL</td><td>~48 mL</td><td>Assay buffer, 96 wells</td></tr>
+          <tr><td>PET inserts</td><td>1 coupon, ~2.5 mg</td><td>96</td><td>Pre-loaded in the assay plate</td></tr>
+        </tbody></table>
+      </div>
+
+      <div class="subpane" id="a5" hidden="">
+        <h3>Automation flowcharts</h3>
+        <p>One board per phase. Each is the robot version of the protocol: the steps in order, the plate it acts on, and the rules the volumes have to satisfy.</p>
+        <div class="bsel" role="tablist">
+          <button class="bchip" type="button" role="tab" aria-selected="false" onclick="board('b01',this)">01 Resuspension</button>
+          <button class="bchip" type="button" role="tab" aria-selected="true" onclick="board('b03',this)">03 Expression</button>
+          <button class="bchip" type="button" role="tab" aria-selected="false" onclick="board('b04',this)">04 Split-GFP</button>
+          <button class="bchip" type="button" role="tab" aria-selected="false" onclick="board('b06',this)">06 Purification</button>
+          <button class="bchip" type="button" role="tab" aria-selected="false" onclick="board('b07',this)">08 PET assay</button>
+        </div>
+
+        <div class="bpane" id="b01" hidden="">
+        <figure class="boardfig"><img src="assets/boards/resuspension-board.png" alt="TWIST plate resuspension board: setup, eleven robot steps, and notes on sealing, off-deck work and volume per well"><figcaption>Open the image in a new tab to read it full size.</figcaption></figure>
+      </div>
+
+        <div class="bpane" id="b03">
+        <figure class="boardfig"><img src="assets/boards/expression-board.png" alt="Cell-free protein expression board: setup, twelve robot steps and the master mix table"><figcaption>Open the image in a new tab to read it full size.</figcaption></figure>
+      </div>
+
+        <div class="bpane" id="b04" hidden="">
+        <figure class="boardfig"><img src="assets/boards/splitgfp-board.png" alt="Split-GFP quantification board: setup, twenty robot steps, assay plate layout and the plate and device flow"><figcaption>Open the image in a new tab to read it full size.</figcaption></figure>
+      </div>
+
+        <div class="bpane" id="b06" hidden="">
+        <figure class="boardfig"><img src="assets/boards/strep-board.png" alt="Strep-tag purification board: setup, twenty robot steps, plate layout, purification rules, buffer and volume rules and the plate and device flow"><figcaption>Open the image in a new tab to read it full size.</figcaption></figure>
+      </div>
+
+        <div class="bpane" id="b07" hidden="">
+        <figure class="boardfig"><img src="assets/boards/assay-board.png" alt="PETase activity assay board: setup, thirteen robot steps, assay controls, plate and device flow, and the data analysis"><figcaption>Open the image in a new tab to read it full size.</figcaption></figure>
+      </div></div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================ DATA MODEL ============================ -->
+<div class="pane" id="data" hidden="">
+  <div class="lab">Data model</div>
+  <h2>Data model and sample traceability</h2>
+  <p class="lede">The data model maintains a complete link between each plate-reader result and its originating variant, independent of the equipment used.</p>
+
+  <h3>Variant identity and sample location</h3>
+  <p>Each record identifies the <strong>variant</strong> and its <strong>location</strong>. Variant identity is assigned from the Twist plate map and remains fixed. Location is updated after each transfer.</p>
+  <table>
+    <tbody>
+      <tr><th>Field</th><th>Example</th><th>Meaning</th></tr>
+      <tr><td><code>variant_id</code></td><td><code>V07</code></td><td>Permanent variant identifier, assigned from the supplier plate map</td></tr>
+      <tr><td><code>stage</code></td><td><code>stage3_quantification</code></td><td>Workflow stage in which the event occurred</td></tr>
+      <tr><td><code>source</code></td><td><code>expression_plate:H3</code></td><td>Source plate or container and well position</td></tr>
+      <tr><td><code>destination</code></td><td><code>assay_plate:H3</code></td><td>Destination plate or container and well position</td></tr>
+      <tr><td><code>volume_ul</code>, <code>liquid</code></td><td><code>5.0</code>, <code>expressed_V07</code></td><td>Transferred volume and material identity</td></tr>
+      <tr><td><code>reason</code></td><td>free text</td><td>Purpose of the operation, recorded during planning</td></tr>
+    </tbody>
+  </table>
+  <p>A result is linked to a specific variant and replicate, not just a plate position. For example, the measurement for V07, replicate 1, at <code>read_plate_t24:H3</code> can be traced through the assay, eluate, binding and expression plates to <code>twist_plate:G1</code>.</p>
+
+  <h3>Consistent well mapping across stages</h3>
+  <p>Each Twist source well is distributed into three separate expression replicates. From that point onward, transfers follow a <strong>1:1 well mapping</strong>. Well positions remain consistent through the final readout, avoiding additional remapping between stages.</p>
+  <p>The selection gate reduces the number of variants processed without changing their assigned well positions.</p>
+  <table>
+    <tbody>
+      <tr><th>Hop</th><th>Mapping</th></tr>
+      <tr><td>Twist plate &rarr; expression plate</td><td>One source well becomes three spatially separated replicates</td></tr>
+      <tr><td>Expression &rarr; assay &rarr; binding &rarr; elution &rarr; PET assay &rarr; read</td><td>Well positions remain unchanged across stages</td></tr>
+      <tr><td>Gate</td><td>Selected variants retain their existing well positions</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Plate layout</h3>
+  <div class="platewrap">
+    <div class="plate">
+      <h4>Shared 96-well layout</h4><span class="cap">80 occupied wells: 24 variants &times; 3 replicates, 8 control wells; columns 1–2 reserved</span>
+        <div class="grid96">
+        <div></div>
+        <div class="hd">1</div>
+        <div class="hd">2</div>
+        <div class="hd">3</div>
+        <div class="hd">4</div>
+        <div class="hd">5</div>
+        <div class="hd">6</div>
+        <div class="hd">7</div>
+        <div class="hd">8</div>
+        <div class="hd">9</div>
+        <div class="hd">10</div>
+        <div class="hd">11</div>
+        <div class="hd">12</div>
+        <div class="hd">A</div>
+        <div class="well edge"></div>
+        <div class="well edge"></div>
+        <div class="well nt" title="no_dna#1"></div>
+        <div class="well v" title="V08#1"></div>
+        <div class="well v" title="V15#1"></div>
+        <div class="well v" title="V22#1"></div>
+        <div class="well v" title="V05#2"></div>
+        <div class="well v" title="V12#2"></div>
+        <div class="well v" title="V20#2"></div>
+        <div class="well v" title="V03#3"></div>
+        <div class="well v" title="V10#3"></div>
+        <div class="well v" title="V18#3"></div>
+        <div class="hd">B</div>
+        <div class="well edge"></div>
+        <div class="well edge"></div>
+        <div class="well v" title="V01#1"></div>
+        <div class="well v" title="V09#1"></div>
+        <div class="well v" title="V16#1"></div>
+        <div class="well v" title="V23#1"></div>
+        <div class="well v" title="V06#2"></div>
+        <div class="well v" title="V13#2"></div>
+        <div class="well v" title="V21#2"></div>
+        <div class="well v" title="V04#3"></div>
+        <div class="well v" title="V11#3"></div>
+        <div class="well v" title="V19#3"></div>
+        <div class="hd">C</div>
+        <div class="well edge"></div>
+        <div class="well edge"></div>
+        <div class="well v" title="V02#1"></div>
+        <div class="well std" title="kit_viability#1"></div>
+        <div class="well v" title="V17#1"></div>
+        <div class="well v" title="V24#1"></div>
+        <div class="well v" title="V07#2"></div>
+        <div class="well v" title="V14#2"></div>
+        <div class="well v" title="V22#2"></div>
+        <div class="well v" title="V05#3"></div>
+        <div class="well v" title="V12#3"></div>
+        <div class="well wt" title="blank#3"></div>
+        <div class="hd">D</div>
+        <div class="well edge"></div>
+        <div class="well edge"></div>
+        <div class="well v" title="V03#1"></div>
+        <div class="well v" title="V10#1"></div>
+        <div class="well v" title="V18#1"></div>
+        <div class="well nt" title="no_dna#2"></div>
+        <div class="well v" title="V08#2"></div>
+        <div class="well v" title="V15#2"></div>
+        <div class="well v" title="V23#2"></div>
+        <div class="well v" title="V06#3"></div>
+        <div class="well v" title="V13#3"></div>
+        <div class="well v" title="V20#3"></div>
+        <div class="hd">E</div>
+        <div class="well edge"></div>
+        <div class="well edge"></div>
+        <div class="well v" title="V04#1"></div>
+        <div class="well v" title="V11#1"></div>
+        <div class="well v" title="V19#1"></div>
+        <div class="well v" title="V01#2"></div>
+        <div class="well v" title="V09#2"></div>
+        <div class="well v" title="V16#2"></div>
+        <div class="well v" title="V24#2"></div>
+        <div class="well v" title="V07#3"></div>
+        <div class="well v" title="V14#3"></div>
+        <div class="well v" title="V21#3"></div>
+        <div class="hd">F</div>
+        <div class="well edge"></div>
+        <div class="well edge"></div>
+        <div class="well v" title="V05#1"></div>
+        <div class="well v" title="V12#1"></div>
+        <div class="well wt" title="blank#1"></div>
+        <div class="well v" title="V02#2"></div>
+        <div class="well std" title="kit_viability#2"></div>
+        <div class="well v" title="V17#2"></div>
+        <div class="well nt" title="no_dna#3"></div>
+        <div class="well v" title="V08#3"></div>
+        <div class="well v" title="V15#3"></div>
+        <div class="well v" title="V22#3"></div>
+        <div class="hd">G</div>
+        <div class="well edge"></div>
+        <div class="well edge"></div>
+        <div class="well v" title="V06#1"></div>
+        <div class="well v" title="V13#1"></div>
+        <div class="well v" title="V20#1"></div>
+        <div class="well v" title="V03#2"></div>
+        <div class="well v" title="V10#2"></div>
+        <div class="well v" title="V18#2"></div>
+        <div class="well v" title="V01#3"></div>
+        <div class="well v" title="V09#3"></div>
+        <div class="well v" title="V16#3"></div>
+        <div class="well v" title="V23#3"></div>
+        <div class="hd">H</div>
+        <div class="well edge"></div>
+        <div class="well edge"></div>
+        <div class="well v" title="V07#1"></div>
+        <div class="well v" title="V14#1"></div>
+        <div class="well v" title="V21#1"></div>
+        <div class="well v" title="V04#2"></div>
+        <div class="well v" title="V11#2"></div>
+        <div class="well v" title="V19#2"></div>
+        <div class="well v" title="V02#3"></div>
+        <div class="well std" title="kit_viability#3"></div>
+        <div class="well v" title="V17#3"></div>
+        <div class="well v" title="V24#3"></div>
+        </div>
+    </div>
+  </div>
+  <div class="legend">
+    <span><i style="background:rgba(84,193,247,.55);border-color:rgba(84,193,247,.9)"></i>Variants: 24 &times; 3 replicates <span class="why-wrap" data-asm="22"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> The wild type is always one of the designed variants, so it occupies a variant well like any other and the plate needs no separate WT position.</span><a class="asmlink" href="#" onclick="return asmTo(22)">Assumption 22 in the list &rarr;</a></span></span></span>
+    <span><i style="background:#2e2532;border-color:#2e2532"></i>No-template controls: 3</span>
+    <span><i style="background:#ef6462;border-color:#ef6462"></i>Kit viability controls: 3</span>
+    <span><i style="background:#297373;border-color:#297373"></i>Detector blanks: 2</span>
+    <span><i style="border-color:rgba(46,37,50,.22)"></i>Reserved for calibration curves</span>
+  </div>
+  <ul class="decisions">
+    <li><b>Replicates are distributed across the plate.</b> <span class="why-wrap" data-asm="11"><button class="qmark bang" type="button" aria-label="Assumption" onclick="pin(this)">!</button><span class="why-box bang"><span class="pb"><strong>Assumption.</strong> Each construct is expressed in three independent reactions, with replicates placed in different regions of the plate.</span><a class="asmlink" href="#" onclick="return asmTo(11)">View assumption 11 &rarr;</a></span></span><span class="why-wrap"><button class="qmark" type="button" aria-label="Why" onclick="pin(this)">?</button><span class="why-box"><span class="pb">Plate position can affect measurements through evaporation, temperature gradients and reader variability. Keeping replicates together could cause these effects to be mistaken for differences between variants.</span><span class="pb">No two replicates of the same variant share a row or column. This is checked automatically. The trade-off is a more complex pipetting sequence.</span></span></span><span class="sub">For example, V07 is assigned to H3, C7 and E10, spanning different rows and regions of the plate.</span></li>
+    <li><b>The layout is reproducible.</b><span class="sub">The plate layout follows fixed allocation rules. Identical inputs produce identical layouts, making each run straightforward to reproduce and compare.</span></li>
+    <li><b>Columns 1 and 2 are reserved on every plate.</b><span class="sub">The assay plate uses these columns for duplicate calibration curves. Reserving the same columns on upstream plates reduces capacity to 24 variants but preserves consistent well positions across the workflow.</span></li>
+    <li><b>Controls are distributed across the plate.</b><span class="sub">Distributing controls across different rows and columns avoids concentrating them in one area and reduces the risk of positional bias.</span></li>
+  </ul>
+
+  <h3>Traceability and audit records</h3>
+  <p>Each stage exports its events to a CSV file. Together, these files form a chronological record of sample transfers and processing steps.</p>
+  <table>
+    <tbody>
+      <tr><th>Question</th><th>Answer</th></tr>
+      <tr><td>Which assay-plate wells contain V07?</td><td><code>H3</code>, <code>C7</code>, <code>E10</code></td></tr>
+      <tr><td>Which variant is present at <code>expression_plate:D9</code>?</td><td>A single variant ID, or an empty well</td></tr>
+      <tr><td>Which operations involved V07, and in what order?</td><td>19 recorded events across two stages</td></tr>
+      <tr><td>Can every transfer be traced to an earlier source?</td><td>Missing links are reported for each affected variant</td></tr>
+    </tbody>
+  </table>
+  <p>The final check identifies breaks in sample traceability. For example, linking stage 0 and stage 2 produces 29 gaps at the template plate because PCR is handled outside the automated cell. The model identifies this missing intermediate stage without requiring it to be specified in advance.</p>
+
+  <h3>Data structures</h3>
+  <table>
+    <tbody>
+      <tr><th>Type</th><th>Stored information</th><th>Purpose</th></tr>
+      <tr><td><code>PlateMap</code></td><td>Well position, variant ID and supplier-reported mass</td><td>Defines variant identity using the supplier plate map</td></tr>
+      <tr><td><code>PlateLayout</code></td><td>Well position, content ID, sample or control type, replicate number</td><td>Maintains a consistent layout across screening plates</td></tr>
+      <tr><td><code>Operation</code></td><td>Operation type, plate role, well, volume, material, purpose and associated variants</td><td>Immutable, JSON-serializable description that uses identifiers rather than hardware objects</td></tr>
+      <tr><td><code>Plan</code></td><td>Ordered sequence of operations</td><td>Supports review, comparison and identification of missing parameters</td></tr>
+      <tr><td><code>Reading</code></td><td>Well-level results, measurement mode and simulation status</td><td>Keeps simulated results clearly distinguished from measured data</td></tr>
+      <tr><td><code>ProvenanceEvent</code></td><td>Stage, operation, variant, source, destination and volume</td><td>Provides the event-by-event sample history for each variant</td></tr>
+      <tr><td><code>MasterMixBuild</code></td><td>Component volumes, dead volume, total volume and deviations from kit instructions</td><td>Records deviations from the supplier protocol explicitly</td></tr>
+      <tr><td><code>GateResult</code></td><td>Selection threshold, retained and excluded variants, summary statistics</td><td>Preserves the criteria and results needed to reproduce variant selection</td></tr>
+      <tr><td><code>TimeCourse</code></td><td>Sampling times, concentrations, reaction volumes and aliquot volumes</td><td>Supports volume-corrected calculations of cumulative product formation</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Validation checks</h3>
+  <table>
+    <tbody>
+      <tr><th>Validation rule</th><th>Response if the check fails</th></tr>
+      <tr><td>Each variant in the supplier plate map is assigned to exactly one source well</td><td>Stop loading and identify the affected CSV line</td></tr>
+      <tr><td>Replicates of the same variant occupy different rows and columns</td><td>Stop and identify the variant and conflicting positions</td></tr>
+      <tr><td>Every master-mix component meets the minimum reliable transfer volume</td><td>Stop and report the component and required volume</td></tr>
+      <tr><td>The master mix fits its container, including dead volume</td><td>Stop and report how many reactions the container can support</td></tr>
+      <tr><td>Mixing volume does not exceed tube capacity</td><td>Stop during planning</td></tr>
+      <tr><td>Template transfer volume stays within the validated pipetting range</td><td>Stop and identify the affected wells and concentrations</td></tr>
+      <tr><td>Sufficient liquid remains to cover the PET insert after sampling</td><td>Stop and report the remaining volume</td></tr>
+      <tr><td>All required operation parameters are defined</td><td>Stop before execution and list all missing parameters</td></tr>
+      <tr><td>Every plate or device role referenced in the plan is defined on the deck</td><td>Stop before execution</td></tr>
+      <tr><td>Every operation type has an implemented execution handler</td><td>Stop rather than silently omitting a required operation</td></tr>
+    </tbody>
+  </table>
+  <div class="note">These checks run at the data-model level, before the robot script executes. They can be performed without connected hardware, allowing invalid plans to be identified before any reagents are used.</div>
+</div>
+
+
+<!-- ============================ FUTURE ============================ -->
+<div class="pane" id="future" hidden="">
+  <div class="lab">Future</div>
+  <h2 class="">Future improvements</h2>
+
+  <details class="acc"><summary class=""><span class="plus">+</span>384-well format</summary><div class="body">
+    <p data-pm-slice="1 1 [&quot;list&quot;,{&quot;spread&quot;:false,&quot;start&quot;:318,&quot;end&quot;:522},&quot;regular_list_item&quot;,{&quot;start&quot;:318,&quot;end&quot;:424}]" class="">Considering 384-well plates if libraries grow beyond one plate or Twist supplies samples in 384-well format.&nbsp;</p>
+  </div></details>
+
+  <details class="acc"><summary><span class="plus">+</span>Acoustic dispensing</summary><div class="body">
+    <p class="">Sub-microlitre transfer would let the cell-free reaction drop to 10 µL or below, roughly doubling how many rounds the finite lysate supports. It is the highest-value hardware change available to this design. NEB and Beckman Coulter report miniaturising NEBExpress and PURExpress reactions 50 to 100-fold on an Echo 525 with no discernible loss in activity <a class="cite" id="cite-15-3" data-cite="15" href="#ref15" onclick="return citeTo(15,this)">[15]</a>.</p>
+  </div></details>
+
+  <details class="acc"><summary class=""><span class="plus">+</span>Measuring protein thermostability</summary><div class="body">
+    <p class="">Holding normalised lysate at a temperature gradient for an hour, then re-reading split-GFP, measures remaining soluble protein, thermostability from the assay already built. For an enzyme screened at 68 °C, that matters as much as the rate does.</p>
+  </div></details>
+
+  <details class="acc"><summary class=""><span class="plus">+</span>Product speciation on hits</summary><div class="body">
+    <p class="">A240 sums TPA, MHET and BHET. Variants differ in which product they favour, and a variant that stalls at MHET is not equivalent to one that goes to TPA, even at identical total aromatic release.</p>
+  </div></details>
+
+  <details class="acc"><summary class=""><span class="plus">+</span>More constructs per round</summary><div class="body">
+    <p class="">The screen runs 24 constructs at n = 3, which spends three quarters of the plate on replication. Dropping to n = 2 would carry 32 constructs and n = 1 would carry 86, at the cost of the per-construct error bar.</p>
+  </div></details>
+
+  <details class="acc"><summary><span class="plus">+</span>Hardware checks and dry runs</summary><div class="body">
+    <p data-pm-slice="1 3 []"><strong>1. Simulation</strong></p><ul data-spread="false"><li><p>Run the full protocol on a simulated deck before using reagents</p></li><li><p>Track liquid volumes and tip usage</p></li><li><p class="">Detect errors such as insufficient reagent volumes or pipetting into sealed plates</p></li></ul><p><strong>2. Hardware dry run</strong></p><ul data-spread="false"><li><p class="">Run the protocol with water instead of reagents</p></li><li><p class="">Verify robotic reach, plate positioning, instrument access and collision-free movements</p></li><li><p class="">Check magnetic separation and plate handling</p></li></ul><p><strong>3. Calibration</strong></p><ul data-spread="false"><li><p class="">The 3 µL minimum transfer volume was established experimentally using fluorescein dilution series</p></li><li><p class="">Compare manual and automated pipetting accuracy across plates</p></li><li><p class="">Recalibrate minimum transfer volumes for each new instrument</p></li></ul>
+  </div></details>
+
+  <details class="acc"><summary class=""><span class="plus">+</span>Returning plates and racks to cold storage</summary><div class="body">
+    <p>Nothing in this design puts anything back. The reagent plate goes to the cooler / heater plate at the start of a phase and stays on deck, and the Twist archival plate, the purified eluates and any leftover master mix are left where they are at the end of a run.</p>
+    <p class="">A real unattended cell needs the return trip: a refrigerated or frozen module on the cell, a rule for what goes back and when, and a record of how long each item spent at room temperature, since that is a quality attribute for lysate and for purified protein. It is a scheduling and hardware constraint rather than a protocol one, which is why it is here and not in the protocol.</p>
+    <p class=""><strong>Trigger:</strong> runs that span more than one working day, or any run where reagents are expensive enough that recovering them matters.</p>
+  </div></details>
+
+  <details class="acc"><summary class=""><span class="plus">+</span>Error recovery and retry</summary></details></div>
+
+<!-- ============================ ASSUMPTIONS ============================ -->
+<div class="pane" id="assumptions" hidden="">
+  <div class="lab">Assumptions</div>
+  <h2>What was assumed</h2>
+
+  <table>
+    <tbody><tr><th>#</th><th>Assumption</th><th>Why</th><th>If wrong</th></tr>
+    <tr><td id="asm1">01 <a class="backlink" href="#" onclick="return asmBack(1)" title="Back to where this is assumed">↩</a></td><td>Fragments arrive in 96-well format, lyophilised, with regulatory elements synthesised in</td><td>Twist's documented options, and it keeps the primers short</td><td>384 delivery adds a redistribution hop. Elements added by overhang instead would mean 70 to 100 nt primers, with RBS spacing left to chance</td></tr>
+    <tr><td id="asm2">02 <a class="backlink" href="#" onclick="return asmBack(2)" title="Back to where this is assumed">↩</a></td><td class="">Every variant is amplified before expression</td><td>At the bottom of Twist's guaranteed range a well cannot fund one reaction, let alone repeats</td><td>Nothing, if yields come in high. The cost is a stage that could have been avoided</td></tr>
+    <tr><td id="asm3">03 <a class="backlink" href="#" onclick="return asmBack(3)" title="Back to where this is assumed">↩</a></td><td>The PCR yields enough template for three expression runs plus retained stock</td><td class="">Three runs covers the quantification tier, the full-volume tier and one repeat of anything that fails QC, without going back to the archival plate</td><td>A second amplification off the Twist stock, which is allowed, or a round that cannot repeat a failed well</td></tr>
+    <tr><td id="asm4">04 <a class="backlink" href="#" onclick="return asmBack(4)" title="Back to where this is assumed">↩</a></td><td class="">The deck has room for everything, with no additional holder rack</td><td>Twelve positions cover source, cold, reaction, two tip racks, magnet, three read or assay plates, buffers, waste and staging</td><td>A rack has to be swapped mid-run, which breaks unattended operation, or the layout moves to a larger deck</td></tr>
+    <tr><td id="asm5">05 <a class="backlink" href="#" onclick="return asmBack(5)" title="Back to where this is assumed">↩</a></td><td class="">No transfer in the protocol is below 3 µL</td><td>Below that, air-displacement pipetting stopped being reproducible in my own calibration work, with 2 µL failing</td><td>Nothing, this is the conservative direction. On an acoustic dispenser the floor disappears and the protocol is worth rewriting around smaller volumes</td></tr>
+    <tr><td id="asm6">06 <a class="backlink" href="#" onclick="return asmBack(6)" title="Back to where this is assumed">↩</a></td><td class="">Universal adapters allow one primer pair for all 96 wells</td><td>A Twist ordering option</td><td>Per-variant primers, which would make a plate-wide master mix impossible</td></tr>
+    <tr><td id="asm7">07 <a class="backlink" href="#" onclick="return asmBack(7)" title="Back to where this is assumed">↩</a></td><td>Twist plate well geometry is unknown and not depended on</td><td>Not publicly specified anywhere I could find</td><td>Nothing, material moves into a controlled plate first</td></tr>
+    <tr><td id="asm8">08 <a class="backlink" href="#" onclick="return asmBack(8)" title="Back to where this is assumed">↩</a></td><td>Cell-free reaction at 50 µL, 37 °C, 3 h</td><td>NEBExpress's standard reaction volume, which also keeps every transfer well clear of the 3 µL reproducibility floor</td><td>Lysate runs out sooner than planned; acoustic dispensing is the fix</td></tr>
+    <tr><td id="asm9">09 <a class="backlink" href="#" onclick="return asmBack(9)" title="Back to where this is assumed">↩</a></td><td>Assay geometry transfers from the published platform</td><td>Same substrate, loading, temperature and readout</td><td>Rates shift; rankings within a plate survive</td></tr>
+    <tr><td id="asm10">10 <a class="backlink" href="#" onclick="return asmBack(10)" title="Back to where this is assumed">↩</a></td><td>A fresh seal at every timepoint holds evaporation across the whole plate, edges included</td><td>The published no-loss result used empty edges as well, so this is the weaker claim of the two and is the one to test first</td><td>Concentrations drift upward at the margins, and the edge wells have to be given up after all</td></tr>
+    <tr><td id="asm11">11 <a class="backlink" href="#" onclick="return asmBack(11)" title="Back to where this is assumed">↩</a></td><td>Three independent expression reactions per construct, scattered across the plate</td><td>Replicating the expression rather than the read puts expression variability, plate position and pipetting inside the error bar instead of outside it</td><td>24 constructs per round rather than 86, so a 96-member library takes four rounds</td></tr>
+    <tr><td id="asm12">12 <a class="backlink" href="#" onclick="return asmBack(12)" title="Back to where this is assumed">↩</a></td><td>One assay plate per 24 h is acceptable throughput</td><td>Keeps scheduling trivial and sampling times exact</td><td>If not, the problem becomes job-shop scheduling, not protocol design</td></tr>
+    <tr><td id="asm13">13 <a class="backlink" href="#" onclick="return asmBack(13)" title="Back to where this is assumed">↩</a></td><td>Activities are comparable only within the GFP11-tagged series</td><td>Tagging costs 6–29% of activity in published fusions</td><td>Nothing, provided no comparison is made to untagged literature values</td></tr>
+    <tr><td id="asm14">14 <a class="backlink" href="#" onclick="return asmBack(14)" title="Back to where this is assumed">↩</a></td><td>Variants arrive with the GFP11 tag and the Strep handle already in the sequence</td><td>It is what lets one primer pair, one master mix and one protocol serve every well</td><td>Tags go on by primer overhang, with 70 to 100 nt primers and the RBS spacing left to chance, or a cloning step comes back</td></tr>
+    <tr><td id="asm15">15 <a class="backlink" href="#" onclick="return asmBack(15)" title="Back to where this is assumed">↩</a></td><td>The PCR stage is already automated and compatible with this cell</td><td>Cycling, amplicon sizing and spin-down are solved instruments, and the design question here is the cell-free screen, not the amplification</td><td>Three devices come back into the roster and the arm needs reach to all three, which is a deck and scheduling problem rather than a protocol one</td></tr>
+    <tr><td id="asm16">16 <a class="backlink" href="#" onclick="return asmBack(16)" title="Back to where this is assumed">↩</a></td><td>The tip offset for aspirating off the magnet without disturbing the pellet is already calibrated</td><td>It is a per-plate, per-magnet geometry number that a dry run with water settles, not a protocol decision</td><td>Beads carried into the eluate or supernatant left behind, either one a silent per-well bias in the assay</td></tr>
+    <tr><td id="asm17">17 <a class="backlink" href="#" onclick="return asmBack(17)" title="Back to where this is assumed">↩</a></td><td>The construct is about 33 kDa, which fits the purification protocol</td><td>PETase catalytic domain plus Twin-Strep, GFP11 and GS linkers, against a binding ceiling near 90 kDa. No parent scaffold is fixed in the brief</td><td>Little. Levelling is molar throughout, so the number only gates the binding ceiling and the minimum sample load</td></tr>
+    <tr><td id="asm18">18 <a class="backlink" href="#" onclick="return asmBack(18)" title="Back to where this is assumed">↩</a></td><td>All reagents needing prior preparation are prepared, at working strength, in enough volume for every run</td><td>Dilution and refolding are batch bench work with their own QC, not per-run robot steps, and doing them once avoids a per-step dilution error repeated 96 times</td><td>Extra deck positions for concentrates and diluent, a dilution step before several phases, and a new error mode where one mis-diluted batch silently scales every number in the run</td></tr>
+    <tr><td id="asm19">19 <a class="backlink" href="#" onclick="return asmBack(19)" title="Back to where this is assumed">&#8617;</a></td><td>Elution carry-over does not shift the 240 nm read, and if it does it can be corrected for</td><td>The no-enzyme control sits on the same plate in the same buffer, so a constant offset subtracts out</td><td>If the offset is not constant between wells it becomes a per-well bias, and the elution buffer has to change or the enzyme has to be buffer-exchanged</td></tr>
+    <tr><td id="asm20">20 <a class="backlink" href="#" onclick="return asmBack(20)" title="Back to where this is assumed">&#8617;</a></td><td>Sealer and peeler drivers exist and are already implemented</td><td>Both are standard instruments, and only their simulation backends are missing from PyLabRobot</td><td>Two devices that touch every plate cannot be driven, which stops the run rather than degrading it</td></tr>
+    <tr><td id="asm21">21 <a class="backlink" href="#" onclick="return asmBack(21)" title="Back to where this is assumed">&#8617;</a></td><td>Every protocol has already been optimised for PETase in these reactions</td><td>The design question here is the automation, not the biochemistry, so the conditions are treated as given</td><td>Conditions become parameters to sweep, which is a round of optimisation before the screen rather than a change to it</td></tr>
+    <tr><td id="asm22">22 <a class="backlink" href="#" onclick="return asmBack(22)" title="Back to where this is assumed">&#8617;</a></td><td>The wild type is always one of the designed variants</td><td>It keeps one layout for every plate, with no reserved WT position, and the reference is measured under exactly the conditions the variants are</td><td>A well has to be taken from the 24 for WT, or the reference comes from a different plate and stops correcting for plate-to-plate variation</td></tr>
+  </tbody></table>
+</div>
+
+<!-- ============================ REFERENCES ============================ -->
+<div class="pane" id="references" hidden="">
+  <div class="lab">References</div>
+  <h2>Bibliography</h2>
+
+  <table>
+    <tbody><tr><th>#</th><th>Citation</th></tr>
+    <tr><td id="ref1">[1] <a class="backlink" href="#" onclick="return citeBack(1)" title="Back to where this is cited">↩</a></td><td>Kim, W., Han, J., Chauhan, S. <em>et al.</em> Cell-free protein synthesis and vesicle systems for programmable therapeutic manufacturing and delivery. <em>J Biol Eng</em> <strong>19</strong>, 55 (2025). <a href="https://doi.org/10.1186/s13036-025-00523-x">doi:10.1186/s13036-025-00523-x</a></td></tr>
+    <tr><td id="ref2">[2] <a class="backlink" href="#" onclick="return citeBack(2)" title="Back to where this is cited">↩</a></td><td>Yin, G. and Swartz, J.R. (2004), Enhancing multiple disulfide bonded protein folding in a cell-free system. <em>Biotechnol. Bioeng.</em>, 86: 188–195. <a href="https://doi.org/10.1002/bit.10827">doi:10.1002/bit.10827</a></td></tr>
+    <tr><td id="ref3">[3] <a class="backlink" href="#" onclick="return citeBack(3)" title="Back to where this is cited">↩</a></td><td>Cabantous, S., Waldo, G. <em>In vivo</em> and <em>in vitro</em> protein solubility assays using split GFP. <em>Nat Methods</em> <strong>3</strong>, 845–854 (2006). <a href="https://doi.org/10.1038/nmeth932">doi:10.1038/nmeth932</a></td></tr>
+    <tr><td id="ref4">[4] <a class="backlink" href="#" onclick="return citeBack(4)" title="Back to where this is cited">↩</a></td><td>Pham, T.D., Poletti, C., Tientcheu, T.M.N. <em>et al.</em> FAST, a method based on split-GFP for the detection in solution of proteins synthesized in cell-free expression systems. <em>Sci Rep</em> <strong>14</strong>, 8042 (2024). <a href="https://doi.org/10.1038/s41598-024-58588-5">doi:10.1038/s41598-024-58588-5</a></td></tr>
+    <tr><td id="ref5">[5] <a class="backlink" href="#" onclick="return citeBack(5)" title="Back to where this is cited">↩</a></td><td>Müller C, Igwe CL, Wiechert W, Oldiges M. Scaling production of GFP1-10 detector protein in <em>E. coli</em> for secretion screening by split GFP assay. <em>Microb Cell Fact.</em> 2021;20(1):191. <a href="https://doi.org/10.1186/s12934-021-01672-6">doi:10.1186/s12934-021-01672-6</a></td></tr>
+    <tr><td id="ref6">[6] <a class="backlink" href="#" onclick="return citeBack(6)" title="Back to where this is cited">↩</a></td><td>Santos-Aberturas J, Dörr M, Waldo GS, Bornscheuer UT. In-depth high-throughput screening of protein engineering libraries by split-GFP direct crude cell extract data normalization. <em>Chem Biol.</em> 2015;22(10):1406–1414. <a href="https://doi.org/10.1016/j.chembiol.2015.08.014">doi:10.1016/j.chembiol.2015.08.014</a></td></tr>
+    <tr><td id="ref7">[7] <a class="backlink" href="#" onclick="return citeBack(7)" title="Back to where this is cited">↩</a></td><td>Groseclose TM, Kober EA, Clark M, Moore B, Banerjee S, Bemmer V, Beckham GT, Pickford AR, Dale TT, Nguyen HB. A High-Throughput Screening Platform for Engineering Poly(ethylene Terephthalate) Hydrolases. <em>ACS Catal.</em> 2024;14(19):14622–14638. <a href="https://doi.org/10.1021/acscatal.4c04321">doi:10.1021/acscatal.4c04321</a></td></tr>
+    <tr><td id="ref8">[8] <a class="backlink" href="#" onclick="return citeBack(8)" title="Back to where this is cited">↩</a></td><td>Zhong-Johnson, E.Z.L., Voigt, C.A. &amp; Sinskey, A.J. An absorbance method for analysis of enzymatic degradation kinetics of poly(ethylene terephthalate) films. <em>Sci Rep</em> <strong>11</strong>, 928 (2021). <a href="https://doi.org/10.1038/s41598-020-79031-5">doi:10.1038/s41598-020-79031-5</a></td></tr>
+    <tr><td id="ref9">[9] <a class="backlink" href="#" onclick="return citeBack(9)" title="Back to where this is cited">↩</a></td><td>Pirillo V, Pollegioni L, Molla G. Analytical methods for the investigation of enzyme-catalyzed degradation of polyethylene terephthalate. <em>FEBS J.</em> 2021;288(16):4730–4745. <a href="https://doi.org/10.1111/febs.15850">doi:10.1111/febs.15850</a></td></tr>
+    <tr><td id="ref10">[10] <a class="backlink" href="#" onclick="return citeBack(10)" title="Back to where this is cited">↩</a></td><td>Joo, S., Cho, I.J., Seo, H. <em>et al.</em> Structural insight into molecular mechanism of poly(ethylene terephthalate) degradation. <em>Nat Commun</em> <strong>9</strong>, 382 (2018). <a href="https://doi.org/10.1038/s41467-018-02881-1">doi:10.1038/s41467-018-02881-1</a></td></tr>
+    <tr><td id="ref11">[11] <a class="backlink" href="#" onclick="return citeBack(11)" title="Back to where this is cited">↩</a></td><td>Urbanek AK, Kosiorowska KE, Mirończuk AM. Current Knowledge on Polyethylene Terephthalate Degradation by Genetically Modified Microorganisms. <em>Front. Bioeng. Biotechnol.</em> 2021;9:771133. <a href="https://doi.org/10.3389/fbioe.2021.771133">doi:10.3389/fbioe.2021.771133</a></td></tr>
+    <tr><td id="ref12">[12] <a class="backlink" href="#" onclick="return citeBack(12)" title="Back to where this is cited">↩</a></td><td>NEBExpress Cell-free <em>E. coli</em> Protein Synthesis System manual, E5360, and PURExpress Disulfide Bond Enhancer, E6820. New England Biolabs.</td></tr>
+    <tr><td id="ref13">[13] <a class="backlink" href="#" onclick="return citeBack(13)" title="Back to where this is cited">↩</a></td><td>Twist Bioscience Gene Fragments product sheet DOC-001050 REV13, gene synthesis FAQ, and DNA Resuspension and Storage Protocols DOC-4045 REV1.</td></tr>
+    <tr><td id="ref14">[14] <a class="backlink" href="#" onclick="return citeBack(14)" title="Back to where this is cited">↩</a></td><td>Kebschull JM, Zador AM. Sources of PCR-induced distortions in high-throughput sequencing data sets. <em>Nucleic Acids Res</em> 2015;43(21):e143.</td></tr>
+    <tr><td id="ref15">[15] <a class="backlink" href="#" onclick="return citeBack(15)" title="Back to where this is cited">↩</a></td><td>Buss JA, Stoddard CD, Beck SV. Scaling down to scale up: miniaturizing cell-free protein synthesis reactions with the Echo 525 Acoustic Liquid Handler. NEB and Beckman Coulter application note, 2023.</td></tr>
+    <tr><td id="ref16">[16] <a class="backlink" href="#" onclick="return citeBack(16)" title="Back to where this is cited">↩</a></td><td>IBA Lifesciences. MagStrep “type3” XT bead-based protein purification, protocol PR83-0011, March 2022, and the beads datasheet, cat. 2-4090-002. Section 3.2 is the 96-well batch protocol. <a href="https://www.iba-lifesciences.com/media/83/57/4c/1698232374/Protocol_MagStrep_type3_XT_Purification_PR83_0011.pdf">iba-lifesciences.com</a></td></tr>
+  </tbody></table>
+
+  
+</div>
+
+<footer class="">Cristina Sobrino · November 2026
+</footer>
+</div>
+
+<script>
+function go(id, el){
+  document.querySelectorAll('.pane').forEach(function(p){p.hidden = p.id!==id;});
+  document.querySelectorAll('.tab').forEach(function(t){t.setAttribute('aria-selected','false');});
+  if(el) el.setAttribute('aria-selected','true');
+  document.querySelector('.appbar').classList.toggle('on-home', id==='home');
+  if(id==='protocol') back();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+
+/* ---------------- slide decks ---------------- */
+function deckGo(cfg, n){
+  if(n < 1) n = 1;
+  if(n > cfg.total) n = cfg.total;
+  cfg.n = n;
+  for(var i = 1; i <= cfg.total; i++){
+    var el = document.getElementById(cfg.prefix + i);
+    if(el) el.classList.toggle('on', i === n);
+  }
+  var c = document.getElementById(cfg.count);
+  if(c) c.textContent = n + ' / ' + cfg.total;
+  var dots = document.getElementById(cfg.dots);
+  if(dots){
+    var out = '';
+    for(var j = 1; j <= cfg.total; j++){
+      out += '<button class="dot' + (j === n ? ' on' : '') + '" type="button" aria-label="Slide ' +
+             j + '" onclick="' + cfg.fn + 'Go(' + j + ')"></button>';
+    }
+    dots.innerHTML = out;
+    var btns = dots.parentNode.querySelectorAll('.arrow-btn');
+    if(btns[0]) btns[0].disabled = (n === 1);
+    if(btns[1]) btns[1].disabled = (n === cfg.total);
+  }
+}
+var SL = {n:1, total:5, prefix:'sl', count:'slCount', dots:'slDots', fn:'sl'};
+function slide(d){ deckGo(SL, SL.n + d); }
+function slGo(n){ deckGo(SL, n); }
+var BIO = {n:1, total:5, prefix:'bs', count:'bioCount', dots:'bioDots', fn:'bio'};
+function bioGo(n){
+  deckGo(BIO, n);
+  var t = document.getElementById('biodeck');
+  if(t && t.getBoundingClientRect().top < 0) t.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function bio(d){ bioGo(BIO.n + d); }
+document.addEventListener('DOMContentLoaded', function(){
+  slGo(1); bioGo(1);
+  /* a backlink arrow with nothing to return to is dead, so hide it */
+  document.querySelectorAll('a.backlink').forEach(function(a){
+    var m = /(?:asm|cite)Back\((\d+)\)/.exec(a.getAttribute('onclick') || '');
+    if(!m) return;
+    var isAsm = a.getAttribute('onclick').indexOf('asmBack') > -1;
+    var sel = isAsm ? '[data-asm="' + m[1] + '"]' : '[data-cite="' + m[1] + '"]';
+    if(!document.querySelector(sel)) a.style.display = 'none';
+  });
+});
+
+
+var lastCite = {};
+function goPane(id){
+  if(id === 'home'){ go('home'); return; }
+  var btn = document.querySelector('.tab[data-pane="' + id + '"]');
+  go(id, btn);
+}
+function flashEl(el){
+  el.classList.remove('flash');
+  void el.offsetWidth;
+  el.classList.add('flash');
+}
+function citeTo(n, el){
+  if(el && el.id) lastCite[n] = el.id;
+  goPane('references');
+  var row = document.getElementById('ref' + n);
+  if(row){
+    setTimeout(function(){
+      row.scrollIntoView({block:'center', behavior:'smooth'});
+      flashEl(row.parentElement || row);
+    }, 60);
+  }
+  return false;
+}
+function asmTo(n){
+  goPane('assumptions');
+  var row = document.getElementById('asm' + n);
+  if(row){
+    setTimeout(function(){
+      row.scrollIntoView({block:'center', behavior:'smooth'});
+      flashEl(row.parentElement || row);
+    }, 60);
+  }
+  return false;
+}
+function reveal(el){
+  var pane = el.closest('.pane');
+  if(pane) goPane(pane.id);
+  var sp = el.closest('.subpane');
+  if(sp){
+    var tab = document.querySelector('.subtab[onclick*="' + sp.id + '"]');
+    if(tab) sub_show(sp.id, tab);
+  }
+  var bp = el.closest('.bpane');
+  if(bp){
+    var chip = document.querySelector('.bchip[onclick*="' + bp.id + '"]');
+    board(bp.id, chip);
+  }
+  var sl = el.closest('#biodeck > .slide');
+  if(sl) bioGo(parseInt(sl.id.replace('bs',''), 10));
+  var hs = el.closest('.deck:not(#biodeck) > .slide');
+  if(hs) slGo(parseInt(hs.id.replace('sl',''), 10));
+  var acc = el.closest('details.acc');
+  if(acc) acc.open = true;
+  var pd = el.closest('.pdet');
+  if(pd) detail(pd.id);
+}
+function asmBack(n){
+  var el = document.querySelector('[data-asm="' + n + '"]');
+  if(!el) return false;
+  reveal(el);
+  setTimeout(function(){
+    el.scrollIntoView({block:'center', behavior:'smooth'});
+    flashEl(el);
+  }, 60);
+  return false;
+}
+function citeBack(n){
+  var id = lastCite[n];
+  var el = id ? document.getElementById(id) : document.querySelector('[data-cite="' + n + '"]');
+  if(!el) return false;
+  reveal(el);
+  setTimeout(function(){
+    el.scrollIntoView({block:'center', behavior:'smooth'});
+    flashEl(el);
+  }, 60);
+  return false;
+}
+function sub_show(id, el){ sub(id, el); }
+function pin(btn){
+  var w = btn.parentElement;
+  var open = w.classList.contains('pinned');
+  document.querySelectorAll('.why-wrap.pinned').forEach(function(x){x.classList.remove('pinned');});
+  if(!open) w.classList.add('pinned');
+}
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.why-wrap')){
+    document.querySelectorAll('.why-wrap.pinned').forEach(function(x){x.classList.remove('pinned');});
+  }
+});
+function board(id, el){
+  document.querySelectorAll('.bpane').forEach(function(b){ b.hidden = b.id !== id; });
+  document.querySelectorAll('.bchip').forEach(function(c){ c.setAttribute('aria-selected','false'); });
+  if(el) el.setAttribute('aria-selected','true');
+}
+function sub(id, el){
+  document.querySelectorAll('.subpane').forEach(function(p){p.hidden = p.id!==id;});
+  document.querySelectorAll('.subtab').forEach(function(t){t.setAttribute('aria-selected','false');});
+  if(el) el.setAttribute('aria-selected','true');
+}
+function detail(which){
+  document.getElementById('flowview').hidden = true;
+  document.getElementById('detailview').hidden = false;
+  document.querySelectorAll('.pdet').forEach(function(d){d.hidden = d.id!==which;});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function back(){
+  document.getElementById('flowview').hidden = false;
+  document.getElementById('detailview').hidden = true;
+}
+</script>
+
+
+</body></html>

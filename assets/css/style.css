@@ -1156,3 +1156,15 @@ main.shell {
     min-width: 34rem;
   }
 }
+
+/* A project can show more than one link; they sit in a row under the body. */
+.repo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: clamp(2.5rem, 5vw, 3.5rem) 0 0;
+}
+
+.repo-row .repo {
+  margin: 0;
+}

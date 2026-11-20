@@ -180,12 +180,21 @@
     root.append(gallery);
   }
 
-  const linkHref = project.link || project.repo;
-  if (linkHref) {
-    const link = el("a", "repo", project.linkLabel || "View repository");
-    link.href = linkHref;
-    link.rel = "noopener";
-    link.target = "_blank";
-    root.append(link);
+  // A project can carry several links; `link`/`repo` is the single-link form.
+  const links = project.links && project.links.length
+    ? project.links
+    : [{ href: project.link || project.repo, label: project.linkLabel }];
+  const shown = links.filter((item) => item.href);
+  if (shown.length) {
+    const row = el("div", "repo-row");
+    shown.forEach((item) => {
+      const link = el("a", "repo", item.label || "View repository");
+      link.href = item.href;
+      link.rel = "noopener";
+      // In-site pages open in place; anything external opens in a new tab.
+      if (/^[a-z]+:/i.test(item.href)) link.target = "_blank";
+      row.append(link);
+    });
+    root.append(row);
   }
 })();

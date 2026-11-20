@@ -1,0 +1,135 @@
+{
+  "slug": "petase-screening",
+  "title": "Designing an automated screen for PETase variants",
+  "year": "2026",
+  "domain": "Lab Automation",
+  "tags": [
+    "Lab Automation",
+    "Protocol Design",
+    "Bioengineering",
+    "PyLabRobot",
+    "Python"
+  ],
+  "themes": [
+    "Lab Automation",
+    "Bioinformatics"
+  ],
+  "thumb": {
+    "src": "assets/img/petase-screening/petase.png",
+    "fit": "contain"
+  },
+  "summary": "A library of PETase variants and four stages: express each one, check it expressed, purify it, and measure how well it degrades PET. This project assembles the protocol from the literature and the automation around it.",
+  "stack": [
+    "Lab Automation",
+    "Protocol Design",
+    "Cell-free Expression",
+    "Split-GFP",
+    "Strep-tag Purification",
+    "Plate Assays",
+    "PyLabRobot",
+    "Python",
+    "Simulation"
+  ],
+  "role": "Solo project",
+  "context": "Design study. The full write-up is published as its own site, with the protocol, automation flowcharts, data model, assumptions and references in separate tabs.",
+  "links": [
+    {
+      "href": "petase/index.html",
+      "label": "Open the design site"
+    },
+    {
+      "href": "https://github.com/crissobrino/petase-screening-automation",
+      "label": "View repository"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "The brief",
+      "body": [
+        "Given a library of PETase variants, rank them by how well they break down PET. That splits into four stages — express each variant, check that it expressed as usable protein, purify it, and assay it against the polymer — and the ranking is only as good as the weakest of them.",
+        "There was no protocol to automate. So the work was to reconstruct one from primary literature and vendor documentation, check it survives its own arithmetic, and only then design the automation around it."
+      ],
+      "images": [
+        {
+          "src": "assets/img/petase-screening/pet-degradation.png",
+          "alt": "Reaction scheme: PETase acting on a PET chain, releasing MHET, BHET and ethylene glycol",
+          "caption": "PETase hydrolyses the ester bonds in PET, releasing MHET, BHET and ethylene glycol. The three aromatic products are what the assay reads, together, as BHET equivalents. Figure from Urbanek et al. 2021, CC BY 4.0."
+        }
+      ]
+    },
+    {
+      "heading": "Letting the biology pick the protocol",
+      "body": [
+        "Two properties of the enzyme decided most of the design:"
+      ],
+      "list": [
+        "Is-PETase carries two disulfide bonds, and they have to form for it to be stable and active. A standard E. coli lysate is reducing, so the cysteines never pair: the protein would still be detected and still return an activity number, but not the variant's activity. A silently wrong number is worse than a missing one, so expression runs on a lysate kit with a documented disulfide supplement.",
+        "PET hydrolysis is a surface reaction on a solid polymer, so the rate saturates at high enzyme loading. That rules out dividing activity by concentration afterwards — it would systematically penalise the variants that expressed best — and forces every passing variant to be physically levelled to a common concentration before the assay."
+      ]
+    },
+    {
+      "heading": "Choosing the readouts",
+      "body": [
+        "Five plate readouts were compared for the activity assay. UV absorbance at 240 nm won because TPA, MHET and BHET share an extinction coefficient there, so one reading reports total depolymerisation regardless of how far a variant drives the reaction toward the monomer. Fenton fluorimetry sees TPA only and would rank product distribution rather than activity; a pH indicator has to be in the reaction from the start and changes it; model substrates measure a proxy; HPLC is not a plate readout.",
+        "Expression is quantified by split-GFP, which only complements for folded, soluble protein — so it reports usable enzyme rather than total protein. It is read twice: once before purification as the gate, and again on the eluate, because the assay normalises to a concentration that has to be measured after the beads."
+      ],
+      "images": [
+        {
+          "src": "assets/img/petase-screening/split-gfp.png",
+          "alt": "Four-panel diagram of the split-GFP mechanism: tagged protein, GFP1-10 detector, complementation, and fluorescent readout",
+          "caption": "Split-GFP. The GFP11 tag does nothing alone; adding the detector fragment reconstitutes the fluorophore in proportion to tagged protein."
+        }
+      ]
+    },
+    {
+      "heading": "Checking it against its own numbers",
+      "body": [
+        "Running the volumes through the protocol is what caught the design errors. An earlier version cut the PCR amplification, on the argument that ordering more DNA is cheaper than a thermocycler and a cleanup stage. The arithmetic killed it: Twist guarantees 100 ng to 1 µg per well, a cell-free reaction wants 250 ng, so a well at the bottom of that range cannot fund even one reaction, let alone three replicates. Left alone the library would quietly lose its low-yield wells for reasons that have nothing to do with the variant.",
+        "The same pass fixed the reaction volume. The fixed components occupy about 78% of any cell-free reaction, so at a 3 µL floor for reliable air-displacement transfer the reaction cannot go below roughly 14 µL. With acoustic dispensing that inverts, which is why the volume is left as a parameter rather than a constant."
+      ]
+    },
+    {
+      "heading": "Automation, instrument-agnostic",
+      "body": [
+        "Each phase was drawn as a flowchart of robot steps — deck setup, master mix, transfers, seals, plate moves, incubations — before any hardware was named. The design stays a proof of concept compatible with any device; offsets and speeds belong to whichever machine it lands on."
+      ],
+      "images": [
+        {
+          "src": "assets/img/petase-screening/expression-board.png",
+          "alt": "Flowchart of the cell-free expression phase: deck setup with reagent tubes and plates on the left, and a numbered twelve-step robot protocol with a master mix table",
+          "caption": "Cell-free expression, as deck layout and numbered robot steps."
+        },
+        {
+          "src": "assets/img/petase-screening/assay-board.png",
+          "alt": "Flowchart of the PET activity assay: setup, a numbered robot protocol, assay controls, plate and device flow, and the data analysis equations",
+          "caption": "The activity assay, through to the fit that converts absorbance into a rate."
+        }
+      ],
+      "imageLayout": "pair"
+    },
+    {
+      "body": [
+        "The steps were then written in PyLabRobot, split into three layers — biological constants, protocol, robot commands — and run in simulation. That is where the remaining errors surfaced: the library only supports what it supports, and a flowchart does not find that out."
+      ]
+    },
+    {
+      "heading": "What comes out",
+      "list": [
+        "Each variant carries its identity from the Twist plate map through every hop, unchanged.",
+        "Soluble concentration from the split-GFP read on the eluate, against calibration curves sitting on the same plate.",
+        "A gate outcome that keeps the threshold which produced it, so a fail can be read back later.",
+        "Product release per timepoint, baseline-subtracted, in BHET equivalents.",
+        "An initial rate fitted over the linear region, recorded with the points used, and the activity relative to a WT-PETase-GFP11 control measured alongside it."
+      ]
+    },
+    {
+      "heading": "Where it stops",
+      "body": [
+        "This is a design, not a run. Everything in it is a protocol reconstructed from the literature, checked for internal consistency and simulated — nothing has been executed on a bench. The open assumptions are listed on the site and numbered, including the ones most likely to bite: that the constructs arrive already carrying the GFP11 and Strep tags, that the published conditions transfer to this enzyme, and that the elution buffer does not absorb into the 240 nm reading."
+      ]
+    },
+    {
+      "note": "Full protocol, assumptions and references on the project site."
+    }
+  ]
+}
